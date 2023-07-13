@@ -74,15 +74,16 @@ public class RigpaGenerateTitleConsumer implements Consumer {
             if (StringUtils.isNotBlank(generatedValue)) {
                 // remove current target value
                 itemService.clearMetadata(context, item, targetMetadataField.getSchema(),
-                                                         targetMetadataField.getQualifier(),
-                                                         targetMetadataField.getElement(), null);
+                                                         targetMetadataField.getElement(),
+                                                         targetMetadataField.getQualifier(), null);
                 // add new generated value
                 itemService.addMetadata(context, item, targetMetadataField.getSchema(),
-                                                         targetMetadataField.getQualifier(),
-                                                         targetMetadataField.getElement(), null, generatedValue);
+                                                       targetMetadataField.getElement(),
+                                                       targetMetadataField.getQualifier(), null, generatedValue);
+                itemService.update(context, item);
             }
         }
-
+        this.itemsAlreadyProcessed.add(item.getID());
     }
 
     private GeneratorOfTitle getGenerator(String entityType) {
