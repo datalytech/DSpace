@@ -34,7 +34,7 @@ public class SimpleGeneratorTitle implements GeneratorOfTitle {
     public String generateTitle(Context context, Item item) {
         StringBuilder titleBuilder = new StringBuilder();
         if (StringUtils.isNotBlank(this.titlePrefix)) {
-            titleBuilder.append(titleBuilder);
+            titleBuilder.append(this.titlePrefix);
         }
 
         if (StringUtils.isBlank(this.separetor)) {

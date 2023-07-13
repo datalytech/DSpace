@@ -8,8 +8,10 @@
 package org.dspace.rigpa.consumer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,9 +35,9 @@ import org.dspace.utils.DSpace;
  */
 public class RigpaGenerateTitleConsumer implements Consumer {
 
-    private List<UUID> alreadyConsumedItems = new ArrayList<>();
+    private Set<UUID> itemsAlreadyProcessed = new HashSet<UUID>();
 
-    private List<GeneratorOfTitle> generetors;
+    private List<GeneratorOfTitle> generetors = new ArrayList<>();
 
     private ItemService itemService;
 
@@ -51,7 +53,8 @@ public class RigpaGenerateTitleConsumer implements Consumer {
     @Override
     public void consume(Context context, Event event) throws Exception {
         // only items & only install events
-        if (event.getSubjectType() != Constants.ITEM || event.getEventType() != Event.INSTALL) {
+        if (event.getSubjectType() != Constants.ITEM || event.getEventType() != Event.INSTALL
+            || itemsAlreadyProcessed.contains(event.getSubjectID())) {
             return;
         }
 
@@ -97,7 +100,7 @@ public class RigpaGenerateTitleConsumer implements Consumer {
 
     @Override
     public void end(Context context) throws Exception {
-        this.alreadyConsumedItems.clear();
+        this.itemsAlreadyProcessed.clear();
     }
 
     @Override
