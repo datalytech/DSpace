@@ -7,10 +7,9 @@
  */
 package org.dspace.rigpa.consumer;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,10 +22,7 @@ import org.dspace.core.Context;
 import org.dspace.event.Consumer;
 import org.dspace.event.Event;
 import org.dspace.importer.external.metadatamapping.MetadataFieldConfig;
-import org.dspace.kernel.ServiceManager;
-import org.dspace.rigpa.generator.GeneratorOfTitle;
-import org.dspace.rigpa.generator.SimpleGeneratorTitle;
-import org.dspace.utils.DSpace;
+import org.dspace.rigpa.generator.service.factory.RigpaGeneratorConfigFactory;
 
 /**
  * The consumer is used to generate custom titles according to configurations of the generators
@@ -35,19 +31,18 @@ import org.dspace.utils.DSpace;
  */
 public class RigpaGenerateTitleConsumer implements Consumer {
 
-    private Set<UUID> itemsAlreadyProcessed = new HashSet<UUID>();
+    public static final String CONSUMER_NAME = "generateTitle";
 
-    private List<GeneratorOfTitle> generetors = new ArrayList<>();
+    private Set<UUID> itemsAlreadyProcessed = new HashSet<UUID>();
 
     private ItemService itemService;
 
+    private RigpaGeneratorConfigFactory generatorConfigFactory;
+
     @Override
     public void initialize() throws Exception {
-        ServiceManager serviceManager = new DSpace().getServiceManager();
-        this.itemService = ContentServiceFactory.getInstance().getItemService();
-        var simpleGenerator = serviceManager.getServiceByName(SimpleGeneratorTitle.class.getName(),
-                                                              SimpleGeneratorTitle.class);
-        generetors.add(simpleGenerator);
+        itemService = ContentServiceFactory.getInstance().getItemService();
+        generatorConfigFactory = RigpaGeneratorConfigFactory.getInstance();
     }
 
     @Override
@@ -64,39 +59,49 @@ public class RigpaGenerateTitleConsumer implements Consumer {
             return;
         }
 
-        var entityType = itemService.getMetadataFirstValue(item, "dspace","entity","type", null);
+        String entityType = itemService.getMetadataFirstValue(item, "dspace","entity","type", Item.ANY);
 
-        GeneratorOfTitle generator = getGenerator(entityType);
+        Optional.ofNullable(
+                generatorConfigFactory.getGeneratorFor(entityType)
+            )
+            .ifPresent(g ->
+                processGeneratedValue(
+                    context, item, g.generateTitle(context, item), g.getTargetMetadataField()
+                )
+            );
 
-        if (Objects.nonNull(generator)) {
-            MetadataFieldConfig targetMetadataField = generator.getTargetMetadataField();
-            var generatedValue = generator.generateTitle(context, item);
-            if (StringUtils.isNotBlank(generatedValue)) {
-                // remove current target value
-                itemService.clearMetadata(context, item, targetMetadataField.getSchema(),
-                                                         targetMetadataField.getElement(),
-                                                         targetMetadataField.getQualifier(), null);
-                // add new generated value
-                itemService.addMetadata(context, item, targetMetadataField.getSchema(),
-                                                       targetMetadataField.getElement(),
-                                                       targetMetadataField.getQualifier(), null, generatedValue);
-                itemService.update(context, item);
-            }
-        }
         this.itemsAlreadyProcessed.add(item.getID());
     }
 
-    private GeneratorOfTitle getGenerator(String entityType) {
-        if (StringUtils.isBlank(entityType)) {
-            return null;
-        }
-
-        for (GeneratorOfTitle generator : generetors) {
-            if (StringUtils.equals(generator.getSupportedType(), entityType)) {
-                return generator;
+    protected void processGeneratedValue(
+        Context context, Item item, String generatedValue, MetadataFieldConfig metadataField
+    ) {
+        if (StringUtils.isNotBlank(generatedValue)) {
+            try {
+             // remove current target value
+                itemService.clearMetadata(
+                    context, item,
+                    metadataField.getSchema(),
+                    metadataField.getElement(),
+                    metadataField.getQualifier(),
+                    Item.ANY
+                );
+                // add new generated value
+                itemService.addMetadata(
+                    context, item,
+                    metadataField.getSchema(),
+                    metadataField.getElement(),
+                    metadataField.getQualifier(),
+                    Item.ANY, generatedValue
+                );
+                itemService.update(context, item);
+            } catch (Exception e) {
+                throw new RuntimeException(
+                    "Cannot process generated title in " + RigpaGenerateTitleConsumer.class + " consumer!",
+                    e
+                );
             }
         }
-        return null;
     }
 
     @Override
