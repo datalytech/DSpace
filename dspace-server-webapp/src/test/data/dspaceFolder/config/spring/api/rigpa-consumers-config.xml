@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+       default-lazy-init="true">
+       
+     <!-- RIGPA configuration factory -->
+     <bean name="rigpaGeneratorConfigFactory"
+        class="org.dspace.rigpa.generator.service.factory.RigpaGeneratorConfigFactoryImpl"
+     />
+
+    <!-- RIGPA generators -->
+    <bean class="org.dspace.rigpa.generator.SimpleGeneratorTitle">
+         <property name="entityType" value="RigpaPublication" />
+         <property name="titlePrefix" value="" />
+         <property name="targetMetadataFiled" ref="rigpa-dc-title" />
+         <property name="fieldsToUseForGenerationOfTitle" ref="fieldsForSimpleGenerator" />
+    </bean>
+    
+    <bean class="org.dspace.rigpa.generator.SimpleGeneratorTitle">
+         <property name="entityType" value="RigpaPrefixPublication" />
+         <property name="separator" value="-" />
+         <property name="titlePrefix" value="RIGPA:" />
+         <property name="targetMetadataFiled" ref="rigpa-dc-title" />
+         <property name="fieldsToUseForGenerationOfTitle" ref="fieldsForSimpleGenerator" />
+    </bean>
+
+    <util:list id="fieldsForSimpleGenerator" value-type="java.lang.String">
+        <ref bean="rigpa-dc-identifier" />
+        <ref bean="rigpa-dc-language" />
+    </util:list>
+
+    <!-- RIGPA metadata field configuration  -->
+    <bean id="rigpa-dc-title" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.title"/>
+    </bean>
+
+    <bean id="rigpa-dc-identifier" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.identifier.other"/>
+    </bean>
+    
+    <bean id="rigpa-dc-language" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.language.iso"/>
+    </bean>
+
+</beans>

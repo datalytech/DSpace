@@ -151,31 +151,6 @@
     <bean class="org.dspace.authorize.RegexPasswordValidator" />
 
     <bean class="org.dspace.supervision.SupervisionOrderServiceImpl"/>
-
-    <!-- RIGPA custom configurations -->
-    <bean class="org.dspace.rigpa.generator.SimpleGeneratorTitle">
-         <property name="entityType" value="Publication" />
-         <property name="titlePrefix" value="" />
-         <property name="targetMetadataFiled" ref="rigpa-dc-title" />
-         <property name="fieldsToUseForGenerationOfTitle" ref="fieldsForSimpleGenerator" />
-    </bean>
-
-    <bean id="rigpa-dc-title" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
-        <constructor-arg value="dc.title"/>
-    </bean>
-
-    <util:list id="fieldsForSimpleGenerator" value-type="java.lang.String">
-        <ref bean="rigpa-dc-identifier" />
-        <ref bean="rigpa-dc-language" />
-    </util:list>
-
-    <bean id="rigpa-dc-identifier" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
-        <constructor-arg value="dc.identifier.other"/>
-    </bean>
-    
-    <bean id="rigpa-dc-language" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
-        <constructor-arg value="dc.language.iso"/>
-    </bean>
     
 </beans>
 
