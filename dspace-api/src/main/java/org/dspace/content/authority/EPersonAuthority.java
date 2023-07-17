@@ -22,6 +22,7 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.util.UUIDUtils;
+import org.dspace.web.ContextUtil;
 
 /**
  * Implementation of {@link ChoiceAuthority} based on EPerson. Allows you to set
@@ -42,6 +43,12 @@ public class EPersonAuthority implements ChoiceAuthority {
     private EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
     private AuthorizeService authorizeService = AuthorizeServiceFactory.getInstance().getAuthorizeService();
+
+
+    private Context getContext() {
+        Context context = ContextUtil.obtainCurrentRequestContext();
+        return context != null ? context : new Context();
+    }
 
     @Override
     public Choices getBestMatch(String text, String locale) {
@@ -64,7 +71,7 @@ public class EPersonAuthority implements ChoiceAuthority {
         }
         Choice[] results = new Choice[choiceList.size()];
         results = choiceList.toArray(results);
-        return new Choices(results, start, ePersons.size(), Choices.CF_AMBIGUOUS, ePersons.size() > (start + limit), 0);
+        return new Choices(results, start, ePersons.size(), Choices.CF_AMBIGUOUS, ePersons.size() > start + limit, 0);
     }
 
     @Override

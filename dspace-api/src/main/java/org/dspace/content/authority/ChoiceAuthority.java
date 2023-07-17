@@ -10,9 +10,7 @@ package org.dspace.content.authority;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dspace.core.Context;
 import org.dspace.core.NameAwarePlugin;
-import org.dspace.web.ContextUtil;
 
 /**
  * Plugin interface that supplies an authority control mechanism for
@@ -89,7 +87,7 @@ public interface ChoiceAuthority extends NameAwarePlugin {
     /**
      * Get a map of additional information related to the specified key in the
      * authority.
-     * 
+     *
      * @param key    the key of the entry
      * @param locale explicit localization key if available, or null
      * @return a map of additional information related to the key
@@ -100,7 +98,7 @@ public interface ChoiceAuthority extends NameAwarePlugin {
 
     /**
      * Return true for hierarchical authorities
-     * 
+     *
      * @return <code>true</code> if hierarchical, default <code>false</code>
      */
     default boolean isHierarchical() {
@@ -111,7 +109,7 @@ public interface ChoiceAuthority extends NameAwarePlugin {
      * Scrollable authorities allows the scroll of the entries without applying
      * filter/query to the
      * {@link #getMatches(String, String, Collection, int, int, String)}
-     * 
+     *
      * @return <code>true</code> if scrollable, default <code>false</code>
      */
     default boolean isScrollable() {
@@ -122,7 +120,7 @@ public interface ChoiceAuthority extends NameAwarePlugin {
      * Hierarchical authority can provide an hint for the UI about how many levels
      * preload to improve the UX. It provides a valid default for hierarchical
      * authorities
-     * 
+     *
      * @return <code>0</code> if hierarchical, null otherwise
      */
     default Integer getPreloadLevel() {
@@ -135,7 +133,7 @@ public interface ChoiceAuthority extends NameAwarePlugin {
      * {@link #getValue(String, String)} and {@link #getExtra(String, String)}
      * methods but can be directly overriden for better efficiency or special
      * scenario
-     * 
+     *
      * @param authKey authority key known to this authority.
      * @param locale  explicit localization key if available, or null
      * @return the preferred choice for this authKey and locale
@@ -154,17 +152,12 @@ public interface ChoiceAuthority extends NameAwarePlugin {
      * available in the in the provided choice(s). Usually ChoiceAuthority should
      * recommend that so the default is true and it only need to be implemented in
      * the unusual scenario
-     * 
+     *
      * @return <code>true</code> if the authority provided in any choice of this
      *         authority should be stored in the metadata value
      */
     default public boolean storeAuthorityInMetadata() {
         return true;
-    }
-
-    default Context getContext() {
-        Context context = ContextUtil.obtainCurrentRequestContext();
-        return context != null ? context : new Context();
     }
 
 }

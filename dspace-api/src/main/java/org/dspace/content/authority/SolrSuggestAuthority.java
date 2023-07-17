@@ -26,17 +26,23 @@ import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.kernel.ServiceManager;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.web.ContextUtil;
 
 /**
  * Implementation of {@link ChoiceAuthority} based on Solr documents.
  * Provide suggestions based on existing values present in the Solr document by faced field.
  * The query is based on the prefix of values in solr.
- * 
+ *
  * @author Mykhaylo Boychuk (mykhaylo.boychuk@4science.com)
  */
 public class SolrSuggestAuthority extends SolrAuthority {
 
     private static final Logger log = LogManager.getLogger(SolrSuggestAuthority.class);
+
+    private Context getContext() {
+        Context context = ContextUtil.obtainCurrentRequestContext();
+        return context != null ? context : new Context();
+    }
 
     @Override
     public Choices getBestMatch(String query, String locale) {
