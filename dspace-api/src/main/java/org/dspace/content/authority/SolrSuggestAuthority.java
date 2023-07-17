@@ -3,7 +3,7 @@
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
  *
- * https://github.com/CILEA/dspace-cris/wiki/License
+ * http://www.dspace.org/license/
  */
 package org.dspace.content.authority;
 
@@ -47,41 +47,41 @@ public class SolrSuggestAuthority extends SolrAuthority {
         return matches;
     }
 
-	@Override
-	public Choices getMatches(String query, int start, int limit, String locale) {
+    @Override
+    public Choices getMatches(String query, int start, int limit, String locale) {
 
         Context context = getContext();
-		String facetName = configurationService.getProperty(SolrSuggestAuthority.class.getSimpleName()
-		                   + "." + this.field + ".facetname") + "_ac";
-		String facetPrefix = query.toLowerCase();
-		DiscoverQuery discoverQuery = new DiscoverQuery();
-		discoverQuery.addFacetField(new DiscoverFacetField(facetName, TYPE_STANDARD, -1, VALUE, facetPrefix));
-		
-		List<Choice> proposals = new ArrayList<Choice>();
-		try {
-		    DiscoverResult discoverResult = getSolrSearchService().search(context, discoverQuery);
-		    List<FacetResult> facets = discoverResult.getFacetResult(facetName);
-		    for (FacetResult facet : facets) {
-		        var value = facet.getDisplayedValue();
-		        proposals.add(new Choice(null, value, value));
-		    }
-		} catch (SearchServiceException e) {
-			log.error(e.getMessage(), e);
-		}
+        String facetName = configurationService.getProperty(SolrSuggestAuthority.class.getSimpleName()
+                           + "." + this.field + ".facetname") + "_ac";
+        String facetPrefix = query.toLowerCase();
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.addFacetField(new DiscoverFacetField(facetName, TYPE_STANDARD, -1, VALUE, facetPrefix));
 
-		Choice[] propArray = new Choice[proposals.size()];
-		propArray = proposals.toArray(propArray);
-		return new Choices(propArray, 0, proposals.size(), CF_ACCEPTED, false);
-	}
+        List<Choice> proposals = new ArrayList<Choice>();
+        try {
+            DiscoverResult discoverResult = getSolrSearchService().search(context, discoverQuery);
+            List<FacetResult> facets = discoverResult.getFacetResult(facetName);
+            for (FacetResult facet : facets) {
+                var value = facet.getDisplayedValue();
+                proposals.add(new Choice(null, value, value));
+            }
+        } catch (SearchServiceException e) {
+            log.error(e.getMessage(), e);
+        }
+
+        Choice[] propArray = new Choice[proposals.size()];
+        propArray = proposals.toArray(propArray);
+        return new Choices(propArray, 0, proposals.size(), CF_ACCEPTED, false);
+    }
 
     private SearchService getSolrSearchService() {
         ServiceManager manager = DSpaceServicesFactory.getInstance().getServiceManager();
         return manager.getServiceByName(SearchService.class.getName(), SearchService.class);
     }
 
-	@Override
-	public String getLabel(String key, String locale) {
-		return StringUtils.EMPTY;
-	}
+    @Override
+    public String getLabel(String key, String locale) {
+        return StringUtils.EMPTY;
+    }
 
 }

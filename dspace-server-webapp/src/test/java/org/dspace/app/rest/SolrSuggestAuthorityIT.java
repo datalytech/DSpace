@@ -227,13 +227,13 @@ public class SolrSuggestAuthorityIT extends AbstractControllerIntegrationTest {
                         .param("exact", "true"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.page.totalElements", Matchers.is(0)));
-        
+
         getClient(token).perform(get("/api/submission/vocabularies/SolrSuggestAuthority/entries")
                         .param("filter", "committed")
                         .param("exact", "true"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.page.totalElements", Matchers.is(0)));
-        
+
         getClient(token).perform(get("/api/submission/vocabularies/SolrSuggestAuthority/entries")
                         .param("filter", "coaching")
                         .param("exact", "true"))
