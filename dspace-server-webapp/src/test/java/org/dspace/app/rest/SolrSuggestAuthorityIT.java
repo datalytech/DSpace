@@ -14,18 +14,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.dspace.builder.CollectionBuilder;
 import org.dspace.builder.CommunityBuilder;
 import org.dspace.builder.ItemBuilder;
 import org.dspace.content.Collection;
-import org.dspace.content.authority.service.ChoiceAuthorityService;
-import org.dspace.core.service.PluginService;
+import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
+import org.dspace.core.factory.CoreServiceFactory;
 import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Integration tests for {@link org.dspace.content.authority.SolrSuggestAuthority}
@@ -34,28 +37,64 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SolrSuggestAuthorityIT extends AbstractControllerIntegrationTest {
 
-    @Autowired
-    private PluginService pluginService;
-    @Autowired
-    private ConfigurationService configurationService;
-    @Autowired
-    private ChoiceAuthorityService choiceAuthorityService;
+    private static String[] defaultChoices;
+    private static String choicesPluginDcSubject;
+    private static String choicesPresentationDcSubject;
+    private static String authorityControlledDcSubject;
+    private static String solrSuggestFacetName;
 
-    @Before
-    public void setup() {
-        context.turnOffAuthorisationSystem();
-        configurationService.setProperty("plugin.named.org.dspace.content.authority.ChoiceAuthority", new String[] {
-                                         "org.dspace.content.authority.SolrSuggestAuthority = SolrSuggestAuthority"
-                                         });
+    @BeforeClass
+    public static void build() {
+        ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
+        defaultChoices =
+            configurationService.getArrayProperty("plugin.named.org.dspace.content.authority.ChoiceAuthority");
+        choicesPluginDcSubject = configurationService.getProperty("choices.plugin.dc.subject");
+        choicesPresentationDcSubject = configurationService.getProperty("choices.presentation.dc.subject");
+        authorityControlledDcSubject = configurationService.getProperty("authority.controlled.dc.subject");
+        solrSuggestFacetName = configurationService.getProperty("SolrSuggestAuthority.dc_subject.facetname");
+
+        configurationService.setProperty(
+            "plugin.named.org.dspace.content.authority.ChoiceAuthority",
+            ArrayUtils.add(defaultChoices, "org.dspace.content.authority.SolrSuggestAuthority = SolrSuggestAuthority")
+        );
         configurationService.setProperty("choices.plugin.dc.subject", "SolrSuggestAuthority");
         configurationService.setProperty("choices.presentation.dc.subject", "suggest");
         configurationService.setProperty("authority.controlled.dc.subject", "true");
         configurationService.setProperty("SolrSuggestAuthority.dc_subject.facetname", "subject");
+        CoreServiceFactory.getInstance().getPluginService().clearNamedPluginClasses();
+        ContentAuthorityServiceFactory.getInstance().getChoiceAuthorityService().clearCache();
+    }
 
-        pluginService.clearNamedPluginClasses();
-        choiceAuthorityService.clearCache();
+    @AfterClass
+    public static void tearDown() {
+        ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        configurationService.setProperty(
+            "plugin.named.org.dspace.content.authority.ChoiceAuthority",
+            defaultChoices
+        );
+        configurationService.setProperty("choices.plugin.dc.subject", choicesPluginDcSubject);
+        configurationService.setProperty("choices.presentation.dc.subject", choicesPresentationDcSubject);
+        configurationService.setProperty("authority.controlled.dc.subject", authorityControlledDcSubject);
+        configurationService.setProperty("SolrSuggestAuthority.dc_subject.facetname", solrSuggestFacetName);
+        CoreServiceFactory.getInstance().getPluginService().clearNamedPluginClasses();
+        ContentAuthorityServiceFactory.getInstance().getChoiceAuthorityService().clearCache();
+    }
 
+    @Before
+    public void before() {
+        context.turnOffAuthorisationSystem();
+        ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        configurationService.setProperty(
+            "plugin.named.org.dspace.content.authority.ChoiceAuthority",
+            ArrayUtils.add(defaultChoices, "org.dspace.content.authority.SolrSuggestAuthority = SolrSuggestAuthority")
+        );
+        configurationService.setProperty("choices.plugin.dc.subject", "SolrSuggestAuthority");
+        configurationService.setProperty("choices.presentation.dc.subject", "suggest");
+        configurationService.setProperty("authority.controlled.dc.subject", "true");
+        configurationService.setProperty("SolrSuggestAuthority.dc_subject.facetname", "subject");
+        CoreServiceFactory.getInstance().getPluginService().clearNamedPluginClasses();
+        ContentAuthorityServiceFactory.getInstance().getChoiceAuthorityService().clearCache();
         context.restoreAuthSystemState();
     }
 
