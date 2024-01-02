@@ -237,7 +237,7 @@ public class EPerson extends DSpaceObject implements DSpaceObjectLegacySupport {
         String l = getLastName();
 
         if ((l == null) && (f == null)) {
-            return getEmail();
+            return StringUtils.isNotBlank(getEmail()) ? getEmail() : getNetid();
         } else if (f == null) {
             return l;
         } else {
