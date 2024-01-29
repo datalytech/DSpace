@@ -65,7 +65,7 @@
         <addon-ocr.version>[CRIS-7.1-SNAPSHOT,CRIS-8.0-SNAPSHOT)</addon-ocr.version>
         <addon-docviewer.version>[CRIS-7.0-SNAPSHOT,CRIS-8.0-SNAPSHOT)</addon-docviewer.version>
         <addon-analytics.version>[CRIS-7.0-SNAPSHOT,CRIS-8.0-SNAPSHOT)</addon-analytics.version>
-        <addon-data-quality.version>cris-2023.02.02-SNAPSHOT</addon-data-quality.version>
+        <addon-dataquality.version>cris-2023.02.02-SNAPSHOT</addon-dataquality.version>
 
         <!--=== MAVEN SETTINGS ===-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -944,7 +944,7 @@
             Builds Data Quality addon for DSpace
         -->
         <profile>
-            <id>addon-data-quality</id>
+            <id>addon-dataquality</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -952,8 +952,8 @@
                 <dependencies>
                     <dependency>
                          <groupId>it.4science.dspace</groupId>
-                         <artifactId>addon-data-quality</artifactId>
-                         <version>${addon-data-quality.version}</version>
+                         <artifactId>addon-dataquality</artifactId>
+                         <version>${addon-dataquality.version}</version>
                          <type>jar</type>
                     </dependency>
                 </dependencies>

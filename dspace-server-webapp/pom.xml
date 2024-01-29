@@ -341,7 +341,7 @@
 		</profile>
 
 	   	<profile>
-			<id>addon-data-quality</id>
+			<id>addon-dataquality</id>
 	         <activation>
 	            <property>
 	               <name>dq.on</name>
@@ -350,8 +350,8 @@
 			<dependencies>
                 <dependency>
                     <groupId>it.4science.dspace</groupId>
-                    <artifactId>addon-data-quality</artifactId>
-                    <version>${addon-data-quality.version}</version>
+                    <artifactId>addon-dataquality</artifactId>
+                    <version>${addon-dataquality.version}</version>
                     <type>jar</type>
                 </dependency>
 			</dependencies>
