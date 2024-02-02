@@ -25,6 +25,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.dspace.app.audit.MetadataEvent;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.core.ReloadableEntity;
 import org.dspace.handle.Handle;
@@ -110,7 +111,7 @@ public abstract class DSpaceObject implements Serializable, ReloadableEntity<jav
      *
      * @param d detail string to add.
      */
-    protected void addDetails(String d) {
+    public void addDetails(String d) {
         if (eventDetails == null) {
             eventDetails = new StringBuffer(d);
         } else {
@@ -192,7 +193,7 @@ public abstract class DSpaceObject implements Serializable, ReloadableEntity<jav
     protected void addMetadata(MetadataValue metadataValue) {
         setMetadataModified();
         getMetadata().add(metadataValue);
-        addDetails(metadataValue.getMetadataField().toString());
+        addDetails(new MetadataEvent(metadataValue, MetadataEvent.INITIAL_ADD).toJson());
     }
 
     public List<ResourcePolicy> getResourcePolicies() {

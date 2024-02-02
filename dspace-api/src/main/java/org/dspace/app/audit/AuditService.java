@@ -11,13 +11,23 @@ package org.dspace.app.audit;
  * Service to store and retrieve DSpace Events from the audit solr core
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.dspace.app.audit.MetadataEvent.INITIAL_ADD;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
@@ -43,22 +53,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuditService {
     private static final String UUID_FIELD = "uid";
-
     private static final String SUBJECT_UUID_FIELD = "subject_uuid";
-
     private static final String SUBJECT_TYPE_FIELD = "subject_type";
-
     private static final String OBJECT_UUID_FIELD = "object_uuid";
-
     private static final String OBJECT_TYPE_FIELD = "object_type";
-
     private static final String EVENT_TYPE_FIELD = "event_type";
-
     private static final String EPERSON_UUID_FIELD = "eperson_uuid";
-
     private static final String DATETIME_FIELD = "timeStamp";
-
     private static final String DETAIL_FIELD = "detail";
+    private static final String METADATA_FIELD = "metadata_field";
+    private static final String VALUE_FIELD = "value";
+    private static final String AUTHORITY_FIELD = "authority";
+    private static final String CONFIDENCE_FIELD = "confidence";
+    private static final String PLACE_FIELD = "place";
+    private static final String ACTION_FIELD = "action";
+    private static final String CHECKSUM = "checksum";
 
     @Autowired
     private ConfigurationService configurationService;
@@ -81,12 +90,15 @@ public class AuditService {
     }
 
     public void store(Context context, Event event) {
-        AuditEvent audit = getAuditEventFromEvent(event);
-        EPerson eperson = context.getCurrentUser();
-        if (eperson != null) {
-            audit.setEpersonUUID(eperson.getID());
+        List<AuditEvent> audits = getAuditEventsFromEvent(context, event);
+        for (AuditEvent audit: audits) {
+            if ("MODIFY_METADATA".equals(event.getEventTypeAsString()) &&
+                StringUtils.isEmpty(audit.getMetadataField())) {
+                continue;
+            }
+
+            store(context, audit);
         }
-        store(context, audit);
     }
 
     /**
@@ -117,6 +129,20 @@ public class AuditService {
         if (audit.getDetail() != null) {
             solrInDoc.addField(DETAIL_FIELD, audit.getDetail());
         }
+
+        if (audit.getMetadataField() != null) {
+            solrInDoc.addField(METADATA_FIELD, audit.getMetadataField());
+            solrInDoc.addField(VALUE_FIELD, audit.getValue());
+            solrInDoc.addField(AUTHORITY_FIELD, audit.getAuthority() == null ? "" : audit.getAuthority());
+            solrInDoc.addField(CONFIDENCE_FIELD, audit.getConfidence());
+            solrInDoc.addField(PLACE_FIELD, audit.getPlace());
+            solrInDoc.addField(ACTION_FIELD, audit.getAction());
+        }
+
+        if (StringUtils.isNotEmpty(audit.getChecksum())) {
+            solrInDoc.addField(CHECKSUM, audit.getChecksum());
+        }
+
         try {
             getSolr().add(solrInDoc);
         } catch (SolrServerException | IOException e) {
@@ -132,18 +158,84 @@ public class AuditService {
      * @param event the dspace event
      * @return an audit event wrapping the event without any user details
      */
-    public AuditEvent getAuditEventFromEvent(Event event) {
+    public List<AuditEvent> getAuditEventsFromEvent(Context context, Event event) {
+        List<AuditEvent> audits = new ArrayList<>();
+        List<MetadataEvent> metadataEvents = extractMetadataDetail(event.getDetail());
+
+        for (MetadataEvent metadataEvent : metadataEvents) {
+            audits.add(getAuditEvent(context, event, metadataEvent));
+        }
+
+        if (CollectionUtils.isEmpty(audits)) {
+            audits.add(getAuditEvent(context, event, null));
+        }
+
+        return audits;
+    }
+
+    private List<MetadataEvent> extractMetadataDetail(String detail) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            if (isNotEmpty(detail) && !(detail.startsWith("[") && detail.endsWith("]"))) {
+                detail = "[" + detail + "]";
+            }
+
+            List<MetadataEvent> metadataEvents = objectMapper.readValue(detail, new TypeReference<>() {});
+
+            return metadataEvents.stream()
+                                 .filter(metadataEvent ->
+                                     !metadataEvent.getAction().equals(INITIAL_ADD))
+                                 .collect(Collectors.toList());
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    private String extractChecksumDetail(String detail) {
+        return Optional.ofNullable(detail)
+                       .filter(val ->
+                           isNotEmpty(val) && val.startsWith("checksum:"))
+                       .map(val ->
+                           val.substring("checksum:".length()))
+                       .orElse("");
+    }
+
+    private AuditEvent getAuditEvent(Context context, Event event, MetadataEvent metadataEvent) {
         AuditEvent audit = new AuditEvent();
         audit.setDatetime(new Date(event.getTimeStamp()));
         audit.setEventType(event.getEventTypeAsString());
+
+        EPerson eperson = context.getCurrentUser();
+        if (eperson != null) {
+            audit.setEpersonUUID(eperson.getID());
+        }
+
         if (event.getObjectID() != null) {
             audit.setObjectType(event.getObjectTypeAsString());
             audit.setObjectUUID(event.getObjectID());
         }
+
         audit.setSubjectType(event.getSubjectTypeAsString());
         audit.setSubjectUUID(event.getSubjectID());
+
+        if (metadataEvent != null) {
+            audit.setMetadataField(metadataEvent.getMetadataField());
+            audit.setValue(metadataEvent.getValue());
+            audit.setAuthority(metadataEvent.getAuthority());
+            audit.setConfidence(metadataEvent.getConfidence());
+            audit.setPlace(metadataEvent.getPlace());
+            audit.setAction(metadataEvent.getAction());
+        }
+
+        String checksum = extractChecksumDetail(event.getDetail());
+        if (!checksum.isEmpty()) {
+            audit.setChecksum(checksum);
+        }
+
         return audit;
     }
+
     /**
      * Shortcut for
      * {@link #findEvents(Context, UUID, Date, Date, int, int, boolean)} with
@@ -233,6 +325,13 @@ public class AuditService {
         rse.setEventType((String) sd.getFieldValue(EVENT_TYPE_FIELD));
         rse.setDatetime((Date) sd.getFieldValue(DATETIME_FIELD));
         rse.setDetail((String) sd.getFieldValue(DETAIL_FIELD));
+        rse.setMetadataField((String) sd.getFieldValue(METADATA_FIELD));
+        rse.setValue((String) sd.getFieldValue(VALUE_FIELD));
+        rse.setAuthority((String) sd.getFieldValue(AUTHORITY_FIELD));
+        rse.setConfidence((Integer) sd.getFieldValue(CONFIDENCE_FIELD));
+        rse.setPlace((Integer) sd.getFieldValue(PLACE_FIELD));
+        rse.setAction((String) sd.getFieldValue(ACTION_FIELD));
+        rse.setChecksum((String) sd.getFieldValue(CHECKSUM));
         return rse;
     }
 

@@ -27,6 +27,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.audit.MetadataEvent;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.authority.service.ChoiceAuthorityService;
@@ -334,7 +335,7 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
                 metadataValue.setValue(String.valueOf(dcvalue));
                 //An update here isn't needed, this is persited upon the merge of the owning object
 //            metadataValueService.update(context, metadataValue);
-                dso.addDetails(metadataField.toString());
+                dso.addDetails(new MetadataEvent(metadataValue, MetadataEvent.ADD).toJson());
             }
         }
         setMetadataModified(dso);
@@ -486,9 +487,9 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
         Iterator<MetadataValue> metadata = dso.getMetadata().iterator();
         while (metadata.hasNext()) {
             MetadataValue metadataValue = metadata.next();
-            // If this value matches, delete it
             if (match(schema, element, qualifier, lang, metadataValue)) {
                 metadata.remove();
+                dso.addDetails(new MetadataEvent(metadataValue, MetadataEvent.REMOVE).toJson());
                 metadataValueService.delete(context, metadataValue);
             }
         }

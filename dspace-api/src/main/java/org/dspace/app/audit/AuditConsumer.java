@@ -41,6 +41,7 @@ public class AuditConsumer implements Consumer {
     public void consume(Context ctx, Event event) throws Exception {
         if (configurationService.getBooleanProperty("audit.enabled", false)) {
             auditService.store(ctx, event);
+            auditService.commit();
         }
     }
 

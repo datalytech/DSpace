@@ -142,7 +142,8 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
         setFormat(context, bitstream, null);
 
         context.addEvent(
-            new Event(Event.CREATE, Constants.BITSTREAM, bitstreamID, null, getIdentifiers(context, bitstream)));
+            new Event(Event.CREATE, Constants.BITSTREAM, bitstreamID,
+                "checksum:" + bitstream.getChecksum(), getIdentifiers(context, bitstream)));
 
         return bitstream;
     }
@@ -281,6 +282,9 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
 
         context.addEvent(new Event(Event.DELETE, Constants.BITSTREAM, bitstream.getID(),
                                    String.valueOf(bitstream.getSequenceID()), getIdentifiers(context, bitstream)));
+        // add anew event details will be checksum value of the deleted bitstream
+        context.addEvent(new Event(Event.DELETE, Constants.BITSTREAM, bitstream.getID(),
+            "checksum:" + bitstream.getChecksum(), getIdentifiers(context, bitstream)));
 
         // Remove bitstream itself
         bitstream.setDeleted(true);
