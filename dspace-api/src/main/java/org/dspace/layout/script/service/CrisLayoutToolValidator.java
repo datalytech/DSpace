@@ -108,6 +108,8 @@ public interface CrisLayoutToolValidator {
 
     String GROUP_COLUMN = "GROUP";
 
+    String ALTERNATIVE_TO_COLUMN = "ALTERNATIVE_TO";
+
     String METADATA_TYPE = "METADATA";
 
     String BITSTREAM_TYPE = "BITSTREAM";
