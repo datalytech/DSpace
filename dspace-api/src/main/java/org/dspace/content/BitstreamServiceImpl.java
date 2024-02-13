@@ -156,6 +156,10 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
 
         Bitstream b = create(context, is);
         bundleService.addBitstream(context, bundle, b);
+        UUID itemUUID = getItem(b).stream().findFirst().map(Item::getID).orElse(null);
+        context.addEvent(
+            new Event(Event.CREATE, Constants.BITSTREAM, b.getID(), Constants.ITEM, itemUUID,
+                "checksum:" + b.getChecksum(), getIdentifiers(context, b)));
         return b;
     }
 
@@ -261,9 +265,12 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
             bitstream.setModified();
         }
         if (bitstream.isMetadataModified()) {
+            UUID itemUUID = getItem(bitstream).stream().findFirst().map(Item::getID).orElse(null);
             context.addEvent(
-                new Event(Event.MODIFY_METADATA, Constants.BITSTREAM, bitstream.getID(), bitstream.getDetails(),
-                          getIdentifiers(context, bitstream)));
+                new Event(Event.MODIFY_METADATA, Constants.BITSTREAM, bitstream.getID(),
+                    Constants.ITEM, itemUUID,
+                    bitstream.getDetails(),
+                    getIdentifiers(context, bitstream)));
             bitstream.clearModified();
             bitstream.clearDetails();
         }
@@ -283,7 +290,8 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
         context.addEvent(new Event(Event.DELETE, Constants.BITSTREAM, bitstream.getID(),
                                    String.valueOf(bitstream.getSequenceID()), getIdentifiers(context, bitstream)));
         // add anew event details will be checksum value of the deleted bitstream
-        context.addEvent(new Event(Event.DELETE, Constants.BITSTREAM, bitstream.getID(),
+        UUID itemUUID = getItem(bitstream).stream().findFirst().map(Item::getID).orElse(null);
+        context.addEvent(new Event(Event.DELETE, Constants.BITSTREAM, bitstream.getID(), Constants.ITEM, itemUUID,
             "checksum:" + bitstream.getChecksum(), getIdentifiers(context, bitstream)));
 
         // Remove bitstream itself

@@ -488,8 +488,8 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
         while (metadata.hasNext()) {
             MetadataValue metadataValue = metadata.next();
             if (match(schema, element, qualifier, lang, metadataValue)) {
-                metadata.remove();
                 dso.addDetails(new MetadataEvent(metadataValue, MetadataEvent.REMOVE).toJson());
+                metadata.remove();
                 metadataValueService.delete(context, metadataValue);
             }
         }
@@ -502,6 +502,7 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
         while (metadata.hasNext()) {
             MetadataValue metadataValue = metadata.next();
             if (values.contains(metadataValue)) {
+                dso.addDetails(new MetadataEvent(metadataValue, MetadataEvent.REMOVE).toJson());
                 metadata.remove();
                 metadataValueService.delete(context, metadataValue);
             }
