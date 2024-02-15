@@ -61,9 +61,11 @@ public class AuditEventRestRepositoryIT extends AbstractControllerIntegrationTes
     private BitstreamService bitstreamService;
 
     private void loadSomeObjects(boolean enabled) throws Exception {
-        if (enabled) {
+        auditService.deleteEvents(context, null, null);
+
+        if (!enabled) {
             // enable the audit system for this test
-            configurationService.setProperty("audit.enabled", true);
+            configurationService.setProperty("audit.enabled", false);
         }
         // We turn off the authorization system in order to create the structure as
         // defined below
@@ -80,8 +82,6 @@ public class AuditEventRestRepositoryIT extends AbstractControllerIntegrationTes
     public void cleanAuditCore() {
         auditService.deleteEvents(context, null, null);
         auditService.commit();
-        // this is required if the configuration is not present in the files
-        configurationService.setProperty("audit.enabled", false);
     }
 
     @Test
