@@ -14,7 +14,7 @@ package org.dspace.external;
  * @author paulo-graca
  *
  */
-public class OpenAIRERestToken {
+public class OpenaireRestToken {
 
     /**
      * Stored access token
@@ -32,7 +32,7 @@ public class OpenAIRERestToken {
      * @param accessToken
      * @param expiresIn
      */
-    public OpenAIRERestToken(String accessToken, Long expiresIn) {
+    public OpenaireRestToken(String accessToken, Long expiresIn) {
         this.accessToken = accessToken;
         this.setExpirationDate(expiresIn);
     }

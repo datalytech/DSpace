@@ -31,7 +31,7 @@ import eu.openaire.oaf.model.base.Project;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.dto.MetadataValueDTO;
-import org.dspace.external.OpenAIRERestConnector;
+import org.dspace.external.OpenaireRestConnector;
 import org.dspace.external.model.ExternalDataObject;
 import org.dspace.external.provider.AbstractExternalDataProvider;
 import org.dspace.importer.external.metadatamapping.MetadataFieldConfig;
@@ -43,9 +43,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author paulo-graca
  */
-public class OpenAIREFundingDataProvider extends AbstractExternalDataProvider {
+public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
 
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OpenAIREFundingDataProvider.class);
+    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OpenaireFundingDataProvider.class);
 
     /**
      * GrantAgreement prefix
@@ -75,7 +75,7 @@ public class OpenAIREFundingDataProvider extends AbstractExternalDataProvider {
     /**
      * Connector to handle token and requests
      */
-    protected OpenAIRERestConnector connector;
+    protected OpenaireRestConnector connector;
 
     protected Map<String, MetadataFieldConfig> metadataFields;
 
@@ -101,7 +101,7 @@ public class OpenAIREFundingDataProvider extends AbstractExternalDataProvider {
         try {
             if (response.getHeader() != null && Integer.parseInt(response.getHeader().getTotal()) > 0) {
                 Project project = response.getResults().getResult().get(0).getMetadata().getEntity().getProject();
-                ExternalDataObject externalDataObject = new OpenAIREFundingDataProvider
+                ExternalDataObject externalDataObject = new OpenaireFundingDataProvider
                         .ExternalDataObjectBuilder(project)
                         .setId(generateProjectURI(project))
                         .setSource(sourceIdentifier)
@@ -148,7 +148,7 @@ public class OpenAIREFundingDataProvider extends AbstractExternalDataProvider {
 
         if (projects.size() > 0) {
             return projects.stream()
-                    .map(project -> new OpenAIREFundingDataProvider
+                    .map(project -> new OpenaireFundingDataProvider
                             .ExternalDataObjectBuilder(project)
                             .setId(generateProjectURI(project))
                             .setSource(sourceIdentifier)
@@ -183,7 +183,7 @@ public class OpenAIREFundingDataProvider extends AbstractExternalDataProvider {
         this.sourceIdentifier = sourceIdentifier;
     }
 
-    public OpenAIRERestConnector getConnector() {
+    public OpenaireRestConnector getConnector() {
         return connector;
     }
 
@@ -193,7 +193,7 @@ public class OpenAIREFundingDataProvider extends AbstractExternalDataProvider {
      * @param connector
      */
     @Autowired(required = true)
-    public void setConnector(OpenAIRERestConnector connector) {
+    public void setConnector(OpenaireRestConnector connector) {
         this.connector = connector;
     }
 

@@ -46,11 +46,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author paulo-graca
  *
  */
-public class OpenAIRERestConnector {
+public class OpenaireRestConnector {
     /**
      * log4j logger
      */
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OpenAIRERestConnector.class);
+    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(OpenaireRestConnector.class);
 
     /**
      * OpenAIRE API Url
@@ -79,7 +79,7 @@ public class OpenAIRERestConnector {
     /**
      * OpenAIRERest access token
      */
-    private OpenAIRERestToken accessToken;
+    private OpenaireRestToken accessToken;
 
     /**
      * OpenAIRE clientSecret
@@ -88,7 +88,7 @@ public class OpenAIRERestConnector {
     private String clientSecret;
 
 
-    public OpenAIRERestConnector(String url) {
+    public OpenaireRestConnector(String url) {
         this.url = url;
     }
 
@@ -99,7 +99,7 @@ public class OpenAIRERestConnector {
      * 
      * @throws IOException
      */
-    public OpenAIRERestToken grabNewAccessToken() throws IOException {
+    public OpenaireRestToken grabNewAccessToken() throws IOException {
 
         if (StringUtils.isBlank(tokenServiceUrl) || StringUtils.isBlank(clientId)
                 || StringUtils.isBlank(clientSecret)) {
@@ -145,7 +145,7 @@ public class OpenAIRERestConnector {
             throw new IOException("Unable to grab the access token using provided service url, client id and secret");
         }
 
-        return new OpenAIRERestToken(responseObject.get("access_token").toString(),
+        return new OpenaireRestToken(responseObject.get("access_token").toString(),
                 Long.valueOf(responseObject.get("expires_in").toString()));
 
     }

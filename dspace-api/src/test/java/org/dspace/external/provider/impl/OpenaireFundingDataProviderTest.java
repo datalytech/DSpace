@@ -28,7 +28,7 @@ import org.junit.Test;
  * @author pgraca
  *
  */
-public class OpenAIREFundingDataProviderTest extends AbstractDSpaceTest {
+public class OpenaireFundingDataProviderTest extends AbstractDSpaceTest {
 
     ExternalDataService externalDataService;
     ExternalDataProvider openAIREFundingDataProvider;

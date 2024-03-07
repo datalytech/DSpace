@@ -19,7 +19,7 @@ import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
-public class OpenAIREFundingExternalSourcesIT extends AbstractControllerIntegrationTest {
+public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrationTest {
 
     /**
      * Test openaire funding external source
