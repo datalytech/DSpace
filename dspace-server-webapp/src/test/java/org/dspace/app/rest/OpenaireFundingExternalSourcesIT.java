@@ -30,7 +30,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
     public void findOneOpenAIREFundingExternalSourceTest() throws Exception {
         getClient().perform(get("/api/integration/externalsources")).andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.externalsources", Matchers.hasItem(
-                        ExternalSourceMatcher.matchExternalSource("openAIREFunding", "openAIREFunding", false))));
+                        ExternalSourceMatcher.matchExternalSource("openaireFunding", "openaireFunding", false))));
     }
 
     /**
@@ -41,7 +41,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
     @Test
     public void findOneOpenAIREFundingExternalSourceEntriesEmptyWithQueryTest() throws Exception {
 
-        getClient().perform(get("/api/integration/externalsources/openAIREFunding/entries").param("query", "empty"))
+        getClient().perform(get("/api/integration/externalsources/openaireFunding/entries").param("query", "empty"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.page.number", is(0)));
     }
 
@@ -56,7 +56,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
 
         getClient()
                 .perform(
-                        get("/api/integration/externalsources/openAIREFunding/entries").param("query", "empty+results"))
+                        get("/api/integration/externalsources/openaireFunding/entries").param("query", "empty+results"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.page.number", is(0)));
     }
 
@@ -67,13 +67,13 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
      */
     @Test
     public void findOneOpenAIREFundingExternalSourceEntriesWithQueryTest() throws Exception {
-        getClient().perform(get("/api/integration/externalsources/openAIREFunding/entries").param("query", "mushroom"))
+        getClient().perform(get("/api/integration/externalsources/openaireFunding/entries").param("query", "mushroom"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.externalSourceEntries",
                         Matchers.hasItem(ExternalSourceEntryMatcher.matchExternalSourceEntry(
                                 "aW5mbzpldS1yZXBvL2dyYW50QWdyZWVtZW50L05XTy8rLzIzMDAxNDc3MjgvTkw=",
                                 "Master switches of initiation of mushroom formation",
-                                "Master switches of initiation of mushroom formation", "openAIREFunding"))));
+                                "Master switches of initiation of mushroom formation", "openaireFunding"))));
 
     }
 
@@ -90,12 +90,12 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
         String projectName = "Portuguese Wild Mushrooms: Chemical characterization and functional study"
                 + " of antiproliferative and proapoptotic properties in cancer cell lines";
 
-        getClient().perform(get("/api/integration/externalsources/openAIREFunding/entryValues/" + projectID))
+        getClient().perform(get("/api/integration/externalsources/openaireFunding/entryValues/" + projectID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$",
                         Matchers.allOf(hasJsonPath("$.id", is(projectID)), hasJsonPath("$.display", is(projectName)),
                                 hasJsonPath("$.value", is(projectName)),
-                                hasJsonPath("$.externalSource", is("openAIREFunding")),
+                                hasJsonPath("$.externalSource", is("openaireFunding")),
                                 hasJsonPath("$.type", is("externalSourceEntry")))));
 
     }
