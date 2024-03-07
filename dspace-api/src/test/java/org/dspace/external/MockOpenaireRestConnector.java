@@ -20,9 +20,9 @@ import eu.openaire.jaxb.model.Response;
  * @author pgraca
  *
  */
-public class MockOpenAIRERestConnector extends OpenaireRestConnector {
+public class MockOpenaireRestConnector extends OpenaireRestConnector {
 
-    public MockOpenAIRERestConnector(String url) {
+    public MockOpenaireRestConnector(String url) {
         super(url);
     }
 
