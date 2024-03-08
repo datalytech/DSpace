@@ -7,6 +7,8 @@
  */
 package org.dspace.qaevent.service.dto;
 
+import org.dspace.content.QAEvent;
+
 /**
  * Interface for classes that contains the details related to a {@link QAEvent}.
  *

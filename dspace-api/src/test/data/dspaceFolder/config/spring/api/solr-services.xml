@@ -47,7 +47,11 @@
     <bean id="org.dspace.statistics.SolrStatisticsCore"
           class="org.dspace.statistics.MockSolrStatisticsCore"
           autowire-candidate="true"/>
-          
+
+    <!-- qa events -->
+    <bean class="org.dspace.qaevent.MockQAEventService"
+          id="org.dspace.qaevent.service.QAEventService" />
+
     <bean class="org.dspace.statistics.GeoIpService" autowire-candidate="true"/>
 
 </beans>
