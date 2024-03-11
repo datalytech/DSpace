@@ -47,7 +47,7 @@ import org.springframework.web.bind.annotation.RestController;
  * "/api/integration/qualityassuranceevents/{qaeventid}/related"
  */
 @RestController
-@RequestMapping("/api/" + QAEventRest.CATEGORY + "/" + QAEventRest.PLURAL_NAME
+@RequestMapping("/api/" + QAEventRest.CATEGORY + "/" + QAEventRest.NAME
     + REGEX_REQUESTMAPPING_IDENTIFIER_AS_STRING_VERSION_STRONG + "/" + QAEventRest.RELATED)
 public class QAEventRelatedRestController {
 
