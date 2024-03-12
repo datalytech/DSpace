@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Mohamed Eskander (mohamed.eskander at 4science.com)
  */
-@Component(CorrectionTypeRest.CATEGORY + "." + CorrectionTypeRest.PLURAL_NAME)
+@Component(CorrectionTypeRest.CATEGORY + "." + CorrectionTypeRest.NAME)
 public class CorrectionTypeRestRepository extends DSpaceRestRepository<CorrectionTypeRest, String> {
 
     @Autowired
