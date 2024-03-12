@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class is the implementation of the ExternalDataProvider interface that
- * will deal with the OpenAIRE External Data lookup
+ * will deal with the Openaire External Data lookup
  * 
  * @author paulo-graca
  */
@@ -93,7 +93,7 @@ public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
         // characters that must be escaped for the <:entry-id>
         String decodedId = new String(Base64.getDecoder().decode(id));
         if (!isValidProjectURI(decodedId)) {
-            log.error("Invalid ID for OpenAIREFunding - " + id);
+            log.error("Invalid ID for OpenaireFunding - " + id);
             return Optional.empty();
         }
         Response response = searchByProjectURI(decodedId);
@@ -123,7 +123,7 @@ public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
             limit = LIMIT_DEFAULT;
         }
 
-        // OpenAIRE uses pages and first page starts with 1
+        // Openaire uses pages and first page starts with 1
         int page = (start / limit) + 1;
 
         // escaping query
@@ -176,7 +176,7 @@ public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
      * Generic setter for the sourceIdentifier
      * 
      * @param sourceIdentifier The sourceIdentifier to be set on this
-     *                         OpenAIREFunderDataProvider
+     *                         OpenaireFunderDataProvider
      */
     @Autowired(required = true)
     public void setSourceIdentifier(String sourceIdentifier) {
@@ -188,7 +188,7 @@ public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
     }
 
     /**
-     * Generic setter for OpenAIRERestConnector
+     * Generic setter for OpenaireRestConnector
      * 
      * @param connector
      */
@@ -219,7 +219,7 @@ public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
     }
 
     /**
-     * This method returns an URI based on OpenAIRE 3.0 guidelines
+     * This method returns an URI based on Openaire 3.0 guidelines
      * https://guidelines.openaire.eu/en/latest/literature/field_projectid.html that
      * can be used as an ID if is there any missing part, that part it will be
      * replaced by the character '+'
@@ -281,7 +281,7 @@ public class OpenaireFundingDataProvider extends AbstractExternalDataProvider {
     }
 
     /**
-     * OpenAIRE Funding External Data Builder Class
+     * Openaire Funding External Data Builder Class
      * 
      * @author pgraca
      */

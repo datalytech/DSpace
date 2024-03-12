@@ -5,10 +5,11 @@
  *
  * http://www.dspace.org/license/
  */
+package org.dspace.app.ldn.action;
 
 /**
- * Support for using DSpace Services in a servlet context.  This is how the
- * kernel and services get started by the servlet container.
+ * Resulting status of an execution of an action.
  */
-
-package org.dspace.servicemanager.servlet;
+public enum LDNActionStatus {
+    CONTINUE, ABORT;
+}

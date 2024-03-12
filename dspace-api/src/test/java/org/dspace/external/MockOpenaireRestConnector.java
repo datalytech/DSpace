@@ -14,7 +14,7 @@ import eu.openaire.jaxb.helper.OpenAIREHandler;
 import eu.openaire.jaxb.model.Response;
 
 /**
- * Mock the OpenAIRE rest connector for unit testing<br>
+ * Mock the Openaire rest connector for unit testing<br>
  * will be resolved against static test xml files
  * 
  * @author pgraca

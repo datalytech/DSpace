@@ -74,7 +74,7 @@ public class QATopicRestRepositoryIT extends AbstractControllerIntegrationTest {
                       .withMessage("{\"pids[0].type\":\"pmid\",\"pids[0].value\":\"10.2307/2144302\"}")
                       .build();
         QAEventBuilder.createTarget(context, col1, "Science and Freedom 4")
-                      .withTopic(QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
+                      .withTopic(org.dspace.qaevent.QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
                       .withMessage("{\"test\": \"Test...\"}")
                       .build();
         QAEventBuilder.createTarget(context, col1, "Science and Freedom 4")
@@ -188,7 +188,7 @@ public class QATopicRestRepositoryIT extends AbstractControllerIntegrationTest {
                       .withMessage("{\"pids[0].type\":\"pmid\",\"pids[0].value\":\"10.2307/2144302\"}")
                       .build();
         QAEventBuilder.createTarget(context, col1, "Science and Freedom 4")
-                      .withTopic(QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
+                      .withTopic(org.dspace.qaevent.QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
                       .withMessage("{\"abstracts[0]\": \"Descrizione delle caratteristiche...\"}")
                       .build();
         QAEventBuilder.createTarget(context, col1, "Science and Freedom 5")
@@ -260,7 +260,7 @@ public class QATopicRestRepositoryIT extends AbstractControllerIntegrationTest {
             .withSource(QAEvent.OPENAIRE_SOURCE)
             .withMessage("{\"pids[0].type\":\"pmid\",\"pids[0].value\":\"10.2307/2144302\"}").build();
         QAEventBuilder.createTarget(context, col1, "Science and Freedom 4")
-            .withTopic(QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
+            .withTopic(org.dspace.qaevent.QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
             .withSource(QAEvent.OPENAIRE_SOURCE)
             .withMessage(
                 "{\"abstracts[0]\": \"Descrizione delle caratteristiche...\"}")
@@ -356,7 +356,7 @@ public class QATopicRestRepositoryIT extends AbstractControllerIntegrationTest {
             .withMessage("{\"pids[0].type\":\"doi\",\"pids[0].value\":\"10.2307/2144300\"}").build();
         QAEventBuilder.createTarget(context, item1)
             .withSource(QAEvent.OPENAIRE_SOURCE)
-            .withTopic(QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
+            .withTopic(org.dspace.qaevent.QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT)
             .withMessage(
                 "{\"abstracts[0]\": \"Descrizione delle caratteristiche...\"}")
             .build();

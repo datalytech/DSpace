@@ -1057,7 +1057,7 @@ public class DiscoveryVersioningIT extends AbstractControllerIntegrationTest {
     }
 
     @Test
-    public void test_discoveryXml_openAIREFundingAgency_expectLatestVersionsOnly() throws Exception {
+    public void test_discoveryXml_openaireFundingAgency_expectLatestVersionsOnly() throws Exception {
         final String configuration = "openaireFundingAgency";
 
 

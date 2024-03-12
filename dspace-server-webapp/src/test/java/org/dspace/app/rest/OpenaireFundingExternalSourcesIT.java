@@ -27,7 +27,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
      * @throws Exception
      */
     @Test
-    public void findOneOpenAIREFundingExternalSourceTest() throws Exception {
+    public void findOneOpenaireFundingExternalSourceTest() throws Exception {
         getClient().perform(get("/api/integration/externalsources")).andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.externalsources", Matchers.hasItem(
                         ExternalSourceMatcher.matchExternalSource("openaireFunding", "openaireFunding", false))));
@@ -39,7 +39,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
      * @throws Exception
      */
     @Test
-    public void findOneOpenAIREFundingExternalSourceEntriesEmptyWithQueryTest() throws Exception {
+    public void findOneOpenaireFundingExternalSourceEntriesEmptyWithQueryTest() throws Exception {
 
         getClient().perform(get("/api/integration/externalsources/openaireFunding/entries").param("query", "empty"))
                 .andExpect(status().isOk()).andExpect(jsonPath("$.page.number", is(0)));
@@ -52,7 +52,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
      * @throws Exception
      */
     @Test
-    public void findOneOpenAIREFundingExternalSourceEntriesWithQueryMultipleKeywordsTest() throws Exception {
+    public void findOneOpenaireFundingExternalSourceEntriesWithQueryMultipleKeywordsTest() throws Exception {
 
         getClient()
                 .perform(
@@ -66,7 +66,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
      * @throws Exception
      */
     @Test
-    public void findOneOpenAIREFundingExternalSourceEntriesWithQueryTest() throws Exception {
+    public void findOneOpenaireFundingExternalSourceEntriesWithQueryTest() throws Exception {
         getClient().perform(get("/api/integration/externalsources/openaireFunding/entries").param("query", "mushroom"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.externalSourceEntries",
@@ -83,7 +83,7 @@ public class OpenaireFundingExternalSourcesIT extends AbstractControllerIntegrat
      * @throws Exception
      */
     @Test
-    public void findOneOpenAIREFundingExternalSourceEntryValueTest() throws Exception {
+    public void findOneOpenaireFundingExternalSourceEntryValueTest() throws Exception {
 
         // "info:eu-repo/grantAgreement/mock/mock/mock/mock" base64 encoded
         String projectID = "aW5mbzpldS1yZXBvL2dyYW50QWdyZWVtZW50L0ZDVC81ODc2LVBQQ0RUSS8xMTAwNjIvUFQ=";

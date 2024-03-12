@@ -5,13 +5,12 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.app.rest.repository.patch;
+package org.dspace.app.rest.repository.patch.operation;
 
 import java.sql.SQLException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.patch.Operation;
-import org.dspace.app.rest.repository.patch.operation.PatchOperation;
 import org.dspace.content.QAEvent;
 import org.dspace.core.Context;
 import org.dspace.qaevent.service.QAEventActionService;

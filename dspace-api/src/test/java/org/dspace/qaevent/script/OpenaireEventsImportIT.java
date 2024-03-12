@@ -279,14 +279,14 @@ public class OpenaireEventsImportIT extends AbstractIntegrationTestWithDatabase 
         assertThat(qaEventService.findAllSources(context, 0, 20), hasItem(QASourceMatcher.with(OPENAIRE_SOURCE, 1L)));
 
         assertThat(qaEventService.findAllTopicsBySource(context, OPENAIRE_SOURCE, 0, 20, ORDER_FIELD, false),
-                contains(QATopicMatcher.with(QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT, 1L)));
+                contains(QATopicMatcher.with(org.dspace.qaevent.QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT, 1L)));
 
         String abstractMessage = "{\"abstracts[0]\":\"Missing Abstract\"}";
 
         assertThat(qaEventService.findEventsByTopic(context, OPENAIRE_SOURCE,
             QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT, 0, 20, ORDER_FIELD, false), contains(
             pendingOpenaireEventWith("oai:www.openstarts.units.it:123456789/999991", secondItem, "Test Publication 2",
-                abstractMessage, QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT, 1.00d)));
+                abstractMessage, org.dspace.qaevent.QANotifyPatterns.TOPIC_ENRICH_MISSING_ABSTRACT, 1.00d)));
 
         verifyNoInteractions(mockBrokerClient);
     }
@@ -299,8 +299,8 @@ public class OpenaireEventsImportIT extends AbstractIntegrationTestWithDatabase 
         String[] args = new String[] { "import-openaire-events", "-f", getFileLocation("empty-file.json") };
         ScriptLauncher.handleScript(args, ScriptLauncher.getConfig(kernelImpl), handler, kernelImpl);
 
-        assertThat(handler.getErrorMessages(),
-            contains(containsString("A not recoverable error occurs during OPENAIRE events import")));
+        assertThat(handler.getException().getMessage(),
+            containsString("No content to map due to end-of-input"));
         assertThat(handler.getWarningMessages(),empty());
         assertThat(handler.getInfoMessages(), contains("Trying to read the QA events from the provided file"));
 
@@ -403,8 +403,8 @@ public class OpenaireEventsImportIT extends AbstractIntegrationTestWithDatabase 
         String[] args = new String[] { "import-openaire-events", "-e", "user@test.com" };
         ScriptLauncher.handleScript(args, ScriptLauncher.getConfig(kernelImpl), handler, kernelImpl);
 
-        assertThat(handler.getErrorMessages(),
-            contains("A not recoverable error occurs during OPENAIRE events import: Connection refused"));
+        assertThat(handler.getException().getMessage(),
+            is("An error occurs retriving the subscriptions from the OPENAIRE broker: Connection refused"));
         assertThat(handler.getWarningMessages(), empty());
         assertThat(handler.getInfoMessages(), contains("Trying to read the QA events from the OPENAIRE broker"));
 
@@ -447,8 +447,6 @@ public class OpenaireEventsImportIT extends AbstractIntegrationTestWithDatabase 
         String[] args = new String[] { "import-openaire-events", "-e", "user@test.com" };
         ScriptLauncher.handleScript(args, ScriptLauncher.getConfig(kernelImpl), handler, kernelImpl);
 
-        assertThat(handler.getErrorMessages(), contains("An error occurs downloading the events "
-            + "related to the subscription sub2: Invalid subscription id"));
         assertThat(handler.getWarningMessages(),
             contains("Event for topic ENRICH/MORE/UNKNOWN is not allowed in the qaevents.cfg"));
         assertThat(handler.getInfoMessages(), contains(

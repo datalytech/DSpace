@@ -185,6 +185,10 @@ public class ItemBuilder extends AbstractDSpaceObjectBuilder<Item> {
         return addMetadataValue(item, "iiif", "image", "height", String.valueOf(i));
     }
 
+    public ItemBuilder withDSpaceObjectOwner(String name, String authority) {
+        return addMetadataValue(item, "dspace", "object", "owner", null, name, authority, 600);
+    }
+
     public ItemBuilder withMetadata(final String schema, final String element, final String qualifier,
         final String value) {
         return addMetadataValue(item, schema, element, qualifier, value);
@@ -281,8 +285,8 @@ public class ItemBuilder extends AbstractDSpaceObjectBuilder<Item> {
     }
 
     /**
-     * Withdrawn the item under build. Please note that an user need to be loggedin the context to avoid NPE during the
-     * creation of the provenance metadata
+     * Withdraw the item under build. Please note that the Context must be
+     * logged in to avoid NPE during the creation of the provenance metadata.
      *
      * @return the ItemBuilder
      */
