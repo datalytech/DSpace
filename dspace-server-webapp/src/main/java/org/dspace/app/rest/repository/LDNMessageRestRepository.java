@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
  * @author Stefano Maffei(stefano.maffei at 4science.com)
  */
 
-@Component(LDNMessageEntityRest.CATEGORY + "." + LDNMessageEntityRest.NAME_PLURALS)
+@Component(LDNMessageEntityRest.CATEGORY + "." + LDNMessageEntityRest.NAME)
 public class LDNMessageRestRepository extends DSpaceRestRepository<LDNMessageEntityRest, String> {
 
     @Autowired
