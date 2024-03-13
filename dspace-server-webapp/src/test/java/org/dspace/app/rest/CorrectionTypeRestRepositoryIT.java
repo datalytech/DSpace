@@ -180,7 +180,7 @@ public class CorrectionTypeRestRepositoryIT extends AbstractControllerIntegratio
         context.restoreAuthSystemState();
 
         String tokenAdmin = getAuthToken(admin.getEmail(), password);
-        getClient(tokenAdmin).perform(get("/api/config/correctiontypes/search/findByItem")
+        getClient(tokenAdmin).perform(get("/api/config/correctiontype/search/findByItem")
                              .param("uuid", item.getID().toString()))
                              .andExpect(status().isOk())
                              .andExpect(jsonPath("$.page.totalElements", is(1)))
