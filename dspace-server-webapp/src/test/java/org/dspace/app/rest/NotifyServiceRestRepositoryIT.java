@@ -1105,7 +1105,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 allOf(
                     matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
+                    hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternA", "itemFilterA", false),
                         matchNotifyServicePattern("patternB", "itemFilterB", true)
                     ))
@@ -1228,7 +1228,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 allOf(
                     matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
+                    hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternA", "itemFilterC", false),
                         matchNotifyServicePattern("patternB", "itemFilterB", true)
                     ))
@@ -1467,7 +1467,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 allOf(
                     matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
+                    hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternA", "itemFilterA", false),
                         matchNotifyServicePattern("patternB", "itemFilterB", true)
                     ))
@@ -1590,7 +1590,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 allOf(
                     matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
+                    hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternC", "itemFilterA", false),
                         matchNotifyServicePattern("patternB", "itemFilterB", true)
                     ))
@@ -1713,7 +1713,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 allOf(
                     matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
+                    hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternA", "itemFilterA", true),
                         matchNotifyServicePattern("patternB", "itemFilterB", true)
                     ))

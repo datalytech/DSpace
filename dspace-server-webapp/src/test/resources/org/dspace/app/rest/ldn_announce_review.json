@@ -21,7 +21,7 @@
       ]
     }
   },
-  "id": "urn:uuid:2f4ec582-109e-4952-a94a-b7d7615a8c69",
+  "id": "urn:uuid:2f4ec582-109e-4952-a94a-b7d7615a8c70",
   "inReplyTo": "urn:uuid:0370c0fb-bb78-4a9b-87f5-bed307a509dd",
   "object": {
 	"id": "<<object_handle>>",
@@ -33,7 +33,7 @@
   },
   "origin": {
     "id": "https://review-service.com/system",
-    "inbox": "https://review-service.com/inbox/",
+    "inbox": "https://review-service.com/inbox2/",
     "type": "Service"
   },
   "target": {

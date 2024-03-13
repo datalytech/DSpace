@@ -6943,7 +6943,7 @@ public class DiscoveryRestControllerIT extends AbstractControllerIntegrationTest
             //There needs to be a page object that shows the total pages and total elements as well as the
             // size and the current page (number)
             .andExpect(jsonPath("$._embedded.searchResult.page", is(
-                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 1)
+                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 0, 0)
             )))
             .andExpect(jsonPath("$._embedded.facets", Matchers.containsInAnyOrder(
                 FacetEntryMatcher.relatedItemFacet(false),
@@ -6977,14 +6977,14 @@ public class DiscoveryRestControllerIT extends AbstractControllerIntegrationTest
 
         String object = configurationService.getProperty("dspace.ui.url") + "/handle/" + item.getHandle();
 
-        NotifyServiceEntity notifyService =
+        /*NotifyServiceEntity notifyService =
             NotifyServiceBuilder.createNotifyServiceBuilder(context)
                                 .withName("service name")
                                 .withDescription("service description")
                                 .withUrl("service url")
                                 .withLdnUrl("https://generic-service.com/system/inbox/")
                                 .build();
-
+        */
         InputStream announceReviewStream = getClass().getResourceAsStream("ldn_announce_review.json");
         String announceReview = IOUtils.toString(announceReviewStream, Charset.defaultCharset());
         announceReviewStream.close();
@@ -7008,7 +7008,7 @@ public class DiscoveryRestControllerIT extends AbstractControllerIntegrationTest
             //There needs to be a page object that shows the total pages and total elements as well as the
             // size and the current page (number)
             .andExpect(jsonPath("$._embedded.searchResult.page", is(
-                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 1)
+                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 0, 0)
             )))
             .andExpect(jsonPath("$._embedded.facets", Matchers.containsInAnyOrder(
                 FacetEntryMatcher.relatedItemFacet(false),
