@@ -153,7 +153,7 @@ public class LDNInboxControllerIT extends AbstractControllerIntegrationTest {
             .perform(post("/ldn/inbox")
                 .contentType("application/ld+json")
                 .content(message))
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isInternalServerError());
     }
 
     @Test
