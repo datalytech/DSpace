@@ -460,7 +460,7 @@ public class SuggestionRestRepositoryIT extends AbstractControllerIntegrationTes
         String suggestionId = "reciter:" + itemFirst.getID().toString() + ":1";
         // reject the suggestion
         getClient(adminToken).perform(delete("/api/integration/suggestions/" + suggestionId))
-                .andExpect(status().isNoContent());
+                       .andExpect(status().isNoContent());
         getClient(adminToken).perform(get("/api/integration/suggestions/" + suggestionId))
                 .andExpect(status().isNotFound());
         // 1 suggestion is still pending
