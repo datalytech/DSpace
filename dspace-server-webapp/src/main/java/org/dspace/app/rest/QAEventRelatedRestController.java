@@ -66,7 +66,7 @@ public class QAEventRelatedRestController {
     /**
      * This method associate an item to a qa event
      * 
-     * @param qaeventId       The qa event id
+     * @param id       The qa event id
      * @param relatedItemUUID The uuid of the related item to associate with the qa event
      * @return The related item
      * @throws SQLException       If something goes wrong
@@ -74,13 +74,13 @@ public class QAEventRelatedRestController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<RepresentationModel<?>> addRelatedItem(@PathVariable(name = "id") String qaeventId,
+    public ResponseEntity<RepresentationModel<?>> addRelatedItem(@PathVariable(name = "id") String id,
         @RequestParam(name = "item") UUID relatedItemUUID) throws SQLException, AuthorizeException {
 
         Context context = ContextUtil.obtainCurrentRequestContext();
-        QAEvent qaevent = qaEventService.findEventByEventId(qaeventId);
+        QAEvent qaevent = qaEventService.findEventByEventId(id);
         if (qaevent == null) {
-            throw new ResourceNotFoundException("No such qa event: " + qaeventId);
+            throw new ResourceNotFoundException("No such qa event: " + id);
         }
 
         if (!qaEventService.isRelatedItemSupported(qaevent)) {
@@ -110,21 +110,21 @@ public class QAEventRelatedRestController {
     /**
      * This method remove the association to a related item from a qa event
      * 
-     * @param qaeventId       The qa event id
+     * @param id       The qa event id
      * @return The related item
      * @throws SQLException       If something goes wrong
      * @throws AuthorizeException If something goes wrong
      */
     @DeleteMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<RepresentationModel<?>> removeRelatedItem(@PathVariable(name = "id") String qaeventId)
+    public ResponseEntity<RepresentationModel<?>> removeRelatedItem(@PathVariable(name = "id") String id)
         throws SQLException, AuthorizeException, IOException {
 
         Context context = ContextUtil.obtainCurrentRequestContext();
-        QAEvent qaevent = qaEventService.findEventByEventId(qaeventId);
+        QAEvent qaevent = qaEventService.findEventByEventId(id);
 
         if (qaevent == null) {
-            throw new ResourceNotFoundException("No such qa event: " + qaeventId);
+            throw new ResourceNotFoundException("No such qa event: " + id);
         }
 
         if (!qaEventService.isRelatedItemSupported(qaevent)) {
