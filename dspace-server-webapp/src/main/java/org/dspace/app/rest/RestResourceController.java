@@ -685,6 +685,28 @@ public class RestResourceController implements InitializingBean {
     }
 
     /**
+     * PATCH method, using operation on the resources following (JSON) Patch notation (https://tools.ietf
+     * .org/html/rfc6902)
+     *
+     * Note that the regular expression in the request mapping accept a UUID as identifier;
+     *
+     * @param request
+     * @param apiCategory
+     * @param model
+     * @param id
+     * @param jsonNode
+     * @return
+     * @throws HttpRequestMethodNotSupportedException
+     */
+    @RequestMapping(method = RequestMethod.PATCH, value = REGEX_REQUESTMAPPING_IDENTIFIER_AS_STRING_VERSION_STRONG)
+    public ResponseEntity<RepresentationModel<?>> patch(HttpServletRequest request, @PathVariable String apiCategory,
+                                                        @PathVariable String model,
+                                                        @PathVariable String id,
+                                                        @RequestBody(required = true) JsonNode jsonNode) {
+        return patchInternal(request, apiCategory, model, id, jsonNode);
+    }
+
+    /**
      * Internal patch method
      *
      * @param request
