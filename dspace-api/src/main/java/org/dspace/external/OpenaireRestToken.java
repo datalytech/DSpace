@@ -8,7 +8,7 @@
 package org.dspace.external;
 
 /**
- * OpenAIRE rest API token to be used when grabbing an accessToken.<br/>
+ * Openaire rest API token to be used when grabbing an accessToken.<br/>
  * Based on https://develop.openaire.eu/basic.html
  * 
  * @author paulo-graca

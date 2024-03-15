@@ -73,7 +73,8 @@ public class IndexEventConsumer implements Consumer {
 
         int st = event.getSubjectType();
         if (!(st == Constants.ITEM || st == Constants.BUNDLE
-            || st == Constants.COLLECTION || st == Constants.COMMUNITY || st == Constants.SITE)) {
+            || st == Constants.COLLECTION || st == Constants.COMMUNITY || st == Constants.SITE
+            || st == Constants.LDN_MESSAGE)) {
             log
                 .warn("IndexConsumer should not have been given this kind of Subject in an event, skipping: "
                           + event.toString());
@@ -110,7 +111,7 @@ public class IndexEventConsumer implements Consumer {
             case Event.MODIFY:
             case Event.MODIFY_METADATA:
                 if (subject == null) {
-                    if (st == Constants.SITE) {
+                    if (st == Constants.SITE || st == Constants.LDN_MESSAGE) {
                         // Update the indexable objects of type in event.detail of objects with ids in event.identifiers
                         for (String id : event.getIdentifiers()) {
                             IndexFactory indexableObjectService = IndexObjectFactoryFactory.getInstance().
