@@ -18,7 +18,7 @@ public class Citation extends Base {
     @JsonProperty("ietf:cite-as")
     private String ietfCiteAs;
 
-    @JsonProperty("ietf:item")
+    @JsonProperty("url")
     private Url url;
 
     /**
