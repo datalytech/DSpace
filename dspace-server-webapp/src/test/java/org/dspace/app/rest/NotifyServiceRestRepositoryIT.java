@@ -39,6 +39,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.dspace.app.ldn.NotifyServiceEntity;
 import org.dspace.app.ldn.service.NotifyService;
+import org.dspace.app.ldn.service.NotifyServiceInboundPatternService;
 import org.dspace.app.rest.model.NotifyServiceInboundPatternRest;
 import org.dspace.app.rest.model.NotifyServiceRest;
 import org.dspace.app.rest.model.patch.AddOperation;
@@ -64,6 +65,9 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
     @Autowired
     private NotifyService notifyService;
+
+    @Autowired
+    private NotifyServiceInboundPatternService inboundPatternService;
 
     @Test
     public void findAllUnAuthorizedTest() throws Exception {
@@ -2253,6 +2257,13 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
         if (CollectionUtils.isNotEmpty(notifyServiceEntities)) {
             notifyServiceEntities.forEach(notifyServiceEntity -> {
                 try {
+                    notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                        try {
+                            inboundPatternService.delete(context, inbound);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                     notifyService.delete(context, notifyServiceEntity);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
