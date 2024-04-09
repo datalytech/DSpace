@@ -12,8 +12,33 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.dspace.builder.*;
+import org.dspace.builder.AbstractBuilder;
+import org.dspace.builder.BitstreamBuilder;
+import org.dspace.builder.BitstreamFormatBuilder;
+import org.dspace.builder.BundleBuilder;
+import org.dspace.builder.ClaimedTaskBuilder;
+import org.dspace.builder.CollectionBuilder;
+import org.dspace.builder.CommunityBuilder;
+import org.dspace.builder.EPersonBuilder;
+import org.dspace.builder.EntityTypeBuilder;
+import org.dspace.builder.GroupBuilder;
+import org.dspace.builder.ItemBuilder;
+import org.dspace.builder.MetadataFieldBuilder;
+import org.dspace.builder.MetadataSchemaBuilder;
+import org.dspace.builder.NotifyServiceBuilder;
+import org.dspace.builder.NotifyServiceInboundPatternBuilder;
+import org.dspace.builder.OrcidHistoryBuilder;
+import org.dspace.builder.OrcidQueueBuilder;
+import org.dspace.builder.OrcidTokenBuilder;
+import org.dspace.builder.PoolTaskBuilder;
 import org.dspace.builder.ProcessBuilder;
+import org.dspace.builder.RelationshipBuilder;
+import org.dspace.builder.RelationshipTypeBuilder;
+import org.dspace.builder.RequestItemBuilder;
+import org.dspace.builder.ResourcePolicyBuilder;
+import org.dspace.builder.SiteBuilder;
+import org.dspace.builder.WorkflowItemBuilder;
+import org.dspace.builder.WorkspaceItemBuilder;
 
 /**
  * This class will ensure that all the builders that are registered will be cleaned up in the order as defined
