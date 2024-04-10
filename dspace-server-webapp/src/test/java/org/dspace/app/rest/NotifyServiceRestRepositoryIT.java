@@ -958,7 +958,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 )));
 
         RemoveOperation inboundRemoveOperation = new RemoveOperation("notifyServiceInboundPatterns[0]");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundRemoveOperation);
         patchBody = getPatchContent(ops);
 
@@ -1017,7 +1017,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         // index out of the range
         RemoveOperation inboundRemoveOperation = new RemoveOperation("notifyServiceInboundPatterns[1]");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundRemoveOperation);
         patchBody = getPatchContent(ops);
 
@@ -1072,7 +1072,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns[0]/constraint",
             "itemFilterA");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundAddOperation);
         patchBody = getPatchContent(ops);
 
@@ -1137,7 +1137,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns[0]/constraint",
             "itemFilterA");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundAddOperation);
         patchBody = getPatchContent(ops);
 
@@ -1193,7 +1193,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/constraint",
             "itemFilterC");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1258,7 +1258,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/constraint",
             "itemFilterA");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1313,7 +1313,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 )));
 
         RemoveOperation inboundRemoveOperation = new RemoveOperation("notifyServiceInboundPatterns[1]/constraint");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundRemoveOperation);
         patchBody = getPatchContent(ops);
 
@@ -1373,7 +1373,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         // index out of the range
         RemoveOperation inboundRemoveOperation = new RemoveOperation("notifyServiceInboundPatterns[1]/constraint");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundRemoveOperation);
         patchBody = getPatchContent(ops);
 
@@ -1428,7 +1428,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns[0]/pattern",
             "patternA");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundAddOperation);
         patchBody = getPatchContent(ops);
 
@@ -1493,7 +1493,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns[0]/pattern",
             "patternA");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundAddOperation);
         patchBody = getPatchContent(ops);
 
@@ -1549,7 +1549,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/pattern",
             "patternC");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1614,7 +1614,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/pattern",
             "patternA");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1670,7 +1670,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/automatic",
             "true");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1735,7 +1735,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/automatic",
             "test");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1792,7 +1792,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns",
             "[{\"pattern\":\"patternC\",\"constraint\":\"itemFilterC\",\"automatic\":\"true\"}," +
                 "{\"pattern\":\"patternD\",\"constraint\":\"itemFilterD\",\"automatic\":\"true\"}]");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1857,7 +1857,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         // empty array will only remove all old patterns
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns", "[]");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1914,7 +1914,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
         // value must be an array not object
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns",
             "{\"pattern\":\"patternB\",\"constraint\":\"itemFilterB\",\"automatic\":\"true\"}");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
@@ -1968,7 +1968,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 )));
 
         RemoveOperation inboundRemoveOperation = new RemoveOperation("notifyServiceInboundPatterns");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundRemoveOperation);
         patchBody = getPatchContent(ops);
 
@@ -2024,7 +2024,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
         ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[1]",
             "{\"pattern\":\"patternC\",\"constraint\":\"itemFilterC\",\"automatic\":\"false\"}");
-        ops.clear();
+        ops = new ArrayList<Operation>();
         ops.add(inboundReplaceOperation);
         patchBody = getPatchContent(ops);
 
