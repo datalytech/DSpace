@@ -1341,9 +1341,8 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
     public void NotifyServiceInboundPatternConstraintRemoveOperationBadRequestTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
-
         NotifyServiceEntity notifyServiceEntity =
-            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name2")
+            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
                                 .withDescription("service description")
                                 .withUrl("https://service.ldn.org/about")
                                 .withLdnUrl("https://service.ldn.org/inbox")
@@ -1367,7 +1366,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
             .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(1)))
             .andExpect(jsonPath("$",
                 allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name2", "service description",
+                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
                     hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternA", "itemFilterA", false)
@@ -2273,7 +2272,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                 }
             });
         }
-
+        context.commit();
         super.destroy();
     }
 
