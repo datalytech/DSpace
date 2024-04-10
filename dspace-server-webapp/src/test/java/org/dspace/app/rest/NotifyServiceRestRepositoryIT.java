@@ -1343,7 +1343,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
         context.turnOffAuthorisationSystem();
 
         NotifyServiceEntity notifyServiceEntity =
-            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
+            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name2")
                                 .withDescription("service description")
                                 .withUrl("https://service.ldn.org/about")
                                 .withLdnUrl("https://service.ldn.org/inbox")
@@ -1367,7 +1367,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
             .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(1)))
             .andExpect(jsonPath("$",
                 allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
+                    matchNotifyService(notifyServiceEntity.getID(), "service name2", "service description",
                         "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
                     hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
                         matchNotifyServicePattern("patternA", "itemFilterA", false)
