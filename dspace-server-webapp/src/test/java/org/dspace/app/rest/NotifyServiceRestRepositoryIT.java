@@ -37,7 +37,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.logging.log4j.core.config.Order;
 import org.dspace.app.ldn.NotifyServiceEntity;
 import org.dspace.app.ldn.service.NotifyService;
 import org.dspace.app.ldn.service.NotifyServiceInboundPatternService;
