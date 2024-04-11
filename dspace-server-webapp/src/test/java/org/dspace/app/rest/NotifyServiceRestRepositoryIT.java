@@ -81,7 +81,25 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
 
     @Before
     public void setUp() throws Exception {
-        destroy();
+        super.setUp();
+        List<NotifyServiceEntity> notifyServiceEntities = notifyService.findAll(context);
+        if (CollectionUtils.isNotEmpty(notifyServiceEntities)) {
+            notifyServiceEntities.forEach(notifyServiceEntity -> {
+                try {
+                    notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                        try {
+                            inboundPatternService.delete(context, inbound);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    notifyService.delete(context, notifyServiceEntity);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        context.commit();
     }
 
     @Test
