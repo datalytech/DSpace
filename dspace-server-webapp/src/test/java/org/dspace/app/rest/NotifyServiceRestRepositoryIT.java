@@ -98,8 +98,8 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                     throw new RuntimeException(e);
                 }
             });
+            context.commit();
         }
-        context.commit();
     }
 
     @Test
