@@ -82,6 +82,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        context.turnOffAuthorisationSystem();
         List<NotifyServiceEntity> notifyServiceEntities = notifyService.findAll(context);
         if (CollectionUtils.isNotEmpty(notifyServiceEntities)) {
             notifyServiceEntities.forEach(notifyServiceEntity -> {
@@ -100,6 +101,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
             });
             context.commit();
         }
+        context.restoreAuthSystemState();
     }
 
     @Test
@@ -1365,6 +1367,25 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
     public void NotifyServiceInboundPatternConstraintRemoveOperationBadRequestTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
+        List<NotifyServiceEntity> notifyServiceEntities = notifyService.findAll(context);
+        if (CollectionUtils.isNotEmpty(notifyServiceEntities)) {
+            notifyServiceEntities.forEach(notifyServiceEntity -> {
+                try {
+                    notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                        try {
+                            inboundPatternService.delete(context, inbound);
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    notifyService.delete(context, notifyServiceEntity);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            context.commit();
+        }
+
         NotifyServiceEntity notifyServiceEntity =
             NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
                                 .withDescription("service description")
@@ -2279,6 +2300,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
     @Override
     @After
     public void destroy() throws Exception {
+        context.turnOffAuthorisationSystem();
         List<NotifyServiceEntity> notifyServiceEntities = notifyService.findAll(context);
         if (CollectionUtils.isNotEmpty(notifyServiceEntities)) {
             notifyServiceEntities.forEach(notifyServiceEntity -> {
@@ -2297,6 +2319,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
             });
         }
         context.commit();
+        context.restoreAuthSystemState();
         super.destroy();
     }
 
