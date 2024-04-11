@@ -51,6 +51,7 @@ import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.dspace.builder.NotifyServiceBuilder;
 import org.dspace.builder.NotifyServiceInboundPatternBuilder;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -76,6 +77,11 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
     public void findAllUnAuthorizedTest() throws Exception {
         getClient().perform(get("/api/ldn/ldnservices"))
                    .andExpect(status().isUnauthorized());
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        destroy();
     }
 
     @Test
