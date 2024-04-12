@@ -111,10 +111,10 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
 
         context.restoreAuthSystemState();
 
-        List<Operation> ops = new ArrayList<Operation>();
         AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns/-",
                 "{\"pattern\":\"patternA\",\"constraint\":\"itemFilterA\",\"automatic\":\"false\"}");
 
+        List<Operation> ops = new ArrayList<Operation>();
         ops.add(inboundAddOperation);
         String patchBody = getPatchContent(ops);
 
@@ -159,15 +159,29 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
                         .withLdnUrl("https://service.ldn.org/inbox")
                         .build();
 
+        try {
+            notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                try {
+                    inboundPatternService.delete(context, inbound);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            notifyService.delete(context, notifyServiceEntity);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        context.commit();
+
         context.restoreAuthSystemState();
 
-        List<Operation> ops = new ArrayList<Operation>();
         AddOperation inboundAddOperationOne = new AddOperation("notifyServiceInboundPatterns/-",
                 "{\"pattern\":\"patternA\",\"constraint\":\"itemFilterA\",\"automatic\":\"false\"}");
 
         AddOperation inboundAddOperationTwo = new AddOperation("notifyServiceInboundPatterns/-",
                 "{\"pattern\":\"patternB\",\"constraint\":\"itemFilterB\",\"automatic\":\"true\"}");
 
+        List<Operation> ops = new ArrayList<Operation>();
         ops.add(inboundAddOperationOne);
         ops.add(inboundAddOperationTwo);
         String patchBody = getPatchContent(ops);
@@ -215,24 +229,6 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
     public void NotifyServiceInboundPatternConstraintRemoveOperationBadRequestTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
-        List<NotifyServiceEntity> notifyServiceEntities = notifyService.findAll(context);
-        if (CollectionUtils.isNotEmpty(notifyServiceEntities)) {
-            notifyServiceEntities.forEach(notifyServiceEntity -> {
-                try {
-                    notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
-                        try {
-                            inboundPatternService.delete(context, inbound);
-                        } catch (SQLException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                    notifyService.delete(context, notifyServiceEntity);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            context.commit();
-        }
 
         NotifyServiceEntity notifyServiceEntity =
                 NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
@@ -240,6 +236,20 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
                         .withUrl("https://service.ldn.org/about")
                         .withLdnUrl("https://service.ldn.org/inbox")
                         .build();
+
+        try {
+            notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                try {
+                    inboundPatternService.delete(context, inbound);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            notifyService.delete(context, notifyServiceEntity);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        context.commit();
 
         context.restoreAuthSystemState();
 
