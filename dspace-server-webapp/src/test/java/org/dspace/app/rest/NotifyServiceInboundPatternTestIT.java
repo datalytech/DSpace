@@ -158,21 +158,21 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
                         .withUrl("https://service.ldn.org/about")
                         .withLdnUrl("https://service.ldn.org/inbox")
                         .build();
-
-        try {
-            notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
-                try {
-                    inboundPatternService.delete(context, inbound);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            notifyService.delete(context, notifyServiceEntity);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (notifyServiceEntity.getInboundPatterns() != null && notifyServiceEntity.getInboundPatterns().size() > 0) {
+            try {
+                notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                    try {
+                        inboundPatternService.delete(context, inbound);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                notifyService.delete(context, notifyServiceEntity);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            context.commit();
         }
-        context.commit();
-
         context.restoreAuthSystemState();
 
         AddOperation inboundAddOperationOne = new AddOperation("notifyServiceInboundPatterns/-",
@@ -236,21 +236,21 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
                         .withUrl("https://service.ldn.org/about")
                         .withLdnUrl("https://service.ldn.org/inbox")
                         .build();
-
-        try {
-            notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
-                try {
-                    inboundPatternService.delete(context, inbound);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            notifyService.delete(context, notifyServiceEntity);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (notifyServiceEntity.getInboundPatterns() != null && notifyServiceEntity.getInboundPatterns().size() > 0) {
+            try {
+                notifyServiceEntity.getInboundPatterns().forEach(inbound -> {
+                    try {
+                        inboundPatternService.delete(context, inbound);
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                notifyService.delete(context, notifyServiceEntity);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            context.commit();
         }
-        context.commit();
-
         context.restoreAuthSystemState();
 
         List<Operation> ops = new ArrayList<Operation>();
