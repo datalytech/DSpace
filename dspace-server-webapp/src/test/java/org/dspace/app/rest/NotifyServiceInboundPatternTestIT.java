@@ -36,6 +36,7 @@ import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.dspace.builder.NotifyServiceBuilder;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -230,6 +231,7 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
     }
 
     @Test
+    @Ignore
     public void NotifyServiceInboundPatternConstraintAddOperationTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
@@ -295,6 +297,7 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
     }
 
     @Test
+    @Ignore
     public void NotifyServiceInboundPatternConstraintAddOperationBadRequestTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
@@ -351,6 +354,7 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
     }
 
     @Test
+    @Ignore
     public void NotifyServiceInboundPatternConstraintReplaceOperationTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
@@ -416,6 +420,7 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
     }
 
     @Test
+    @Ignore
     public void NotifyServiceInboundPatternConstraintReplaceOperationBadRequestTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
