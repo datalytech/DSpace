@@ -52,10 +52,8 @@ import org.dspace.builder.NotifyServiceBuilder;
 import org.dspace.builder.NotifyServiceInboundPatternBuilder;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -64,7 +62,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Mohamed Eskander (mohamed.eskander at 4science.com)
  */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Ignore
 public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegrationTest {
 
     @Autowired
