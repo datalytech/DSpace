@@ -12,6 +12,7 @@ import static org.dspace.app.rest.repository.patch.operation.ldn.NotifyServicePa
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dspace.app.ldn.NotifyServiceEntity;
 import org.dspace.app.ldn.NotifyServiceInboundPattern;
 import org.dspace.app.ldn.service.NotifyServiceInboundPatternService;
@@ -45,12 +46,15 @@ public class NotifyServiceInboundPatternRemoveOperation extends PatchOperation<N
 
     private static final String OPERATION_PATH = NOTIFY_SERVICE_INBOUND_PATTERNS + "[";
 
+    private Logger log = Logger.getLogger(NotifyServiceInboundPatternRemoveOperation.class);
+
     @Override
     public NotifyServiceEntity perform(Context context, NotifyServiceEntity notifyServiceEntity, Operation operation) {
         if (supports(notifyServiceEntity, operation)) {
             try {
                 int index = notifyServicePatchUtils.extractIndexFromOperation(operation);
 
+                log.info("Removing inbound pattern for " + notifyServiceEntity.getID() + " at idx " + index);
                 List<NotifyServiceInboundPattern> inboundPatterns = notifyServiceEntity.getInboundPatterns();
 
                 if (index >= inboundPatterns.size()) {

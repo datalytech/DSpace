@@ -12,6 +12,7 @@ import static org.dspace.app.rest.repository.patch.operation.ldn.NotifyServicePa
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dspace.app.ldn.NotifyServiceEntity;
 import org.dspace.app.ldn.NotifyServiceInboundPattern;
 import org.dspace.app.ldn.service.NotifyServiceInboundPatternService;
@@ -45,12 +46,16 @@ public class NotifyServiceInboundPatternConstraintRemoveOperation extends PatchO
 
     private static final String OPERATION_PATH = "/constraint";
 
+    private Logger log = Logger.getLogger(NotifyServiceInboundPatternConstraintRemoveOperation.class);
+
+
     @Override
     public NotifyServiceEntity perform(Context context, NotifyServiceEntity notifyServiceEntity, Operation operation) {
         if (supports(notifyServiceEntity, operation)) {
             try {
                 int index = notifyServicePatchUtils.extractIndexFromOperation(operation);
-
+                log.info("Constraint Remove operation for " + notifyServiceEntity.getID() + " inbound patterns at "
+                        + index + " idc.");
                 List<NotifyServiceInboundPattern> inboundPatterns = notifyServiceEntity.getInboundPatterns();
 
                 if (index >= inboundPatterns.size()) {

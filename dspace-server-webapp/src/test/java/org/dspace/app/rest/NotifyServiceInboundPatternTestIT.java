@@ -73,7 +73,6 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
                 }
             });
             context.commit();
-            logger.info("cleared x" + notifyServiceEntities.size() + " notifyServiceEntities");
         }
         context.restoreAuthSystemState();;
     }
@@ -98,6 +97,7 @@ public class NotifyServiceInboundPatternTestIT extends AbstractControllerIntegra
                     throw new RuntimeException(e);
                 }
             });
+            logger.info("cleared x" + notifyServiceEntities.size() + " notifyServiceEntities");
         }
         context.commit();
         context.restoreAuthSystemState();
