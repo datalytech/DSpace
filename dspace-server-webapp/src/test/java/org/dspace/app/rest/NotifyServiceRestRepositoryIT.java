@@ -1008,245 +1008,53 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
     }
 
     @Test
-    public void NotifyServiceInboundPatternConstraintAddOperationTest() throws Exception {
+    public void NotifyServiceInboundPatternsRemoveOperationBadRequestTest() throws Exception {
 
         context.turnOffAuthorisationSystem();
 
         NotifyServiceEntity notifyServiceEntity =
-            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
-                                .withDescription("service description")
-                                .withUrl("https://service.ldn.org/about")
-                                .withLdnUrl("https://service.ldn.org/inbox")
-                                .build();
+                NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
+                        .withDescription("service description")
+                        .withUrl("https://service.ldn.org/about")
+                        .withLdnUrl("https://service.ldn.org/inbox")
+                        .build();
 
         context.restoreAuthSystemState();
 
+        AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns/-",
+                "{\"pattern\":\"patternA\",\"constraint\":\"itemFilterA\",\"automatic\":\"false\"}");
+
         List<Operation> ops = new ArrayList<Operation>();
-        AddOperation inboundAddOperationOne = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternA\",\"constraint\":null,\"automatic\":\"false\"}");
-
-        AddOperation inboundAddOperationTwo = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternB\",\"constraint\":\"itemFilterB\",\"automatic\":\"true\"}");
-
-        ops.add(inboundAddOperationOne);
-        ops.add(inboundAddOperationTwo);
-        String patchBody = getPatchContent(ops);
-
-        String authToken = getAuthToken(admin.getEmail(), password);
-        getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(2)))
-            .andExpect(jsonPath("$",
-                allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
-                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
-                        matchNotifyServicePattern("patternA", null, false),
-                        matchNotifyServicePattern("patternB", "itemFilterB", true)
-                    ))
-                )));
-
-        AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns[0]/constraint",
-            "itemFilterA");
-        ops = new ArrayList<Operation>();
         ops.add(inboundAddOperation);
-        patchBody = getPatchContent(ops);
-
-        getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(2)))
-            .andExpect(jsonPath("$",
-                allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
-                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
-                        matchNotifyServicePattern("patternA", "itemFilterA", false),
-                        matchNotifyServicePattern("patternB", "itemFilterB", true)
-                    ))
-                )));
-    }
-
-    @Test
-    public void NotifyServiceInboundPatternConstraintAddOperationBadRequestTest() throws Exception {
-
-        context.turnOffAuthorisationSystem();
-
-        NotifyServiceEntity notifyServiceEntity =
-            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
-                                .withDescription("service description")
-                                .withUrl("https://service.ldn.org/about")
-                                .withLdnUrl("https://service.ldn.org/inbox")
-                                .build();
-
-        context.restoreAuthSystemState();
-
-        List<Operation> ops = new ArrayList<Operation>();
-        AddOperation inboundAddOperationOne = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternA\",\"constraint\":\"itemFilterA\",\"automatic\":\"false\"}");
-
-        AddOperation inboundAddOperationTwo = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternB\",\"constraint\":\"itemFilterB\",\"automatic\":\"true\"}");
-
-        ops.add(inboundAddOperationOne);
-        ops.add(inboundAddOperationTwo);
         String patchBody = getPatchContent(ops);
 
         String authToken = getAuthToken(admin.getEmail(), password);
         getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(2)))
-            .andExpect(jsonPath("$",
-                allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
-                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
-                        matchNotifyServicePattern("patternA", "itemFilterA", false),
-                        matchNotifyServicePattern("patternB", "itemFilterB", true)
-                    ))
-                )));
+                .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
+                        .content(patchBody)
+                        .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(1)))
+                .andExpect(jsonPath("$",
+                        allOf(
+                                matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
+                                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
+                                hasJsonPath("$.notifyServiceInboundPatterns", containsInAnyOrder(
+                                        matchNotifyServicePattern("patternA", "itemFilterA", false)
+                                ))
+                        )));
 
-        AddOperation inboundAddOperation = new AddOperation("notifyServiceInboundPatterns[0]/constraint",
-            "itemFilterA");
+        // index out of the range
+        RemoveOperation inboundRemoveOperation = new RemoveOperation("notifyServiceInboundPatterns[1]");
         ops = new ArrayList<Operation>();
-        ops.add(inboundAddOperation);
-        patchBody = getPatchContent(ops);
-
-        // constraint at index 0 already has value
-        getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    public void NotifyServiceInboundPatternConstraintReplaceOperationTest() throws Exception {
-
-        context.turnOffAuthorisationSystem();
-
-        NotifyServiceEntity notifyServiceEntity =
-            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
-                                .withDescription("service description")
-                                .withUrl("https://service.ldn.org/about")
-                                .withLdnUrl("https://service.ldn.org/inbox")
-                                .build();
-
-        context.restoreAuthSystemState();
-
-        List<Operation> ops = new ArrayList<Operation>();
-        AddOperation inboundAddOperationOne = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternA\",\"constraint\":\"itemFilterA\",\"automatic\":\"false\"}");
-
-        AddOperation inboundAddOperationTwo = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternB\",\"constraint\":\"itemFilterB\",\"automatic\":\"true\"}");
-
-        ops.add(inboundAddOperationOne);
-        ops.add(inboundAddOperationTwo);
-        String patchBody = getPatchContent(ops);
-
-        String authToken = getAuthToken(admin.getEmail(), password);
-        getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(2)))
-            .andExpect(jsonPath("$",
-                allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
-                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
-                        matchNotifyServicePattern("patternA", "itemFilterA", false),
-                        matchNotifyServicePattern("patternB", "itemFilterB", true)
-                    ))
-                )));
-
-        ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/constraint",
-            "itemFilterC");
-        ops = new ArrayList<Operation>();
-        ops.add(inboundReplaceOperation);
+        ops.add(inboundRemoveOperation);
         patchBody = getPatchContent(ops);
 
         getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(2)))
-            .andExpect(jsonPath("$",
-                allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
-                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
-                        matchNotifyServicePattern("patternA", "itemFilterC", false),
-                        matchNotifyServicePattern("patternB", "itemFilterB", true)
-                    ))
-                )));
-    }
-
-    @Test
-    public void NotifyServiceInboundPatternConstraintReplaceOperationBadRequestTest() throws Exception {
-
-        context.turnOffAuthorisationSystem();
-
-        NotifyServiceEntity notifyServiceEntity =
-            NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
-                                .withDescription("service description")
-                                .withUrl("https://service.ldn.org/about")
-                                .withLdnUrl("https://service.ldn.org/inbox")
-                                .build();
-
-        context.restoreAuthSystemState();
-
-        List<Operation> ops = new ArrayList<Operation>();
-        AddOperation inboundAddOperationOne = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternA\",\"constraint\":null,\"automatic\":\"false\"}");
-
-        AddOperation inboundAddOperationTwo = new AddOperation("notifyServiceInboundPatterns/-",
-            "{\"pattern\":\"patternB\",\"constraint\":\"itemFilterB\",\"automatic\":\"true\"}");
-
-        ops.add(inboundAddOperationOne);
-        ops.add(inboundAddOperationTwo);
-        String patchBody = getPatchContent(ops);
-
-        String authToken = getAuthToken(admin.getEmail(), password);
-        getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.notifyServiceInboundPatterns", hasSize(2)))
-            .andExpect(jsonPath("$",
-                allOf(
-                    matchNotifyService(notifyServiceEntity.getID(), "service name", "service description",
-                        "https://service.ldn.org/about", "https://service.ldn.org/inbox"),
-                    hasJsonPath("$.notifyServiceInboundPatterns", contains(
-                        matchNotifyServicePattern("patternA", null, false),
-                        matchNotifyServicePattern("patternB", "itemFilterB", true)
-                    ))
-                )));
-
-        ReplaceOperation inboundReplaceOperation = new ReplaceOperation("notifyServiceInboundPatterns[0]/constraint",
-            "itemFilterA");
-        ops = new ArrayList<Operation>();
-        ops.add(inboundReplaceOperation);
-        patchBody = getPatchContent(ops);
-
-        // constraint at index 0 is null
-        getClient(authToken)
-            .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
-                .content(patchBody)
-                .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
-            .andExpect(status().isBadRequest());
+                .perform(patch("/api/ldn/ldnservices/" + notifyServiceEntity.getID())
+                        .content(patchBody)
+                        .contentType(MediaType.APPLICATION_JSON_PATCH_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
