@@ -17,7 +17,6 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
 import org.dspace.app.ldn.NotifyServiceEntity;
 import org.dspace.app.ldn.NotifyServiceInboundPattern;
 import org.dspace.app.ldn.service.NotifyService;
@@ -56,9 +55,6 @@ public class NotifyServiceRestRepository extends DSpaceRestRepository<NotifyServ
 
     @Autowired
     ResourcePatch<NotifyServiceEntity> resourcePatch;
-
-    private Logger log = Logger.getLogger(NotifyServiceRestRepository.class);
-
 
     @Override
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
@@ -119,7 +115,6 @@ public class NotifyServiceRestRepository extends DSpaceRestRepository<NotifyServ
         notifyServiceEntity.setUpperIp(notifyServiceRest.getUpperIp());
 
         if (notifyServiceRest.getNotifyServiceInboundPatterns() != null) {
-            log.info("add received inbound patterns for " + notifyServiceEntity.getID());
             appendNotifyServiceInboundPatterns(context, notifyServiceEntity,
                 notifyServiceRest.getNotifyServiceInboundPatterns());
         }
@@ -144,8 +139,11 @@ public class NotifyServiceRestRepository extends DSpaceRestRepository<NotifyServ
 
             inboundPatterns.add(inboundPattern);
         }
-
-        notifyServiceEntity.setInboundPatterns(inboundPatterns);
+        if (notifyServiceEntity.getInboundPatterns() != null) {
+            notifyServiceEntity.getInboundPatterns().addAll(inboundPatterns);
+        } else {
+            notifyServiceEntity.setInboundPatterns(inboundPatterns);
+        }
     }
 
     @Override

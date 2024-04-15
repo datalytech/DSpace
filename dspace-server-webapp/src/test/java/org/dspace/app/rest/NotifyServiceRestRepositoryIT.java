@@ -62,7 +62,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Mohamed Eskander (mohamed.eskander at 4science.com)
  */
-@Ignore
 public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegrationTest {
 
     @Autowired
