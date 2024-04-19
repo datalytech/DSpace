@@ -81,10 +81,14 @@ public class IndexEventConsumer implements Consumer {
             return;
         }
 
-        DSpaceObject subject = event.getSubject(ctx);
-
-        DSpaceObject object = event.getObject(ctx);
-
+        DSpaceObject subject = null;
+        DSpaceObject object = null;
+        try {
+            subject = event.getSubject(ctx);
+            object = event.getObject(ctx);
+        } catch (Exception e) {
+            log.warn("Could not find the related DSpace Object for event subject: " + st);
+        }
 
         // If event subject is a Bundle and event was Add or Remove,
         // transform the event to be a Modify on the owning Item.
