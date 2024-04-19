@@ -6943,7 +6943,7 @@ public class DiscoveryRestControllerIT extends AbstractControllerIntegrationTest
             //There needs to be a page object that shows the total pages and total elements as well as the
             // size and the current page (number)
             .andExpect(jsonPath("$._embedded.searchResult.page", is(
-                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 0, 0)
+                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 1)
             )))
             .andExpect(jsonPath("$._embedded.facets", Matchers.containsInAnyOrder(
                 FacetEntryMatcher.relatedItemFacet(false),
@@ -7008,7 +7008,7 @@ public class DiscoveryRestControllerIT extends AbstractControllerIntegrationTest
             //There needs to be a page object that shows the total pages and total elements as well as the
             // size and the current page (number)
             .andExpect(jsonPath("$._embedded.searchResult.page", is(
-                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 0, 0)
+                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 1)
             )))
             .andExpect(jsonPath("$._embedded.facets", Matchers.containsInAnyOrder(
                 FacetEntryMatcher.relatedItemFacet(false),
