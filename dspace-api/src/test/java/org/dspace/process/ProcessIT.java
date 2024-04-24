@@ -7,7 +7,9 @@
  */
 package org.dspace.process;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -17,10 +19,13 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.dspace.AbstractIntegrationTestWithDatabase;
+import org.dspace.builder.EPersonBuilder;
 import org.dspace.builder.GroupBuilder;
 import org.dspace.builder.ProcessBuilder;
+import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
+import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.scripts.Process;
 import org.dspace.scripts.factory.ScriptServiceFactory;
@@ -36,6 +41,7 @@ public class ProcessIT extends AbstractIntegrationTestWithDatabase {
 
     protected ProcessService processService = ScriptServiceFactory.getInstance().getProcessService();
     protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
+    protected EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
     @Test
     public void checkProcessGroupsTest() throws Exception {
@@ -86,5 +92,44 @@ public class ProcessIT extends AbstractIntegrationTestWithDatabase {
         boolean isPresent = groups.stream().anyMatch(g -> g.getID().equals(groupUuid));
         assertFalse(isPresent);
 
+    }
+
+    @Test
+    public void checkProcessCreatorTest() throws Exception {
+
+        context.turnOffAuthorisationSystem();
+
+        EPerson userA = EPersonBuilder.createEPerson(context)
+                .withEmail("userA@email.com")
+                .withPassword(password)
+                .withCanLogin(true).build();
+
+        Process processA = ProcessBuilder.createProcess(context, userA, "mock-script", new LinkedList<>()).build();
+
+        context.restoreAuthSystemState();
+
+        Process process = processService.find(context, processA.getID());
+        assertEquals(process.getEPerson(), context.reloadEntity(userA));
+    }
+
+    @Test
+    public void removeProcessCreatorTest() throws Exception {
+
+        context.turnOffAuthorisationSystem();
+
+        EPerson userA = EPersonBuilder.createEPerson(context)
+                .withEmail("userA@email.com")
+                .withPassword(password)
+                .withCanLogin(true).build();
+
+        Process processA = ProcessBuilder.createProcess(context, userA, "mock-script", new LinkedList<>()).build();
+
+        ePersonService.delete(context, userA);
+        context.commit();
+
+        context.restoreAuthSystemState();
+
+        Process process = processService.find(context, processA.getID());
+        assertNull(process);
     }
 }
