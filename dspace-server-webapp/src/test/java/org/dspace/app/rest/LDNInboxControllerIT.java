@@ -115,6 +115,7 @@ public class LDNInboxControllerIT extends AbstractControllerIntegrationTest {
                                 .withUrl("https://review-service.com/inbox/about/")
                                 .withLdnUrl("https://review-service.com/inbox/")
                                 .withScore(BigDecimal.valueOf(0.6d))
+                                .withStatus(true)
                                 .withLowerIp("127.0.0.1")
                                 .withUpperIp("127.0.0.3")
                                 .build();
@@ -169,6 +170,7 @@ public class LDNInboxControllerIT extends AbstractControllerIntegrationTest {
                                 .withUrl("https://review-service.com/inbox/about/")
                                 .withLdnUrl("https://review-service.com/inbox/")
                                 .withScore(BigDecimal.valueOf(0.6d))
+                                .withStatus(true)
                                 .withLowerIp("127.0.0.1")
                                 .withUpperIp("127.0.0.3")
                                 .build();
@@ -226,6 +228,7 @@ public class LDNInboxControllerIT extends AbstractControllerIntegrationTest {
                                 .withUrl("https://review-service.com/inbox/about/")
                                 .withLdnUrl("https://review-service.com/inbox/")
                                 .withScore(BigDecimal.valueOf(0.6d))
+                                .withStatus(true)
                                 .withLowerIp("127.0.0.1")
                                 .withUpperIp("127.0.0.3")
                                 .build();

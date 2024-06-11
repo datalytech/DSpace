@@ -2105,6 +2105,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                                 .withName("service name one")
                                 .withDescription("service description one")
                                 .withUrl("https://service.ldn.org/about")
+                                .withStatus(true)
                                 .withLdnUrl("https://service.ldn.org/inbox")
                                 .build();
 
@@ -2113,6 +2114,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                                 .withName("service name two")
                                 .withDescription("service description two")
                                 .withUrl("https://service2.ldn.org/about")
+                                .withStatus(true)
                                 .withLdnUrl("https://service2.ldn.org/inbox")
                                 .build();
 
@@ -2121,6 +2123,7 @@ public class NotifyServiceRestRepositoryIT extends AbstractControllerIntegration
                                 .withName("service name three")
                                 .withDescription("service description")
                                 .withUrl("https://service3.ldn.org/about")
+                                .withStatus(true)
                                 .withLdnUrl("https://service3.ldn.org/inbox")
                                 .build();
 
