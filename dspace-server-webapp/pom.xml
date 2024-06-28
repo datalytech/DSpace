@@ -464,6 +464,13 @@
             <version>0.4.14</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itext7-core</artifactId>
+            <version>7.2.4</version>
+            <type>pom</type>
+        </dependency>
+
         <!-- HAL Browser (via WebJars) : https://github.com/mikekelly/hal-browser -->
         <!-- This is primarily used to pull in the HAL Browser core Javascript code ('js' folder), as we've overridden
              many dependencies below and the HTML pages in src/main/webapp/ -->
