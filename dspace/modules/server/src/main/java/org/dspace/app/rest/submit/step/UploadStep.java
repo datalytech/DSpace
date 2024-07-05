@@ -15,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -119,7 +120,7 @@ public class UploadStep extends AbstractProcessingStep
 
     public com.itextpdf.layout.element.Paragraph createWatermarkParagraph() throws IOException {
         String imagePath = configurationService.getProperty("dspace.dir") + "/config/fonts/image.png";
-         ImageData imgData = ImageDataFactory.create(imagePath);
+        ImageData imgData = ImageDataFactory.create(imagePath);
         Image image = new Image(imgData);
         image.setWidth(500f);
         com.itextpdf.layout.element.Paragraph p = new Paragraph();
@@ -178,27 +179,55 @@ public class UploadStep extends AbstractProcessingStep
             // do we already have a bundle?
             bundles = itemService.getBundles(item, Constants.CONTENT_BUNDLE_NAME);
 
-            String outputPdf = configurationService.getProperty("dspace.dir") + "/upload/watermarked_"
-                    + file.getOriginalFilename();
-            
-            WriterProperties writerProperties = new WriterProperties().setStandardEncryption(new byte[0], new byte[0], 0, EncryptionConstants.ENCRYPTION_AES_256); 
-            try (
+            InputStream inputStream = null;
 
-                    PdfDocument pdfDocument = new PdfDocument(
-                            new PdfReader(file.getInputStream()),
-                            new PdfWriter(outputPdf, writerProperties)
-                            )) {
-                Document document = new Document(pdfDocument);
+            boolean isWatermarkPdf = false;
 
-                com.itextpdf.layout.element.Paragraph paragraph = createWatermarkParagraph();
-                PdfExtGState transparentGraphicState = new PdfExtGState().setFillOpacity(0.5f);
-                for (int i = 0; i <= document.getPdfDocument()
-                        .getNumberOfPages(); i++) {
-                    addWatermarkToExistingPage(document, i, paragraph, transparentGraphicState, 0f);
+            if (file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
+
+                boolean isWatermarkAllowedInCollection = false;
+                String watermarkCollectionsStr = configurationService
+                        .getProperty("dspace.allow.watermak.in.collections.uuids");
+                List<String> watermarkCollections = new ArrayList<>();
+                if (watermarkCollectionsStr != null && watermarkCollectionsStr.length() > 1) {
+                    for (String watermarkCollectionUUID : watermarkCollectionsStr.split(",")) {
+                        watermarkCollections.add(watermarkCollectionUUID.trim());
+                    }
+                }
+                if (watermarkCollections.contains(wsi.getCollection().getID().toString()))
+                    isWatermarkAllowedInCollection = true;
+
+                if (isWatermarkAllowedInCollection) {
+                    String outputPdf = configurationService.getProperty("dspace.dir") + "/upload/watermarked_"
+                            + file.getOriginalFilename();
+
+                    WriterProperties writerProperties = new WriterProperties().setStandardEncryption(new byte[0],
+                            new byte[0], 0, EncryptionConstants.ENCRYPTION_AES_256);
+                    try (
+
+                            PdfDocument pdfDocument = new PdfDocument(
+                                    new PdfReader(file.getInputStream()),
+                                    new PdfWriter(outputPdf, writerProperties))) {
+                        Document document = new Document(pdfDocument);
+
+                        com.itextpdf.layout.element.Paragraph paragraph = createWatermarkParagraph();
+                        PdfExtGState transparentGraphicState = new PdfExtGState().setFillOpacity(0.5f);
+                        for (int i = 0; i <= document.getPdfDocument()
+                                .getNumberOfPages(); i++) {
+                            addWatermarkToExistingPage(document, i, paragraph, transparentGraphicState, 0f);
+                        }
+                        isWatermarkPdf = true;
+                    }
+
+                    inputStream = new BufferedInputStream(
+                            new BufferedInputStream(new FileInputStream(outputPdf)));
+
                 }
             }
 
-            InputStream inputStream = new BufferedInputStream(new BufferedInputStream(new FileInputStream(outputPdf)));
+            if (!isWatermarkPdf) {
+                inputStream = new BufferedInputStream(file.getInputStream());
+            }
             if (bundles.size() < 1) {
                 // set bundle's name to ORIGINAL
                 source = itemService.createSingleBitstream(context, inputStream, item, Constants.CONTENT_BUNDLE_NAME);
@@ -216,7 +245,7 @@ public class UploadStep extends AbstractProcessingStep
 
             // Update to DB
             bitstreamService.update(context, source);
-            itemService.update(context, item); 
+            itemService.update(context, item);
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
