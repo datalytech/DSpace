@@ -170,6 +170,7 @@ public class UploadStep extends AbstractProcessingStep
     public ErrorRest upload(Context context, SubmissionService submissionService, SubmissionStepConfig stepConfig,
             InProgressSubmission wsi, MultipartFile file) {
 
+        log.warn("In upload");
         Bitstream source = null;
         BitstreamFormat bf = null;
 
@@ -185,6 +186,8 @@ public class UploadStep extends AbstractProcessingStep
 
             if (file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
 
+                log.warn("In pdf for:" + file.getOriginalFilename());
+
                 boolean isWatermarkAllowedInCollection = false;
                 String watermarkCollectionsStr = configurationService
                         .getProperty("dspace.allow.watermak.in.collections.uuids");
@@ -198,6 +201,8 @@ public class UploadStep extends AbstractProcessingStep
                     isWatermarkAllowedInCollection = true;
 
                 if (isWatermarkAllowedInCollection) {
+                    log.warn("In collection for:" + wsi.getCollection().getID().toString());
+
                     String outputPdf = configurationService.getProperty("dspace.dir") + "/upload/watermarked_"
                             + file.getOriginalFilename();
 
@@ -217,6 +222,8 @@ public class UploadStep extends AbstractProcessingStep
                             addWatermarkToExistingPage(document, i, paragraph, transparentGraphicState, 0f);
                         }
                         isWatermarkPdf = true;
+                    }catch (Exception e) {
+                        log.error("Error while watermarking: ", e.getMessage());
                     }
 
                     inputStream = new BufferedInputStream(
@@ -226,6 +233,8 @@ public class UploadStep extends AbstractProcessingStep
             }
 
             if (!isWatermarkPdf) {
+                log.warn("Not a pdf file found in upload!");
+
                 inputStream = new BufferedInputStream(file.getInputStream());
             }
             if (bundles.size() < 1) {
