@@ -11,7 +11,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.batch.ItemImportOA;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
@@ -70,25 +69,42 @@ public class BibliometrisController {
     private static Logger logger = org.apache.logging.log4j.LogManager
             .getLogger(BibliometrisController.class);
 
-    private static String status = "inactive";
-    private static int counterOk = 0;
-    private static int counterNotOk = 0;
-    private static int counterAll = 0;
-    private static int counter = 0;
-    private static int total = 0;
-    private static int progressBar = 1;
+    private String status = "inactive";
+    private int counterOk = 0;
+    private int counterNotOk = 0;
+    private int counterAll = 0;
+    private int counter = 0;
+    private int total = 0;
+    private String exportApi = "";
+    private String email = "";
+    private String isPublish = "";
+    private boolean importInProgress = false;
     private String firstWfId = "";
-    private boolean firstItemIsReindexed = false;
 
     private static List<String> logs = new ArrayList<>();
 
     @RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity get(HttpServletRequest request) {
-        // firstWfId = "";
-        // firstItemIsReindexed = false;
+        logs = new ArrayList<>();
+        exportApi = request.getParameter("exportApi");
+        importInProgress = true;
+        email = request.getParameter("email");
+        if (email == null || email.isBlank()) {
+            email = configurationService.getProperty("bibliometris.export.submitter");
+        }
+
+        isPublish = request.getParameter("publish");
+        boolean publish = false;
+        if (isPublish != null && isPublish.equals("true")) {
+            publish = true;
+        }
+        updateSession(request);
+
         String bibliometrisUrl = configurationService.getProperty("bibliometris.url");
         String loginApi = configurationService.getProperty("bibliometris.login.endpoint");
-        String exportApi = configurationService.getProperty("bibliometris.export.endpoint");
+        if (exportApi == null) {
+            exportApi = configurationService.getProperty("bibliometris.export.endpoint");
+        }
         String user = configurationService.getProperty("bibliometris.username");
         String pass = configurationService.getProperty("bibliometris.password");
 
@@ -99,15 +115,19 @@ public class BibliometrisController {
             if (exportAsJsonArray != null) {
                 total = exportAsJsonArray.size();
                 status = "Successfully got data from Bibliometris. Ready to import " + total + " items";
+                addLog("ok", "Successfully got data from Bibliometris. Ready to import " + total + " items");
+                updateSession(request);
                 status = "Starting import....";
+                updateSession(request);
                 try {
-                    addItems(exportAsJsonArray, false);
+                    addItems(request, exportAsJsonArray, publish);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
                 status = "completed";
-                progressBar = 100;
+                importInProgress = false;
+                updateSession(request);
             }
 
         } catch (Exception e) {
@@ -115,10 +135,12 @@ public class BibliometrisController {
             throw new RuntimeException();
         }
 
+        updateSession(request); 
+
         JSONObject jo = new JSONObject();
-        jo.put("method", "POST");
-        jo.put("accessToken", accessToken);
-        jo.put("status", HttpStatus.OK);
+        jo.put("importInProgress", request.getSession().getAttribute("importInProgress"));
+        jo.put("counterAll", request.getSession().getAttribute("counterAll"));
+        jo.put("status", request.getSession().getAttribute("status"));
         return new ResponseEntity<>(jo.toString(), HttpStatus.OK);
     }
 
@@ -146,18 +168,17 @@ public class BibliometrisController {
             jsonResponse = (JSONObject) parser.parse(result);
             if (jsonResponse.containsKey("data")) {
                 JSONArray data = (JSONArray) jsonResponse.get("data");
-                // addLog("ok", " " + ":: Successfully retrieved data from Bibliometris");
+                addLog("ok", " " + ":: Successfully retrieved data from Bibliometris");
 
                 return data;
             }
         } catch (Exception e) {
-            // addLog("notok", " " + ":: Failed to fetch data from bibliometris exportApi:"
-            // + exportApi + ", "
-            // + e.getMessage() + e.getCause());
+            addLog("notok", " " + ":: Failed to fetch data from bibliometris exportApi:"
+                    + exportApi + ", "
+                    + e.getMessage() + e.getCause());
             e.printStackTrace();
         }
-        // addLog("notok", " " + ":: Empty data from bibliometris exportApi:" +
-        // exportApi);
+        addLog("notok", " " + ":: Empty data from bibliometris exportApi:" + exportApi);
 
         return null;
 
@@ -195,18 +216,19 @@ public class BibliometrisController {
         return null;
     }
 
-    private void addItems(JSONArray data, boolean publish)
+    private void addItems(HttpServletRequest request, JSONArray data, boolean publish)
             throws NumberFormatException, SQLException, AuthorizeException, IOException {
         Item item = null;
-
+        counterAll = 0;
+        counterOk = 0;
+        counterNotOk = 0;
         // iterate through Items
         Iterator iterator = data.iterator();
         // int counter = 0;
 
         while (iterator.hasNext()) {
-            // if (counter == 1)
-            // break;
-            // counter++;
+            updateSession(request);
+
             counterAll++;
             JSONObject itemBibiometris = (JSONObject) iterator.next();
             Long itemBibiometrisId = (Long) itemBibiometris.get("id");
@@ -234,8 +256,8 @@ public class BibliometrisController {
                                 int collectionFromJsonAsInt = Integer.parseInt(collectionFromJson);
                                 collectionToImport = collectionFromJson + "";
                             } catch (Exception e) {
-                                // addLog("notok", itemBibiometrisId + "::collection-not-parsable ("
-                                // + itemBibiometris.get("export_type").toString() + ")");
+                                addLog("notok", itemBibiometrisId + "::collection-not-parsable ("
+                                        + itemBibiometris.get("export_type").toString() + ")");
                             }
                             collectionToImport = collectionFromJson + "";
                         }
@@ -249,32 +271,30 @@ public class BibliometrisController {
                 item = addItem(itemBibiometris, collectionToImport, false, publish);
                 if (item != null) {
                     counterOk++;
-                    // addLog("ok", itemBibiometrisId + ":: Successfully added item");
+                    addLog("ok", itemBibiometrisId + ":: Successfully added item");
 
                 }
 
             } catch (Exception e) {
-                // addLog("notok", itemBibiometrisId + "::" + e.getMessage() + "-" +
-                // e.getCause() + "___");
-                // if (wi != null) {
-                // wi.deleteAll();
-                // wi = null;
-                // }
+                addLog("notok", itemBibiometrisId + "::" + e.getMessage() + "-" +
+                        e.getCause() + "___");
                 System.out.println(e.getMessage() + e.getCause());
                 counterNotOk++;
-                // log.error(e);
             }
-            // context.commit();
-            // itemService.update(context, item);
-            // sleep(500);
             status = "Importing item " + counterAll + " / " + total;
 
         }
         status = "completed";
-        progressBar = 100;
+        addLog("ok", " " + ":: Successful Import - Completed");
 
-        // addLog("ok", " " + ":: Successful Import - Completed");
+    }
 
+    private void sleep(int mtime) {
+        try {
+            Thread.sleep(mtime);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+        }
     }
 
     private Item addItem(JSONObject itemData, String mycollection, boolean template, boolean publish)
@@ -286,7 +306,7 @@ public class BibliometrisController {
 
         try {
             EPerson myEPerson = null;
-            myEPerson = epersonService.findByEmail(context, "kostisalex@gmail.com");
+            myEPerson = epersonService.findByEmail(context, email);
             context.setCurrentUser(myEPerson);
 
             context.turnOffAuthorisationSystem();
@@ -297,7 +317,6 @@ public class BibliometrisController {
                 IndexableItem indexableItem = new IndexableItem(oldItem);
                 indexingService.indexContent(context, indexableItem, true);
                 context.commit();
-                firstItemIsReindexed = true;
             }
 
             // create workspace item
@@ -310,8 +329,8 @@ public class BibliometrisController {
             Iterator<Item> items = itemService.findUnfilteredByMetadataField(context, "dc", "identifier", null,
                     identifier);
             if (items.hasNext()) {
-                // addLog("notok", identifier + "::item-already-exists [dc.identifier.null]" +
-                // "___");
+                addLog("notok", identifier + "::item-already-exists [dc.identifier.null]" +
+                        "___");
                 counterNotOk++;
                 // return null;
             }
@@ -378,14 +397,10 @@ public class BibliometrisController {
                             itemService.addMetadata(context, myitem, schema, element, qualifier, null, valueToStore);
 
                         } else {
-                            // addLog("notok", identifier + "::item-already-exists [" + schema + "." +
-                            // element + "." + qualifier + "]" + "___");
+                            addLog("notok", identifier + "::item-already-exists [" + schema + "." +
+                                    element + "." + qualifier + "]" + "___");
                             counterNotOk++;
 
-                            // remove wi
-                            if (wi != null) {
-                                // workspaceItemService.deleteAll(c, wi);
-                            }
                             return null;
                         }
                     } else {
@@ -565,6 +580,19 @@ public class BibliometrisController {
             currentnames.add(coAuthor);
         }
         return currentnames;
+    }
+
+    private void updateSession(HttpServletRequest request) {
+        request.getSession().setAttribute("importInProgress", importInProgress);
+        request.getSession().setAttribute("total", total);
+        request.getSession().setAttribute("counterOk", counterOk);
+        request.getSession().setAttribute("counterNotOk", counterNotOk);
+        request.getSession().setAttribute("status", status);
+        request.getSession().setAttribute("exportApi", exportApi);
+        request.getSession().setAttribute("email", email);
+        request.getSession().setAttribute("publish", isPublish);
+        request.getSession().setAttribute("logs", logs);
+        sleep(1000);
     }
 
 }
