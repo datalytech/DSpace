@@ -21,14 +21,14 @@ public class BibliometrisPropertiesController {
     public ResponseEntity get(HttpServletRequest request) {
         JSONObject jo = new JSONObject();
         jo.put("importInProgress", request.getSession().getAttribute("importInProgress"));
-        jo.put("total", request.getSession().getAttribute("total"));
+        jo.put("total", request.getSession().getAttribute("total")); 
         jo.put("counterOk", request.getSession().getAttribute("counterOk"));
         jo.put("counterNotOk", request.getSession().getAttribute("counterNotOk"));
         jo.put("logs", request.getSession().getAttribute("logs"));
         jo.put("status", request.getSession().getAttribute("status"));
         jo.put("exportApi", request.getSession().getAttribute("exportApi"));
         jo.put("email", request.getSession().getAttribute("email"));
-        jo.put("status", request.getSession().getAttribute("publish"));
+        jo.put("publish", request.getSession().getAttribute("publish"));
         return new ResponseEntity<>(jo.toString(), HttpStatus.OK);
 
         

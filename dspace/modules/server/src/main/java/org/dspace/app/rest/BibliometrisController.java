@@ -86,6 +86,11 @@ public class BibliometrisController {
     @RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity get(HttpServletRequest request) {
         logs = new ArrayList<>();
+        status = "Connecting with bibliometris...";
+        counterOk = 0;
+        counterNotOk = 0;
+        total = 0;
+
         exportApi = request.getParameter("exportApi");
         importInProgress = true;
         email = request.getParameter("email");
@@ -94,10 +99,12 @@ public class BibliometrisController {
         }
 
         isPublish = request.getParameter("publish");
+        if (isPublish == null) isPublish = "false";
         boolean publish = false;
-        if (isPublish != null && isPublish.equals("true")) {
+        if (isPublish.equals("true")) {  
             publish = true;
         }
+
         updateSession(request);
 
         String bibliometrisUrl = configurationService.getProperty("bibliometris.url");
@@ -135,11 +142,12 @@ public class BibliometrisController {
             throw new RuntimeException();
         }
 
+        if (status.equals("completed")) importInProgress = false;
         updateSession(request); 
 
         JSONObject jo = new JSONObject();
         jo.put("importInProgress", request.getSession().getAttribute("importInProgress"));
-        jo.put("counterAll", request.getSession().getAttribute("counterAll"));
+        jo.put("total", request.getSession().getAttribute("total"));
         jo.put("status", request.getSession().getAttribute("status"));
         return new ResponseEntity<>(jo.toString(), HttpStatus.OK);
     }
@@ -329,9 +337,9 @@ public class BibliometrisController {
             Iterator<Item> items = itemService.findUnfilteredByMetadataField(context, "dc", "identifier", null,
                     identifier);
             if (items.hasNext()) {
-                addLog("notok", identifier + "::item-already-exists [dc.identifier.null]" +
-                        "___");
-                counterNotOk++;
+                // addLog("notok", identifier + "::item-already-exists [dc.identifier.null]" +
+                //         "___");
+                // counterNotOk++;
                 // return null;
             }
 
@@ -482,7 +490,7 @@ public class BibliometrisController {
                 }
 
             }
-            if (publish) {
+            if (!publish) {
                 myitem.setArchived(false);
                 myitem.setDiscoverable(true);
                 itemService.update(context, myitem);
@@ -592,7 +600,7 @@ public class BibliometrisController {
         request.getSession().setAttribute("email", email);
         request.getSession().setAttribute("publish", isPublish);
         request.getSession().setAttribute("logs", logs);
-        sleep(1000);
+        sleep(3000);
     }
 
 }
