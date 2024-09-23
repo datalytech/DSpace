@@ -20,15 +20,15 @@ public class BibliometrisPropertiesController {
     @RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity get(HttpServletRequest request) {
         JSONObject jo = new JSONObject();
-        jo.put("importInProgress", request.getSession().getAttribute("importInProgress"));
-        jo.put("total", request.getSession().getAttribute("total")); 
-        jo.put("counterOk", request.getSession().getAttribute("counterOk"));
-        jo.put("counterNotOk", request.getSession().getAttribute("counterNotOk"));
-        jo.put("logs", request.getSession().getAttribute("logs"));
-        jo.put("status", request.getSession().getAttribute("status"));
-        jo.put("exportApi", request.getSession().getAttribute("exportApi"));
-        jo.put("email", request.getSession().getAttribute("email"));
-        jo.put("publish", request.getSession().getAttribute("publish"));
+        jo.put("importInProgress", BibliometrisController.importInProgress);
+        jo.put("total", BibliometrisController.total); 
+        jo.put("counterOk", BibliometrisController.counterOk);
+        jo.put("counterNotOk", BibliometrisController.counterNotOk);
+        jo.put("logs", BibliometrisController.logs);
+        jo.put("status", BibliometrisController.status);
+        jo.put("exportApi", BibliometrisController.exportApi);
+        jo.put("email", BibliometrisController.email);
+        jo.put("publish", BibliometrisController.isPublish);
         return new ResponseEntity<>(jo.toString(), HttpStatus.OK);
 
         

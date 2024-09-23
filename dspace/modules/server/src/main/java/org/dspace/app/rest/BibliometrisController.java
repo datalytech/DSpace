@@ -69,19 +69,19 @@ public class BibliometrisController {
     private static Logger logger = org.apache.logging.log4j.LogManager
             .getLogger(BibliometrisController.class);
 
-    private String status = "inactive";
-    private int counterOk = 0;
-    private int counterNotOk = 0;
-    private int counterAll = 0;
-    private int counter = 0;
-    private int total = 0;
-    private String exportApi = "";
-    private String email = "";
-    private String isPublish = "";
-    private boolean importInProgress = false;
-    private String firstWfId = "";
+    public static String status = "inactive";
+    public static int counterOk = 0;
+    public static  int counterNotOk = 0;
+    public static  int counterAll = 0;
+    public static  int counter = 0;
+    public static  int total = 0;
+    public static  String exportApi = "";
+    public static  String email = "";
+    public static  String isPublish = "";
+    public static  boolean importInProgress = false;
+    public static  String firstWfId = "";
 
-    private static List<String> logs = new ArrayList<>();
+    public static List<String> logs = new ArrayList<>();
 
     @RequestMapping(method = { RequestMethod.GET, RequestMethod.HEAD })
     public ResponseEntity get(HttpServletRequest request) {
@@ -90,6 +90,7 @@ public class BibliometrisController {
         counterOk = 0;
         counterNotOk = 0;
         total = 0;
+        counter = 0;
 
         exportApi = request.getParameter("exportApi");
         importInProgress = true;
@@ -327,9 +328,6 @@ public class BibliometrisController {
                 context.commit();
             }
 
-            // create workspace item
-
-            // EPerson myEPerson = c.getCurrentUser();
             JSONObject publication = (JSONObject) itemData.get("publication");
             // TODO: check if identifier structure is correct
             String identifier = itemData.get("source") + "-" + publication.get("id").toString();

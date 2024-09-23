@@ -9,6 +9,7 @@ package org.dspace.content;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.dspace.event.Event;
 import org.dspace.identifier.Identifier;
 import org.dspace.identifier.IdentifierException;
 import org.dspace.identifier.service.IdentifierService;
+import org.dspace.services.ConfigurationService;
 import org.dspace.supervision.SupervisionOrder;
 import org.dspace.supervision.service.SupervisionOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class InstallItemServiceImpl implements InstallItemService {
 
+    @Autowired(required = true)
+    protected ConfigurationService configurationService;
     @Autowired(required = true)
     protected ContentServiceFactory contentServiceFactory;
     @Autowired(required = true)
@@ -62,14 +66,14 @@ public class InstallItemServiceImpl implements InstallItemService {
 
     @Override
     public Item installItem(Context c, InProgressSubmission is)
-        throws SQLException, AuthorizeException {
+            throws SQLException, AuthorizeException {
         return installItem(c, is, null);
     }
 
     @Override
     public Item installItem(Context c, InProgressSubmission is,
-                            String suppliedHandle) throws SQLException,
-        AuthorizeException {
+            String suppliedHandle) throws SQLException,
+            AuthorizeException {
         Item item = is.getItem();
         Collection collection = is.getCollection();
         // Get map of filters to use for identifier types.
@@ -79,7 +83,8 @@ public class InstallItemServiceImpl implements InstallItemService {
                 // Register with the filters we've set up
                 identifierService.register(c, item, filters);
             } else {
-                // This will register the handle but a pending DOI won't be compatible and so won't be registered
+                // This will register the handle but a pending DOI won't be compatible and so
+                // won't be registered
                 identifierService.register(c, item, suppliedHandle);
             }
         } catch (IdentifierException e) {
@@ -101,8 +106,8 @@ public class InstallItemServiceImpl implements InstallItemService {
 
     @Override
     public Item restoreItem(Context c, InProgressSubmission is,
-                            String suppliedHandle)
-        throws SQLException, IOException, AuthorizeException {
+            String suppliedHandle)
+            throws SQLException, IOException, AuthorizeException {
         Item item = is.getItem();
 
         try {
@@ -115,24 +120,26 @@ public class InstallItemServiceImpl implements InstallItemService {
             throw new RuntimeException("Can't create an Identifier!");
         }
 
-        // Even though we are restoring an item it may not have the proper dates. So let's
+        // Even though we are restoring an item it may not have the proper dates. So
+        // let's
         // double check its associated date(s)
         DCDate now = DCDate.getCurrent();
 
         // If the item doesn't have a date.accessioned, set it to today
         List<MetadataValue> dateAccessioned = itemService
-            .getMetadata(item, MetadataSchemaEnum.DC.getName(), "date", "accessioned", Item.ANY);
+                .getMetadata(item, MetadataSchemaEnum.DC.getName(), "date", "accessioned", Item.ANY);
         if (dateAccessioned.isEmpty()) {
             itemService.addMetadata(c, item, MetadataSchemaEnum.DC.getName(),
-                                    "date", "accessioned", null, now.toString());
+                    "date", "accessioned", null, now.toString());
         }
 
         // If issue date is set as "today" (literal string), then set it to current date
-        // In the below loop, we temporarily clear all issued dates and re-add, one-by-one,
+        // In the below loop, we temporarily clear all issued dates and re-add,
+        // one-by-one,
         // replacing "today" with today's date.
         // NOTE: As of DSpace 4.0, DSpace no longer sets an issue date by default
         List<MetadataValue> currentDateIssued = itemService
-            .getMetadata(item, MetadataSchemaEnum.DC.getName(), "date", "issued", Item.ANY);
+                .getMetadata(item, MetadataSchemaEnum.DC.getName(), "date", "issued", Item.ANY);
         itemService.clearMetadata(c, item, MetadataSchemaEnum.DC.getName(), "date", "issued", Item.ANY);
         for (MetadataValue dcv : currentDateIssued) {
             if (dcv.getValue() != null && dcv.getValue().equalsIgnoreCase("today")) {
@@ -146,35 +153,36 @@ public class InstallItemServiceImpl implements InstallItemService {
         // Record that the item was restored
         String provDescription = "Restored into DSpace on " + now + " (GMT).";
         itemService.addMetadata(c, item, MetadataSchemaEnum.DC.getName(),
-                                "description", "provenance", "en", provDescription);
+                "description", "provenance", "en", provDescription);
 
         return finishItem(c, item, is);
     }
 
-
     protected void populateMetadata(Context c, Item item)
-        throws SQLException, AuthorizeException {
+            throws SQLException, AuthorizeException {
         // create accession date
         DCDate now = DCDate.getCurrent();
-        itemService.addMetadata(c, item, MetadataSchemaEnum.DC.getName(), "date","accessioned",null,now.toString());
+        itemService.addMetadata(c, item, MetadataSchemaEnum.DC.getName(), "date", "accessioned", null, now.toString());
         // add date available if not under embargo, otherwise it will
         // be set when the embargo is lifted.
         // this will flush out fatal embargo metadata
         // problems before we set inArchive.
         if (embargoService.getEmbargoTermsAsDate(c, item) == null) {
             String dateAvailable = itemService.getMetadataFirstValue(item, MetadataSchemaEnum.DC.getName(),
-                                                                    "date", "available", Item.ANY);
+                    "date", "available", Item.ANY);
             if (StringUtils.isBlank(dateAvailable)) {
-                itemService.addMetadata(c,item,MetadataSchemaEnum.DC.getName(),"date","available",null, now.toString());
+                itemService.addMetadata(c, item, MetadataSchemaEnum.DC.getName(), "date", "available", null,
+                        now.toString());
             }
         }
 
         // If issue date is set as "today" (literal string), then set it to current date
-        // In the below loop, we temporarily clear all issued dates and re-add, one-by-one,
+        // In the below loop, we temporarily clear all issued dates and re-add,
+        // one-by-one,
         // replacing "today" with today's date.
         // NOTE: As of DSpace 4.0, DSpace no longer sets an issue date by default
         List<MetadataValue> currentDateIssued = itemService
-            .getMetadata(item, MetadataSchemaEnum.DC.getName(), "date", "issued", Item.ANY);
+                .getMetadata(item, MetadataSchemaEnum.DC.getName(), "date", "issued", Item.ANY);
         itemService.clearMetadata(c, item, MetadataSchemaEnum.DC.getName(), "date", "issued", Item.ANY);
         for (MetadataValue dcv : currentDateIssued) {
             if (dcv.getValue() != null && dcv.getValue().equalsIgnoreCase("today")) {
@@ -186,7 +194,7 @@ public class InstallItemServiceImpl implements InstallItemService {
         }
 
         String provDescription = "Made available in DSpace on " + now
-            + " (GMT). " + getBitstreamProvenanceMessage(c, item);
+                + " (GMT). " + getBitstreamProvenanceMessage(c, item);
 
         // If an issue date was passed in and it wasn't set to "today" (literal string)
         // then note this previous issue date in provenance message
@@ -195,13 +203,13 @@ public class InstallItemServiceImpl implements InstallItemService {
             if (previousDateIssued != null && !previousDateIssued.equalsIgnoreCase("today")) {
                 DCDate d = new DCDate(previousDateIssued);
                 provDescription = provDescription + "  Previous issue date: "
-                    + d.toString();
+                        + d.toString();
             }
         }
 
         // Add provenance description
         itemService.addMetadata(c, item, MetadataSchemaEnum.DC.getName(),
-                                "description", "provenance", "en", provDescription);
+                "description", "provenance", "en", provDescription);
     }
 
     /**
@@ -217,7 +225,7 @@ public class InstallItemServiceImpl implements InstallItemService {
      * @throws AuthorizeException if authorization error
      */
     protected Item finishItem(Context c, Item item, InProgressSubmission is)
-        throws SQLException, AuthorizeException {
+            throws SQLException, AuthorizeException {
         // create collection2item mapping
         collectionService.addItem(c, is.getCollection(), item);
 
@@ -232,7 +240,7 @@ public class InstallItemServiceImpl implements InstallItemService {
 
         // Notify interested parties of newly archived Item
         c.addEvent(new Event(Event.INSTALL, Constants.ITEM, item.getID(),
-                             item.getHandle(), itemService.getIdentifiers(c, item)));
+                item.getHandle(), itemService.getIdentifiers(c, item)));
 
         // remove in-progress submission
         contentServiceFactory.getInProgressSubmissionService(is).deleteWrapper(c, is);
@@ -243,7 +251,28 @@ public class InstallItemServiceImpl implements InstallItemService {
         // delete all related supervision orders
         deleteSupervisionOrders(c, item);
 
+        updateReportItem(c, item, "publish");
+
         return item;
+    }
+
+    private void updateReportItem(Context context, Item item, String status) {
+        // update reporting item
+        String reportItemUuid = configurationService.getProperty("dspace.action.report.item.uuid");
+        boolean reportActive = configurationService.getBooleanProperty("dspace.action.report.active");
+        if (reportActive && !reportItemUuid.equals(item.getID().toString()) && item.isArchived()) {
+            try {
+                Item reportItem = itemService.findByIdOrLegacyId(context, reportItemUuid);
+                context.turnOffAuthorisationSystem();
+                itemService.addMetadata(context, reportItem, "dc", "subject", null, Item.ANY,
+                        (new Date()).toString() + "::" + context.getCurrentUser().getFullName() + "::" + status + "::"
+                                + item.getID() + "::" + item.getName());
+                context.restoreAuthSystemState();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void deleteSupervisionOrders(Context c, Item item) throws SQLException, AuthorizeException {
@@ -255,7 +284,7 @@ public class InstallItemServiceImpl implements InstallItemService {
 
     @Override
     public String getBitstreamProvenanceMessage(Context context, Item myitem)
-        throws SQLException {
+            throws SQLException {
         // Get non-internal format bitstreams
         List<Bitstream> bitstreams = itemService.getNonInternalBitstreams(context, myitem);
 
@@ -266,9 +295,9 @@ public class InstallItemServiceImpl implements InstallItemService {
         // Add sizes and checksums of bitstreams
         for (Bitstream bitstream : bitstreams) {
             myMessage.append(bitstream.getName()).append(": ")
-                     .append(bitstream.getSizeBytes()).append(" bytes, checksum: ")
-                     .append(bitstream.getChecksum()).append(" (")
-                     .append(bitstream.getChecksumAlgorithm()).append(")\n");
+                    .append(bitstream.getSizeBytes()).append(" bytes, checksum: ")
+                    .append(bitstream.getChecksum()).append(" (")
+                    .append(bitstream.getChecksumAlgorithm()).append(")\n");
         }
 
         return myMessage.toString();
@@ -284,12 +313,12 @@ public class InstallItemServiceImpl implements InstallItemService {
 
         if (item.getSubmitter() != null) {
             provmessage.append("Submitted by ").append(item.getSubmitter().getFullName())
-                .append(" (").append(item.getSubmitter().getEmail()).append(") on ")
-                .append(now.toString());
+                    .append(" (").append(item.getSubmitter().getEmail()).append(") on ")
+                    .append(now.toString());
         } else {
             // else, null submitter
             provmessage.append("Submitted by unknown (probably automated) on")
-                .append(now.toString());
+                    .append(now.toString());
         }
         provmessage.append("\n");
 
