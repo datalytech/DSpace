@@ -1447,7 +1447,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <required />
           <hint />
         </field>
-      </row>
+	</row>
       <row>
         <field>
           <dc-schema>person</dc-schema>
@@ -1470,16 +1470,28 @@ it, please enter the types and the actual numbers or codes.</hint>
         </field>
       </row>
       <row>
+	      <!--<field>
+          <dc-schema>person</dc-schema>
+          <dc-element>jobTitle</dc-element>
+          <label>Job Title</label>
+	  <input-type value-pairs-name="jobpositionel">dropdown</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+  </field>
+  -->
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>jobTitle</dc-element>
           <label>Job Title</label>
-          <input-type>onebox</input-type>
+	  <input-type value-pairs-name="jobposition">dropdown</input-type>
           <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
-        <field>
+	<!--	</row>
+	<row> -->
+	<field>
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>name</dc-qualifier>
@@ -1526,6 +1538,53 @@ it, please enter the types and the actual numbers or codes.</hint>
       </row>
       <row>
         <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>telephone</dc-element>
+          <label>Telephone</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+	  <dc-element>affiliation</dc-element>
+	  <dc-qualifier>centerofexcellence</dc-qualifier>
+          <label>Center of Excellence</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+	  <dc-element>affiliation</dc-element>
+	  <dc-qualifier>department</dc-qualifier>
+          <label>Department</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+	  <dc-element>affiliation</dc-element>
+	  <dc-qualifier>faculty</dc-qualifier>
+          <label>Faculty / School </label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+       </row>
+      <row>
+        <field>
           <dc-schema>dc</dc-schema>
           <dc-element>subject</dc-element>
           <label>Interest(s)</label>
@@ -1558,7 +1617,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <repeatable>false</repeatable>
           <required />
           <hint>Settable by connecting the entity with ORCID</hint>
-          <readonly>all</readonly>
+	  <!--  <readonly>all</readonly> -->
         </field>
       </row>
       <row>
@@ -1611,11 +1670,33 @@ it, please enter the types and the actual numbers or codes.</hint>
       </row>
       <row>
         <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>interests</dc-element>
+          <label>Interests</label>
+          <input-type>textarea</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+      <row>
+        <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>education</dc-element>
           <label>Education(s)</label>
           <input-type>inline-group</input-type>
           <repeatable>true</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+       <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>address</dc-element>
+          <label>Address</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -1646,7 +1727,7 @@ it, please enter the types and the actual numbers or codes.</hint>
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>knowsLanguage</dc-element>
-          <label>Written Language(s)</label>
+          <label>Language</label>
           <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
           <repeatable>true</repeatable>
           <required />
@@ -1786,8 +1867,8 @@ it, please enter the types and the actual numbers or codes.</hint>
           <dc-element>address</dc-element>
           <dc-qualifier>addressLocality</dc-qualifier>
           <label>City</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
+          <input-type value-pairs-name="common_iso_city">dropdown</input-type>
+	  <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -1953,6 +2034,39 @@ it, please enter the types and the actual numbers or codes.</hint>
           <dc-qualifier>endDate</dc-qualifier>
           <label>Expected Completion</label>
           <input-type>date</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+      <row>
+      <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>project</dc-element>
+          <dc-qualifier>duration</dc-qualifier>
+          <label>Duration</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+  </field>
+  </row>
+  <row>
+	  <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>callnumber</dc-element>
+          <label>Call Number</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+        </field>
+
+       <field>
+          <dc-schema>oaire</dc-schema>
+          <dc-element>awardNumber</dc-element>
+          <label>Grant No</label>
+          <input-type>onebox</input-type>
           <repeatable>false</repeatable>
           <required />
           <hint />
@@ -3030,6 +3144,182 @@ it, please enter the types and the actual numbers or codes.</hint>
         <stored-value>Pound sterling</stored-value>
       </pair>
     </value-pairs>
+     <value-pairs value-pairs-name="jobposition" dc-term="position">
+        <pair><displayed-value>Acting Chairman</displayed-value>
+<stored-value>Acting Chairman</stored-value></pair>
+<pair><displayed-value>Associate Professor</displayed-value>
+<stored-value>Associate Professor</stored-value></pair>
+<pair><displayed-value>Vice-rector for Academic Affairs</displayed-value>
+<stored-value>Vice-rector for Academic Affairs</stored-value></pair>
+<pair><displayed-value>Vice-rector for InternationaL Affairs, Finance and Administration</displayed-value>
+        <stored-value>Vice-rector for InternationaL Affairs, Finance and Administration</stored-value></pair>
+<pair><displayed-value>Assistant Librarian</displayed-value>
+<stored-value>Assistant Librarian</stored-value></pair>
+<pair><displayed-value>Phd student</displayed-value>
+<stored-value>Phd student</stored-value></pair>
+<pair><displayed-value>Acting Library Director</displayed-value>
+<stored-value>Acting Library Director</stored-value></pair>
+<pair><displayed-value>Director of Administration &amp; Finance</displayed-value>
+<stored-value>Director of Administration &amp; Finance</stored-value></pair>
+<pair><displayed-value>Centre Manager</displayed-value>
+<stored-value>Centre Manager</stored-value></pair>
+<pair><displayed-value>Special Teaching Staff</displayed-value>
+<stored-value>Special Teaching Staff</stored-value></pair>
+<pair><displayed-value>Special Scientist</displayed-value>
+<stored-value>Special Scientist</stored-value></pair>
+<pair><displayed-value>Assistant Professor</displayed-value>
+<stored-value>Assistant Professor</stored-value></pair>
+<pair><displayed-value>Visiting Associate Professor</displayed-value>
+<stored-value>Visiting Associate Professor</stored-value></pair>
+<pair><displayed-value>Visiting Associate Professor</displayed-value>
+<stored-value>Visting Professor</stored-value></pair>
+<pair><displayed-value>Professor</displayed-value>
+<stored-value>Professor</stored-value></pair>
+<pair><displayed-value>University Officer</displayed-value>
+<stored-value>University Officer</stored-value></pair>
+<pair><displayed-value>University Officer / Librarian</displayed-value>
+<stored-value>University Officer / Librarian</stored-value></pair>
+<pair><displayed-value>Lecturer</displayed-value>
+<stored-value>Lecturer</stored-value></pair>
+<pair><displayed-value>Research Associate</displayed-value>
+<stored-value>Research Associate</stored-value></pair>
+<pair><displayed-value>Chairman</displayed-value>
+<stored-value>Chairman</stored-value></pair>
+<pair><displayed-value>Head of Financial Services</displayed-value>
+<stored-value>Head of Financial Services</stored-value></pair>
+<pair><displayed-value>Head of Technical Services</displayed-value>
+<stored-value>Head of Technical Services</stored-value></pair>
+<pair><displayed-value>Head of Human Resources Services</displayed-value>
+<stored-value>Head of Human Resources Services</stored-value></pair>
+<pair><displayed-value>Deputy Head of Technical Services</displayed-value>
+<stored-value>Deputy Head of Technical Services</stored-value></pair>
+<pair><displayed-value>Head of Information Systems Services</displayed-value>
+<stored-value>Head of Information Systems Services</stored-value></pair>
+<pair><displayed-value>Head of Academic, Affairs and Atudent WeLfare Services</displayed-value>
+<stored-value>Head of Academic, Affairs and Atudent WeLfare Services</stored-value></pair>
+<pair><displayed-value>Rector</displayed-value>
+<stored-value>Rector</stored-value></pair>
+<pair><displayed-value>Visiting Assistant Professor</displayed-value>
+        <stored-value>Visiting Assistant Professor</stored-value></pair>
+<pair><displayed-value>Visiting Lecturer</displayed-value>
+<stored-value>Visiting Lecturer</stored-value></pair>
+<pair><displayed-value>Library Deputy Director</displayed-value>
+<stored-value>Library Deputy Director</stored-value></pair>
+<pair><displayed-value>Head of Research Support Service</displayed-value>
+<stored-value>Head of Research Support Service</stored-value></pair>
+<pair><displayed-value>Postdoctoral Researcher</displayed-value>
+<stored-value>Postdoctoral Researcher</stored-value></pair>
+<pair><displayed-value>Librarian</displayed-value>
+<stored-value>Librarian</stored-value></pair>
+<pair><displayed-value>Senior Library Assistant</displayed-value>
+<stored-value>Senior Library Assistant</stored-value></pair>
+<pair><displayed-value>Deputy Head of International Relations Service</displayed-value>
+<stored-value>Deputy Head of International Relations Service</stored-value></pair>
+<pair><displayed-value>Deputy Head of Academic Affairs and Student Welfare Service</displayed-value>
+<stored-value>Deputy Head of Academic Affairs and Student Welfare Service</stored-value></pair>
+<pair><displayed-value>Deputy Head of IT Infrastructure Service</displayed-value>
+<stored-value>Deputy Head of IT Infrastructure Service</stored-value></pair>
+<pair><displayed-value>Deputy Head of Information Applications Service</displayed-value>
+<stored-value>Deputy Head of Information Applications Service</stored-value></pair>
+<pair><displayed-value>Deputy Head of Technical Services</displayed-value>
+<stored-value>Deputy Head of Technical Services</stored-value></pair>
+<pair><displayed-value>- </displayed-value>
+<stored-value>-</stored-value></pair>
+<pair><displayed-value>Professor - Bank of Cyprus Chair in Finance at the University of Cyprus</displayed-value>
+<stored-value>Professor - Bank of Cyprus Chair in Finance at the University of Cyprus</stored-value></pair>
+<pair><displayed-value>University Officer A</displayed-value>
+<stored-value>uniVersity Officer A</stored-value></pair>
+<pair><displayed-value>Emeritus Professor</displayed-value>
+<stored-value>Emeritus Professor</stored-value></pair>
+     </value-pairs>
+    <value-pairs value-pairs-name="jobpositionel" dc-term="position">
+	<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ/ΙΑ ΠΡΟΕΔΡΟΣ</displayed-value>
+<stored-value>_UE_POSS1</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ/ΡΙΑ ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS2</stored-value></pair>
+<pair><displayed-value>ΑΝΤΙΠΡΥΤΑΝΗΣ ΑΚΑΔΗΜΑΪΚΩΝ ΥΠΟΘΕΣΕΩΝ</displayed-value>
+<stored-value>_UE_POSS3</stored-value></pair>
+<pair><displayed-value>ΑΝΤΙΠΡΥΤΑΝΗΣ ΔΙΕΘΝΩΝ ΣΧΕΣΕΩΝ, ΟΙΚΟΝΟΜΙΚΩΝ ΚΑΙ ΔΙΟΙΚΗΣΗΣ</displayed-value>
+<stored-value>_UE_POSS4</stored-value></pair>
+<pair><displayed-value>ΒΟΗΘΟΣ ΒΙΒΛΙΟΘΗΚΗΣ</displayed-value>
+<stored-value>_UE_POSS13</stored-value></pair>
+<pair><displayed-value>ΔΙΔΑΚΤΟΡΙΚΟΣ/Η ΦΟΙΤΗΤΗΣ/ΙΑ</displayed-value>
+<stored-value>_UE_POSS19</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΡΙΑ ΔΙΕΥΘΥΝΤΡΙΑ ΒΙΒΛΙΟΘΗΚΗΣ</displayed-value>
+<stored-value>_UE_POSS20</stored-value></pair>
+<pair><displayed-value>ΔΙΕΥΘΥΝΤΗΣ ΔΙΟΙΚΗΣΗΣ ΚΑΙ ΟΙΚΟΝΟΜΙΚΩΝ</displayed-value>
+<stored-value>_UE_POSS21</stored-value></pair>
+<pair><displayed-value>ΔΙΕΥΘΥΝΤΗΣ/ΙΑ ΚΕΝΤΡΟΥ</displayed-value>
+<stored-value>_UE_POSS22</stored-value></pair>
+<pair><displayed-value>ΕΙΔΙΚΟ ΕΚΠΑΙΔΕΥΤΙΚΟ ΠΡΟΣΩΠΙΚΟ</displayed-value>
+<stored-value>_UE_POSS23</stored-value></pair>
+<pair><displayed-value>ΕΙΔΙΚΟΣ/Η ΕΠΙΣΤΗΜΟΝΑΣ</displayed-value>
+<stored-value>_UE_POSS24</stored-value></pair>
+<pair><displayed-value>ΕΠΙΚΟΥΡΟΣ/Η ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS25</stored-value></pair>
+<pair><displayed-value>ΕΠΙΣΚΕΠΤΗΣ/ΡΙΑ ΑΝΑΠΛΗΡΩΤΗΣ/ΡΙΑ ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS26</stored-value></pair>
+<pair><displayed-value>ΕΠΙΣΚΕΠΤΗΣ/ΡΙΑ ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS27</stored-value></pair>
+<pair><displayed-value>ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS31</stored-value></pair>
+<pair><displayed-value>ΛΕΙΤΟΥΡΓΟΣ ΠΑΝΕΠΙΣΤΗΜΙΟΥ</displayed-value>
+<stored-value>_UE_POSS33</stored-value></pair>
+<pair><displayed-value>ΛΕΙΤΟΥΡΓΟΣ ΠΑΝΕΠΙΣΤΗΜΙΟΥ - ΒΙΒΛΙΟΘΗΚΟΝΟΜΟΣ</displayed-value>
+<stored-value>_UE_POSS34</stored-value></pair>
+<pair><displayed-value>ΛΕΚΤΟΡΑΣ</displayed-value>
+<stored-value>_UE_POSS36</stored-value></pair>
+<pair><displayed-value>ΜΕΤΑΠΤΥΧΙΑΚΟΣ/Η ΣΥΝΕΡΓΑΤΗΣ/ΙΔΑ</displayed-value>
+<stored-value>_UE_POSS40</stored-value></pair>
+<pair><displayed-value>ΠΡΟΕΔΡΟΣ</displayed-value>
+<stored-value>_UE_POSS49</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΗ ΟΙΚΟΝΟΜΙΚΩΝ ΥΠΗΡΕΣΙΩΝ</displayed-value>
+<stored-value>_UE_POSS50</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΤΕΧΝΙΚΩΝ ΥΠΗΡΕΣΙΩΝ</displayed-value>
+<stored-value>_UE_POSS51</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΑΔ</displayed-value>
+<stored-value>_UE_POSS52</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑΣ ΑΝΑΠΤΥΞΗΣ ΠΑΝΕΠΙΣΤΗΜΙΟΥ</displayed-value>
+<stored-value>_UE_POSS53</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑΣ ΠΛΗΡΟΦΟΡΙΑΚΩΝ ΣΥΣΤΗΜΑΤΩΝ</displayed-value>
+<stored-value>_UE_POSS54</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΣΦΜ</displayed-value>
+<stored-value>_UE_POSS55</stored-value></pair>
+<pair><displayed-value>ΠΡΥΤΑΝΗΣ</displayed-value>
+<stored-value>_UE_POSS56</stored-value></pair>
+<pair><displayed-value>ΕΠΙΣΚΕΠΤΗΣ/ΡΙΑ ΕΠΙΚΟΥΡΟΣ/Η ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS67</stored-value></pair>
+<pair><displayed-value>ΕΠΙΣΚΕΠΤΗΣ/ΡΙΑ ΛΕΚΤΟΡΑΣ</displayed-value>
+<stored-value>_UE_POSS70</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ/ΙΑ ΤΟΥ ΔΙΕΥΘΥΝΤΗ ΒΙΒΛΙΟΘΗΚΗΣ</displayed-value>
+<stored-value>_UE_POSS72</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑΣ ΥΠΟΣΤΗΡΙΞΗΣ ΕΡΕΥΝΑΣ</displayed-value>
+<stored-value>_UE_POSS73</stored-value></pair>
+<pair><displayed-value>ΜΕΤΑΔΙΔΑΚΤΟΡΙΚΟΣ/Η ΕΡΕΥΝΗΤΗΣ/ΙΑ</displayed-value>
+<stored-value>_UE_POSS74</stored-value></pair>
+<pair><displayed-value>ΒΙΒΛΙΟΘΗΚΟΝΟΜΟΣ</displayed-value>
+<stored-value>_UE_POSS75</stored-value></pair>
+<pair><displayed-value>ΑΝΩΤΕΡΟΣ/Η ΒΟΗΘΟΣ ΒΙΒΛΙΟΘΗΚΟΝΟΜΟΣ</displayed-value>
+<stored-value>_UE_POSS76</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΡΙΑ ΠΡΟΪΣΤΑΜΕΝΗ ΥΠΗΡΕΣΙΑΣ ΔΙΕΘΝΩΝ ΣΧΕΣΕΩΝ</displayed-value>
+<stored-value>_UE_POSS77</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑΣ ΣΠΟΥΔΩΝ ΚΑΙ ΦΟΙΤΗΤΙΚΗΣ ΜΕΡΙΜΝΑΣ</displayed-value>
+<stored-value>_UE_POSS78</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑΣ ΠΛΗΡΟΦΟΡΙΚΗΣ ΥΠΟΔΟΜΗΣ</displayed-value>
+<stored-value>_UE_POSS79</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑ ΠΛΗΡΟΦΟΡΙΚΩΝ ΕΦΑΡΜΟΓΩΝ</displayed-value>
+<stored-value>_UE_POSS80</stored-value></pair>
+<pair><displayed-value>ΑΝΑΠΛΗΡΩΤΗΣ ΠΡΟΪΣΤΑΜΕΝΟΣ ΤΕΧΝΙΚΩΝ ΥΠΗΡΕΣΙΩΝ</displayed-value>
+<stored-value>_UE_POSS81</stored-value></pair>
+<pair><displayed-value>ΠΡΟΪΣΤΑΜΕΝΟΣ ΥΠΗΡΕΣΙΑΣ ΑΝΑΠΤΥΞΗΣ ΠΑΝΕΠΙΣΤΗΜΙΟΥ</displayed-value>
+<stored-value>_UE_POSS82</stored-value></pair>
+<pair><displayed-value>ΚΑΘΗΓΗΤΗΣ - ΚΑΤΟΧΟΣ ΕΔΡΑΣ ΤΡΑΠΕΖΑΣ ΚΥΠΡΟΥ ΣΤΗ ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΗ ΤΟΥ ΠΑΝΕΠΙΣΤΗΜΙΟΥ ΚΥΠΡΟΥ</displayed-value>
+<stored-value>_UE_POSS83</stored-value></pair>
+<pair><displayed-value>ΛΕΙΤΟΥΡΓΟΣ ΠΑΝΕΠΙΣΤΗΜΙΟΥ A</displayed-value>
+<stored-value>_UE_POSS84</stored-value></pair>
+<pair><displayed-value>ΟΜΟΤΙΜΟΣ/Η ΚΑΘΗΓΗΤΗΣ/ΡΙΑ</displayed-value>
+<stored-value>_UE_POSS85</stored-value></pair>
+    </value-pairs>
     <value-pairs value-pairs-name="gender" dc-term="gender">
       <pair>
         <displayed-value>Male</displayed-value>
@@ -3196,6 +3486,28 @@ it, please enter the types and the actual numbers or codes.</hint>
         <stored-value>Workshop</stored-value>
       </pair>
     </value-pairs>
+    <value-pairs value-pairs-name="common_iso_city" dc-term="common_iso_city">
+      <pair>
+        <displayed-value>Nicosia</displayed-value>
+        <stored-value>Nicosia</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Limassol</displayed-value>
+        <stored-value>Limassol</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Larnaca</displayed-value>
+        <stored-value>Larnaca</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Paphos</displayed-value>
+        <stored-value>Paphos</stored-value>
+	</pair>
+      <pair>
+        <displayed-value>Famagusta</displayed-value>
+        <stored-value>Famagusta</stored-value>
+      </pair>
+</value-pairs>
     <value-pairs value-pairs-name="common_iso_countries" dc-term="common_iso_countries">
       <pair>
         <displayed-value>Unspecified</displayed-value>
