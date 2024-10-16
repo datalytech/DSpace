@@ -14,42 +14,85 @@
   <submission-map>
     <!-- Default submission process -->
     <name-map collection-handle="default" submission-name="publication"/>
+    <name-map collection-handle="123456789/48" submission-name="academic" /> <!-- Library -->
+    <name-map collection-handle="123456789/29" submission-name="academic" /> 
+    <name-map collection-handle="123456789/30" submission-name="academic" /> 
+    <name-map collection-handle="123456789/31" submission-name="academic" /> 
+    <name-map collection-handle="123456789/32" submission-name="academic" /> 
+    <name-map collection-handle="123456789/24" submission-name="academic" /> 
+    <name-map collection-handle="123456789/25" submission-name="academic" /> 
+    <name-map collection-handle="123456789/26" submission-name="academic" /> 
+    <name-map collection-handle="123456789/27" submission-name="academic" /> 
+    <name-map collection-handle="123456789/28" submission-name="academic" /> 
+    <name-map collection-handle="123456789/33" submission-name="academic" />
+    <name-map collection-handle="123456789/37" submission-name="academic" />
+    <name-map collection-handle="123456789/38" submission-name="academic" />
+    <name-map collection-handle="123456789/39" submission-name="academic" />
+    <name-map collection-handle="123456789/40" submission-name="academic" />
+    <name-map collection-handle="123456789/34" submission-name="academic" />
+    <name-map collection-handle="123456789/35" submission-name="academic" />
+    <name-map collection-handle="123456789/36" submission-name="academic" />
+    <name-map collection-handle="123456789/21" submission-name="academic" />
+    <name-map collection-handle="123456789/22" submission-name="academic" />
+    <name-map collection-handle="123456789/23" submission-name="academic" />
+    <name-map collection-handle="123456789/6" submission-name="academic" />
+    <name-map collection-handle="123456789/41" submission-name="academic" />
+    <name-map collection-handle="123456789/42" submission-name="academic" />
+    <name-map collection-handle="123456789/43" submission-name="academic" />
+    <name-map collection-handle="123456789/49" submission-name="academic" />
+    <name-map collection-handle="123456789/50" submission-name="academic" />
+    <name-map collection-handle="123456789/44" submission-name="academic" />
+    <name-map collection-handle="123456789/47" submission-name="academic" />
+    <name-map collection-handle="123456789/46" submission-name="academic" />
 
-    <!-- Sample Entities Collection configuration based on the demo Entities dataset available at:
-         https://github.com/DSpace-Labs/AIP-Files/releases/tag/demo-entities-data
-         This sets up the following Entity-based Collections in that dataset:
-            "Publication" Collections = "Publications" -> "Articles", "Books", "Publications 2", & "Theses"
-            "OrgUnit" Collection = "Related Objects" -> "OrgUnits"
-            "Person" Collections = "Related Objects" -> "People" & "People 2"
-            "Project" Collections = "Related Objects" -> "Projects" & "Projects 2"
-            "Journal" Collection = "Compound Journals" -> "Journals"
-            "Journal Volume" Collection = "Compound Journals" -> "Journal Volumes"
-            "Journal Issue" Collection = "Compound Journals" ->  "Journal Issues"
-         If you are using that demo dataset, you can simply uncomment the below configuration to enable Entity
-         submission into all of the above Collections.
-    -->
+    <name-map collection-handle="123456789/52" submission-name="phd" />
+    <name-map collection-handle="123456789/53" submission-name="phd" />
+    <name-map collection-handle="123456789/54" submission-name="phd" />
+    <name-map collection-handle="123456789/55" submission-name="phd" />
+    <name-map collection-handle="123456789/57" submission-name="phd" />
+    <name-map collection-handle="123456789/58" submission-name="phd" />
+    <name-map collection-handle="123456789/59" submission-name="phd" />
+    <name-map collection-handle="123456789/64" submission-name="phd" />
+    <name-map collection-handle="123456789/65" submission-name="phd" />
+    <name-map collection-handle="123456789/66" submission-name="phd" />
+    <name-map collection-handle="123456789/67" submission-name="phd" />
+    <name-map collection-handle="123456789/68" submission-name="phd" />
+    <name-map collection-handle="123456789/69" submission-name="phd" />
+    <name-map collection-handle="123456789/70" submission-name="phd" />
+    <name-map collection-handle="123456789/71" submission-name="phd" />
+    <name-map collection-handle="123456789/72" submission-name="phd" />
+    <name-map collection-handle="123456789/73" submission-name="phd" />
+    <name-map collection-handle="123456789/74" submission-name="phd" />
+    <name-map collection-handle="123456789/75" submission-name="phd" />
+    <name-map collection-handle="123456789/76" submission-name="phd" />
+    <name-map collection-handle="123456789/77" submission-name="phd" />
+    <name-map collection-handle="123456789/78" submission-name="phd" />
+
+    <name-map collection-handle="123456789/82" submission-name="msc" />
+    <name-map collection-handle="123456789/83" submission-name="msc" />
+    <name-map collection-handle="123456789/84" submission-name="msc" />
+    <name-map collection-handle="123456789/85" submission-name="msc" />
+    <name-map collection-handle="123456789/87" submission-name="msc" />
+    <name-map collection-handle="123456789/88" submission-name="msc" />
+    <name-map collection-handle="123456789/89" submission-name="msc" />
+    <name-map collection-handle="123456789/91" submission-name="msc" />
+    <name-map collection-handle="123456789/92" submission-name="msc" />
+    <name-map collection-handle="123456789/93" submission-name="msc" />
+    <name-map collection-handle="123456789/94" submission-name="msc" />
+    <name-map collection-handle="123456789/95" submission-name="msc" />
+    <name-map collection-handle="123456789/97" submission-name="msc" />
+    <name-map collection-handle="123456789/98" submission-name="msc" />
+    <name-map collection-handle="123456789/99" submission-name="msc" />
+    <name-map collection-handle="123456789/100" submission-name="msc" />
+    <name-map collection-handle="123456789/102" submission-name="msc" />
+    <name-map collection-handle="123456789/103" submission-name="msc" />
+    <name-map collection-handle="123456789/104" submission-name="msc" />
+    <name-map collection-handle="123456789/106" submission-name="msc" />
+    <name-map collection-handle="123456789/107" submission-name="msc" />
+    <name-map collection-handle="123456789/108" submission-name="msc" />
+    <name-map collection-handle="123456789/80" submission-name="msc" />
   </submission-map>
 
-  <!-- The 'step-definitions' allows you to define steps which you may wish -->
-  <!-- to "share" amongst multiple submission-item definitions. In order to -->
-  <!-- share the same step definition, you can refer to it by its unique id -->
-  <!-- defined in this section. EVERY 'step' in this section MUST have a -->
-  <!-- unique identifier in the 'id' attribute! -->
-  <!-- -->
-  <!-- Each <step-definition> REQUIRES the following attributes (@) and properties: -->
-  <!-- @id - The unique identifier for this step -->
-  <!-- -->
-  <!-- <processing-class> - The class which will process all information for -->
-  <!-- this step. The class must implement -->
-  <!-- 'org.dspace.app.rest.submit.RestProcessingStep' -->
-  <!-- (or one of the org.dspace.rest.submit.step.* classes) -->
-  <!-- This property should reference the full path of the class -->
-  <!-- (e.g. org.dspace.app.rest.submit.step.MyCustomStep) -->
-  <!-- -->
-  <!-- The following properties are OPTIONAL for each <step-definition>: -->
-  <!-- <heading> - References the message key, from the -->
-  <!-- Messages.properties -->
-  <!-- -->
   <step-definitions>
     <!-- The "collection" step is a "special step" which is *REQUIRED* -->
     <!-- In DSpace, all submitted items must be immediately assigned -->
@@ -131,6 +174,36 @@
     </step-definition>
     <step-definition id="publication_references" mandatory="false">
       <heading>submit.progressbar.describe.publication_references</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="academic_part1" mandatory="true">
+      <heading>submit.progressbar.describe.academic_part1</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+   <step-definition id="academic_part2" mandatory="true">
+      <heading>submit.progressbar.describe.academic_part2</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+   <step-definition id="phd_part1" mandatory="true">
+      <heading>submit.progressbar.describe.phd_part1</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+   <step-definition id="phd_part2" mandatory="true">
+      <heading>submit.progressbar.describe.phd_part2</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+   <step-definition id="msc_part1" mandatory="true">
+      <heading>submit.progressbar.describe.msc_part1</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+   <step-definition id="msc_part2" mandatory="true">
+      <heading>submit.progressbar.describe.msc_part2</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
@@ -232,7 +305,7 @@
       <step id="correction" />
       <step id="detect-duplicate" />
       <step id="upload" />
-      <step id="license" />
+      <!--    <step id="license" /> -->
     </submission-process>
     <submission-process name="orgunit-edit">
       <step id="orgunit" />
@@ -244,7 +317,7 @@
       <step id="correction" />
       <step id="detect-duplicate" />
       <step id="upload" />
-      <step id="license" />
+      <!--  <step id="license" /> -->
     </submission-process>
     <submission-process name="project-edit">
       <step id="project" />
@@ -280,6 +353,54 @@
       <step id="publication_indexing" />
       <step id="publication_bibliographic_details" />
       <step id="publication_references" />
+      <step id="upload" />
+    </submission-process>
+    <submission-process name="academic">
+      <step id="collection" />
+      <step id="extractionstep" />
+      <step id="academic_part1" />
+      <step id="academic_part2" />
+      <step id="correction" />
+      <step id="detect-duplicate" />
+      <step id="upload" />
+      <step id="license" />
+    </submission-process>
+    <submission-process name="academic-edit">
+      <step id="extractionstep" />
+      <step id="academic_part1" />
+      <step id="academic_part2" />
+      <step id="upload" />
+    </submission-process>
+    <submission-process name="phd">
+      <step id="collection" />
+      <step id="extractionstep" />
+      <step id="phd_part1" />
+      <step id="phd_part2" />
+      <step id="correction" />
+      <step id="detect-duplicate" />
+      <step id="upload" />
+      <step id="license" />
+    </submission-process>
+    <submission-process name="phd-edit">
+      <step id="extractionstep" />
+      <step id="phd_part1" />
+      <step id="phd_part2" />
+      <step id="upload" />
+    </submission-process>
+    <submission-process name="msc">
+      <step id="collection" />
+      <step id="extractionstep" />
+      <step id="msc_part1" />
+      <step id="msc_part2" />
+      <step id="correction" />
+      <step id="detect-duplicate" />
+      <step id="upload" />
+      <step id="license" />
+    </submission-process>
+    <submission-process name="msc-edit">
+      <step id="extractionstep" />
+      <step id="msc_part1" />
+      <step id="msc_part2" />
       <step id="upload" />
     </submission-process>
     <submission-process name="person">

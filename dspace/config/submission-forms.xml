@@ -504,6 +504,703 @@
         </field>
       </row>
     </form>
+    <form name="academic_part1">
+     <row>
+     <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>type</dc-element>
+         <dc-qualifier>uhtype</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Τύπος Δημοσίευσης/ Publication Type</label>
+         <input-type value-pairs-name="common_types">dropdown</input-type>
+         <hint>Επιλέξτε τον τύπο δημοσίευσης, π.χ. Article / Select the type(s) of content of the item e.g. Article</hint>
+         <required>Επιλέξτε τον τύπο. / Please specify a type.</required>
+       </field>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>type</dc-element>
+         <dc-qualifier>subtype</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Υποτύπος / Sub-Type</label>
+         <input-type value-pairs-name="subtype_identifiers">dropdown</input-type>
+         <hint>πιλέξτε τον υποτύπο δημοσίευσης, π.χ. Creative Writing / Select the sub-type(s) of content of the item, e.g. Creative Writing</hint>
+         <required>Επιλέξτε τον υποτύπο. / Please specify a sub-type.</required>
+      </field>
+      </row>
+      <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>title</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τιτλος Δημοσιευσης/ Title Of The Publication</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τον κύριο τίτλο της δημοσίευσης στη γλώσσα δημοσίευσης. / Enter the main title of the item in the publishing language.</hint>
+         <required>Υποχρεωτικό πεδίο / Mandatory field</required>
+       </field>
+     </row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>title</dc-element>
+         <dc-qualifier>alternative</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Μεταφρασμένος τίτλος / Translated title</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τη μετάφραση του τίτλου, εάν υπάρχει. / If the item has any alternative titles, please enter them here.</hint>
+         <required></required>
+      </field>
+    </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>author</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Συγγραφείς / Authors</label>
+         <input-type>name</input-type>
+         <hint>Προσθέστε τα ονόματα των συγγραφέων στη γλώσσα δημοσίευσης του τεκμηρίου.  / Enter the names of the authors in publishing language.</hint>
+         <required>Υποχρεωτικό πεδίο / Mandatory field</required>
+       </field>
+       </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>editor</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Επιμελητής(ες) έκδοσης: / Editor(s)</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε το πλήρες όνομα του/των επιμελητή (ων) έκδοσης. / Enter the full name of the editor.</hint>
+         <required></required>
+       </field>
+       </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>translator</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Μεταφραστής(ες) / Translator(s)</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε το πλήρες όνομα του/των μεταφραστή(ων). / Enter the full name of the translator.</hint>
+         <required></required>
+      </field>
+       </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>orcid</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>ORCID (συγγραφέα, επιμελητή έκδοσης, μεταφραστή) / ORCID (author, editor, translator)</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε το προσωπικό σας ORCID ως Συγγραφέα ή Επιμελητή ή Μεταφραστή της δημοσίευσης, ανάλογα με το τι ισχύει. π.χ. Ιωάννου, Μαρία [0000-0460-0340-5550] / Enter your individual ORCID as Author, or Editor, or Translator of the publication, accordingly. e.g. Ioannou, Maria [0000-0460-0340-5550]</hint>
+         <required></required>
+      </field>
+    </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>publisher</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Εκδότης / Publisher</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε το όνομα του εκδότη. / Enter the name of the publisher.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>coverage</dc-element>
+         <dc-qualifier>spatial</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label> Τόπος δημοσίευσης / Place of publication</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τον τόπο δημοσίευσης. / Enter the place of publication.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>date</dc-element>
+         <dc-qualifier>issued</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Ημερομηνία Έκδοσης / Date of Issue</label>
+         <input-type>date</input-type>
+         <hint>Εισάξετε το έτος δημοσίευσης. Μπορείτε να παραλείψετε τον μήνα και την ημέρα. / Please  the year of publication. You can omit month and/or day if they are not applicable.</hint>
+         <required>Πρέπει να εισάξετε τουλάχιστον το έτος. / You must enter at least the year.</required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>edition</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Αριθμός Έκδοσης / Number of Edition</label>
+         <input-type>onebox</input-type>
+         <hint>Παρακαλώ προσθέστε τον αριθμό έκδοσης εάν υπάρχει. / Please enter the number of the edition, if any.</hint>
+         <required></required>
+       </field>
+    </row>
+  </form>
+  <form name="academic_part2">
+        <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>source</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Ευρύτερη Πηγή Δημοσίευσης (ΕΠΔ) / Broader Publishing Source (BPS)</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε την ευρύτερη πηγή δημοσίευσης, εάν υπάρχει ( π.χ. τίτλος περιοδικού) / Enter the broader source if any (e.g. Journal or book title).</hint>
+         <required></required>
+       </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>startingpage</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Αρχική σελίδα ΕΠΔ / BPS starting page</label>
+         <input-type>onebox</input-type>
+         <hint>Παρακαλώ προσθέστε την αρχική σελίδα της Ευρύτερης Πηγής Δημοσίευσης./ Please enter the start page of the Broader Publishing Source.</hint>
+         <required></required>
+       </field>
+       </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>endingpage</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τελική σελίδα ΕΠΔ / BPS last page</label>
+         <input-type>onebox</input-type>
+         <hint>Παρακαλώ προσθέστε την τελική σελίδα της Ευρύτερης Πηγής Δημοσίευσης. / Please enter the last page of the Broader Publishing Source.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>7/
+         <dc-qualifier>volume</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τόμος / Volume</label>
+         <input-type>onebox</input-type>
+         <hint>Παρακαλώ προσθέστε τον τόμο εάν υπάρχει. / Please enter the volume, if any.</hint>
+         <required></required>
+      </field>
+      </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>issue</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τεύχος / Issue</label>
+         <input-type>onebox</input-type>
+         <hint>Παρακαλώ προσθέστε το τεύχος εάν υπάρχει. / Please enter the issue, if any.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>language</dc-element>
+         <dc-qualifier>iso</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Γλώσσα / Language</label>
+         <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+         <hint>Επιλέξτε τη γλώσσα περιεχομένου της δημοσίευσης. Εάν η γλώσσα δεν εμφανίζεται στη λίστα, επιλέξτε "Άλλο" ή αν δεν υπάρχει γλώσσα όπως, π.χ. για αριθμητικά δεδομένα, τον όρο 'N/A'. / Select the language of the main content of the item. If the language does not appear in the list, please select 'Other'. If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>identifier</dc-element>
+         <dc-qualifier>doi</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>DOI  (Digital Object Identifier)</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τον αριθμό DOI. π.χ 10.1037/arc0000014 / Enter the DOI number. e.g. 10.1037/arc0000014.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>source</dc-element>
+         <dc-qualifier>uri</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Σύνδεσμος(οι) / Link(s)</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τον/τους σύνδεσμο/συνδέσμους προς τη δημοσίευση. / Enter the link(s) to the publication.</hint>
+         <required></required>
+      </field>
+</row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>identifier</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <!-- An input-type of qualdrop_value MUST be marked as repeatable -->
+         <repeatable>true</repeatable>
+         <label>Αναγνωριστικά / Identifiers</label>
+         <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
+         <hint>Εάν η εργασία σας έχει οποιαδήποτε αναγνωριστικά που συνδέονται με αυτή, παρακαλούμε εισάγετε τους τύπους και τους αριθμούς ή κωδικούς. / If the item has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes.</hint>
+         <required></required>
+      </field>
+     </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>subject</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <!-- An input-type of twobox MUST be marked as repeatable -->
+         <repeatable>true</repeatable>
+         <label>Λέξεις κλειδιά / Keywords</label>
+         <input-type>twobox</input-type>
+         <hint>Προσθέστε λέξεις κλειδιά ή φράσεις. / Enter appropriate subject keywords or phrases.</hint>
+         <required></required>
+         <!-- <vocabulary>srsc</vocabulary> -->
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>abstract</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Περίληψη / Abstract</label>
+         <input-type>textarea</input-type>
+         <hint>Προσθέστε την περίληψη της εργασίας σας στη γλώσσα του κειμένου. / Enter the abstract of the item in the text language.</hint>
+         <required></required>
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>sponsorship</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Χορηγοί / Sponsors</label>
+         <input-type>textarea</input-type>
+         <hint>Προσθέστε τα ονόματα των χορηγών. Enter the names of any sponsors.</hint>
+         <required></required>
+       </field>
+	</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Συμφωνία Επιχορήγησης / Grant Agreement</label>
+         <input-type>onebox</input-type>
+         <hint>e.g. EC/FP7/265010.</hint>
+         <required></required>
+       </field>
+      </row>
+    <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>notes</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Σημειώσεις / Notes</label>
+         <input-type>onebox</input-type>
+         <hint>Εισαγάγετε οποιαδήποτε άλλη περιγραφή ή σχόλιο επιθυμείτε σε αυτό το πεδίο / Enter any other description or comment in this box.</hint>
+         <required></required>
+       </field>
+     </row>
+   </form>
+
+   <form name="phd_part1">
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>author</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Συγγραφείς / Authors</label>
+         <input-type>name</input-type>
+         <hint>Προσθέστε τo όνομα του συγγραφέα(συγγραφέων) της διατριβής. / Enter the names of the author(s) of this item.</hint>
+         <required>Παρακαλώ εισάξετε συγγραφέα / Please enter the author</required>
+       </field>
+      </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>orcid</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>ORCID συγγραφέα / Authors ORCID</label>
+         <input-type>onebox</input-type>
+         <hint>π.χ. Ιωάννου, Μαρία [0000-0460-0340-5550] / e.g. Ioannou, Maria [0000-0460-0340-5550]</hint>
+         <required></required>
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>title</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τίτλος / Title</label>
+         <input-type>onebox</input-type>
+         <hint>Συμπληρώστε τον τίτλο όπως ακριβώς εμφανίζεται στην σελίδα τίτλου της Διατριβής. / Enter the title exactly as it appears on the dissertation’s title page.</hint>
+         <required>Υποχρεωτικό πεδίο / Mandatory field</required>
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>title</dc-element>
+         <dc-qualifier>alternative</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Μεταφρασμένος τίτλος / Translated title</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τη μετάφραση του τίτλου σας / Insert translation of the title.</hint>
+         <required></required>
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>advisor</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Επιβλέπων / Supervisor</label>
+         <input-type>name</input-type>
+         <hint>Προσθέστε το/τα όνομα/ονόματα του επιβλέπων ακαδημαϊκού / Enter the name(s) of the supervisor(s) of this item.</hint>
+         <required>You must enter the advisor for this item.</required>
+       </field>
+</row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>committeemember</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Μέλη εξεταστικής επιτροπής / Committee members</label>
+         <input-type>name</input-type>
+         <hint>Εισάξετε τα ονόματα των μελών της εξεταστικής επιτροπής / Enter the names of the members of the evaluation committee.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+</row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>sponsorship</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Συνεργαζόμενο ίδρυμα / Collaborating Institution</label>
+         <input-type>onebox</input-type>
+         <hint>Να συμπληρωθεί μόνο εάν η διατριβή γράφτηκε σε ερευνητικό ίδρυμα ή εργαστήριο, π.χ. Ινστιτούτο Νευρολογίας και Γενετικής / To be completed only if the dissertation was written in a research institute or laboratory, e.g. Institute of Neurology and Genetics.</hint>
+         <required></required>
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>publisher</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Εκδότης / Publisher</label>
+         <input-type>onebox</input-type>
+         <hint>Ο εκδότης επιλέγεται αυτόματα / Publisher is automatically selected.</hint>
+         <required>A publisher is required</required>
+       </field>
+        </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>date</dc-element>
+         <dc-qualifier>issued</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Ημερομηνία Έκδοσης / Date of Issue</label>
+         <input-type>date</input-type>
+         <hint>Εισάξετε την ημερομηνία δημοσίευσης. Μπορείτε να μην επιλέξετε την ημέρα ή μήνα / Please give the date of previous publication or public distribution.
+                        You can leave out the day and/or month if they aren't
+                        applicable.</hint>
+         <required>Πρέπει να εισάξετε κατ'ελάχιστο το έτος / You must enter at least the year.</required>
+       </field>
+       </row>
+        <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>coverage</dc-element>
+         <dc-qualifier>spatial</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τόπος δημοσίευσης / Place of publication</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τον τόπο δημοσίευσης π.χ. Κύπρος / Enter the place of publication e.g. Cyprus</hint>
+         <required></required>
+       </field>
+       </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>type</dc-element>
+         <dc-qualifier>uhtype</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Τύπος / Type</label>
+         <input-type value-pairs-name="common_types_phd">dropdown</input-type>
+         <hint>Ο τύπος του αντικειμένου επιλέγεται αυτόματα / Item type is automatically selected.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+</row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>language</dc-element>
+         <dc-qualifier>iso</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Γλώσσα / Language</label>
+         <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+         <hint>Επιλέξτε τη γλώσσα του κύριου περιεχομένου του αντικειμένου. Εάν η γλώσσα δεν εμφανίζεται στη λίστα, επιλέξτε "Άλλο" / Select the language of the main content of the item.  If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+         <required></required>
+       </field>
+     </row>
+   </form>
+
+     <form name="phd_part2"> <!--phd-->
+       <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>subject</dc-element>
+         <dc-qualifier>uncontrolledterm</dc-qualifier>
+         <!-- An input-type of twobox MUST be marked as repeatable -->
+         <repeatable>true</repeatable>
+         <label>Λέξεις κλειδιά / Subject Keywords</label>
+         <input-type>twobox</input-type>
+         <hint>Προσθέστε λέξεις κλειδιά ή φράσεις (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Με τον όρο λέξεις κλειδιά χαρακτηρίζονται λέξεις ή φράσεις, που προσδιορίζουν το θέμα. Κάθε λέξη κλειδί ή φράση να μην υπερβαίνει τους 60 χαρακτήρες / Enter appropriate subject keywords or phrases (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). Words or phrases defining the topic. Each keyword must not exceed 60 characters, including spaces.</hint>
+         <required></required>
+
+       </field>
+       </row>
+      <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>abstract</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Περίληψη / Abstract</label>
+         <input-type>textarea</input-type>
+         <hint>Προσθέστε την περίληψη της διατριβής σας (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Η περίληψη να μην υπερβαίνει τις 500 λέξεις και να περιλαμβάνει το στόχο, τη μεθοδολογία και τα αποτελέσματα/συμπεράσματα της διατριβής / Enter the abstract of the item (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). The abstract must not exceed 500 words and must include the aim, methodology and findings/conclusions of the dissertation.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+        </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Αριθμός δεδηλωμένων πηγών στη βιβλιογραφία / Number of cited sources in bibliography</label>
+         <input-type>onebox</input-type>
+         <hint>π.χ. Αριθμός δεδηλωμένων πηγών στη βιβλιογραφία: 200 / e.g. Number of sources in the bibliography: 200</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+      </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>notes</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Σημειώσεις / Notes</label>
+         <input-type>onebox</input-type>
+         <hint>Εισαγάγετε οποιαδήποτε άλλη περιγραφή ή σχόλιο σε αυτό το πεδίο / Enter any others description or comment in this box. </hint>
+         <required></required>
+       </field>
+      </row>
+   </form>
+
+   <form name="msc_part1">
+        <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>author</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Συγγραφείς / Authors</label>
+         <input-type>name</input-type>
+         <hint>Προσθέστε τo όνομα του συγγραφέα(συγγραφέων) της διατριβής. / Enter the names of the author(s) of this item.</hint>
+         <required>Παρακαλώ εισάξετε συγγραφέα / Please enter the author</required>
+       </field>
+       </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>orcid</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>ORCID συγγραφέα / Authors ORCID</label>
+         <input-type>onebox</input-type>
+         <hint>π.χ. Ιωάννου, Μαρία [0000-0460-0340-5550] / e.g. Ioannou, Maria [0000-0460-0340-5550]</hint>
+         <required></required>
+       </field>
+        </row>
+        <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>title</dc-element>
+         <dc-qualifier></dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τίτλος / Title</label>
+         <input-type>onebox</input-type>
+         <hint>Συμπληρώστε τον τίτλο όπως ακριβώς εμφανίζεται στην σελίδα τίτλου της Διατριβής. / Enter the title exactly as it appears on the dissertation’s title page.</hint>
+         <required>Υποχρεωτικό πεδίο / Mandatory field</required>
+       </field>
+        </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>title</dc-element>
+         <dc-qualifier>alternative</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Μεταφρασμένος τίτλος / Translated title</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τη μετάφραση του τίτλου σας / Insert translation of the title.</hint>
+         <required></required>
+       </field>
+        </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>advisor</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Επιβλέπων / Supervisor</label>
+         <input-type>name</input-type>
+         <hint>Προσθέστε το/τα όνομα/ονόματα του επιβλέπων ακαδημαϊκού / Enter the name(s) of the supervisor(s) of this item.</hint>
+         <required>You must enter the advisor for this item.</required>
+       </field>
+        </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>committeemember</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Μέλη εξεταστικής επιτροπής / Committee members</label>
+         <input-type>name</input-type>
+         <hint>Εισάξετε τα ονόματα των μελών της εξεταστικής επιτροπής / Enter the names of the members of the evaluation committee.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+        </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>sponsorship</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Συνεργαζόμενο ίδρυμα / Collaborating Institution</label>
+         <input-type>onebox</input-type>
+         <hint>Να συμπληρωθεί μόνο εάν η διατριβή γράφτηκε σε ερευνητικό ίδρυμα ή εργαστήριο, π.χ. Ινστιτούτο Νευρολογίας και Γενετικής / To be completed only if the dissertation was written in a research institute or laboratory, e.g. Institute of Neurology and Genetics.</hint>
+         <required></required>
+       </field>
+        </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>date</dc-element>
+         <dc-qualifier>issued</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Ημερομηνία Έκδοσης / Date of Issue</label>
+         <input-type>date</input-type>
+         <hint>Εισάξετε την ημερομηνία δημοσίευσης. Μπορείτε να μην επιλέξετε την ημέρα ή μήνα / Please give the date of previous publication or public distribution.
+                        You can leave out the day and/or month if they aren't
+                        applicable.</hint>
+         <required>Πρέπει να εισάξετε κατ'ελάχιστο το έτος / You must enter at least the year.</required>
+       </field>
+        </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>coverage</dc-element>
+         <dc-qualifier>spatial</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Τόπος δημοσίευσης / Place of publication</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε τον τόπο δημοσίευσης π.χ. Κύπρος / Enter the place of publication e.g. Cyprus</hint>
+         <required></required>
+       </field>
+       </row>
+    <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>type</dc-element>
+         <dc-qualifier>uhtype</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Τύπος / Type</label>
+         <input-type value-pairs-name="common_types_msc">dropdown</input-type>
+         <hint>Ο τύπος του αντικειμένου επιλέγεται αυτόματα / Item type is automatically selected.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+       </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>language</dc-element>
+         <dc-qualifier>iso</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Γλώσσα / Language</label>
+         <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+         <hint>Επιλέξτε τη γλώσσα του κύριου περιεχομένου του αντικειμένου. Εάν η γλώσσα δεν εμφανίζεται στη λίστα, επιλέξτε "Άλλο" / Select the language of the main content of the item.  If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+         <required></required>
+       </field>
+       </row>
+    </form>
+
+     <form name="msc_part2">
+       <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>subject</dc-element>
+         <dc-qualifier>uncontrolledterm</dc-qualifier>
+         <!-- An input-type of twobox MUST be marked as repeatable -->
+         <repeatable>true</repeatable>
+         <label>Λέξεις κλειδιά / Subject Keywords</label>
+         <input-type>twobox</input-type>
+         <hint>Προσθέστε λέξεις κλειδιά ή φράσεις με ΚΕΦΑΛΑΙΑ γράμματα (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Με τον όρο λέξεις κλειδιά χαρακτηρίζονται λέξεις ή φράσεις, που προσδιορίζουν το θέμα. Κάθελέξηκλειδίήφράσηναμηνυπερβαίνειτους 60χαρακτήρες / Enter appropriate subject keywords or phrases in CAPITAL LETTERS (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). Words or phrases defining the topic. Each keyword must not exceed 60 characters, including spaces.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+         <!-- <vocabulary>srsc</vocabulary> -->
+       </field>
+       </row>
+    <row>
+       <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>abstract</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Περίληψη / Abstract</label>
+         <input-type>textarea</input-type>
+         <hint>Προσθέστε την περίληψη της διατριβής σας (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Η περίληψη να μην υπερβαίνει τις 500 λέξεις και να περιλαμβάνει το στόχο, τη μεθοδολογία και τα αποτελέσματα/συμπεράσματα της διατριβής / Enter the abstract of the item (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). The abstract must not exceed 500 words and must include the aim, methodology and findings/conclusions of the dissertation.</hint>
+         <required>Υποχρεωτικό / Mandatory</required>
+       </field>
+       </row>
+      <row>
+        <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>description</dc-element>
+         <dc-qualifier>notes</dc-qualifier>
+         <repeatable>false</repeatable>
+         <label>Σημειώσεις / Notes</label>
+         <input-type>onebox</input-type>
+         <hint>Εισαγάγετε οποιαδήποτε άλλη περιγραφή ή σχόλιο σε αυτό το πεδίο / Enter any others description or comment in this box. </hint>
+         <required></required>
+       </field>
+       </row>
+   </form>
     <form name="publication">
       <row>
         <field>
@@ -1965,6 +2662,28 @@ it, please enter the types and the actual numbers or codes.</hint>
       <row>
         <field>
           <dc-schema>crispj</dc-schema>
+          <dc-element>investigator</dc-element>
+          <dc-qualifier>department</dc-qualifier>
+	  <label>Project Coordinator's Department</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+	  <required/>
+          <hint />
+        </field>
+        <field>
+          <dc-schema>crispj</dc-schema>
+	  <dc-element>investigator</dc-element>
+          <dc-qualifier>faculty</dc-qualifier>
+          <label>Project Coordinator's Faculty</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+	  <required/>
+          <hint />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crispj</dc-schema>
           <dc-element>openaireid</dc-element>
           <label>OpenAIRE ID</label>
           <input-type>onebox</input-type>
@@ -2049,9 +2768,9 @@ it, please enter the types and the actual numbers or codes.</hint>
           <repeatable>false</repeatable>
           <required />
           <hint />
-  </field>
-  </row>
-  <row>
+       </field>
+       </row>
+       <row>
 	  <field>
           <dc-schema>oairecerif</dc-schema>
           <dc-element>callnumber</dc-element>
@@ -2061,7 +2780,6 @@ it, please enter the types and the actual numbers or codes.</hint>
           <required />
           <hint />
         </field>
-
        <field>
           <dc-schema>oaire</dc-schema>
           <dc-element>awardNumber</dc-element>
@@ -2071,13 +2789,23 @@ it, please enter the types and the actual numbers or codes.</hint>
           <required />
           <hint />
         </field>
-      </row>
+	</row>
       <row>
         <field>
           <dc-schema>oairecerif</dc-schema>
           <dc-element>project</dc-element>
           <dc-qualifier>status</dc-qualifier>
           <label>Status</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+	  </field>
+	  <field>
+          <dc-schema>crispj</dc-schema>
+          <dc-element>university</dc-element>
+          <dc-qualifier>responsibility</dc-qualifier>
+          <label>University Responsibility</label>
           <input-type>onebox</input-type>
           <repeatable>false</repeatable>
           <required />
@@ -2093,7 +2821,16 @@ it, please enter the types and the actual numbers or codes.</hint>
           <repeatable>false</repeatable>
           <required />
           <hint />
-        </field>
+	  </field>
+	  <field>
+          <dc-schema>crispj</dc-schema>
+          <dc-element>type</dc-element>
+          <label>Type of the Project</label>
+	  <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint />
+	</field>
       </row>
       <row>
         <field>
@@ -2326,7 +3063,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <repeatable>false</repeatable>
           <required />
           <hint />
-        </field>
+        </field>    
       </row>
       <row>
         <field>
@@ -2638,6 +3375,64 @@ it, please enter the types and the actual numbers or codes.</hint>
     </form>
   </form-definitions>
   <form-value-pairs>
+    <value-pairs value-pairs-name="subtype_identifiers" dc-term="type">
+     <pair>
+       <displayed-value>Publications in Scientific Journals (refereed)</displayed-value>
+       <stored-value>SCIENTIFIC_JOURNAL</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications  / Conference Proceedings (refereed) {Printed, CD-ROM, URL link}</displayed-value>
+       <stored-value>CONFERENCE_PROCEEDINGS</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Books / Authorship of Teaching Textbooks</displayed-value>
+       <stored-value>TEACHING_BOOK</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Books / Authorship in Publishing houses following peer review</displayed-value>
+       <stored-value>BOOK_WRITING</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Books / Editorial work in book volumes</displayed-value>
+       <stored-value>BOOK_EDITORSHIP</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Books / Personal publication (with personal costs)</displayed-value>
+       <stored-value>OWN_PUBLICATION</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Books / Editing of collective volumes of special issues of Scientific journals</displayed-value>
+       <stored-value>SCIENTIFIC_EDITORSHIP</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Chapters, articles in publishing houses following peer review</displayed-value>
+       <stored-value>PUBLISHER_EDITORSHIP</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Chapters, articles as personal publication (with personal costs, no peer review)</displayed-value>
+       <stored-value>OWN_PUBLICATION_NO_EDITORSHIP</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Publications / Book translation (Literacy and scholarly translation-science)</displayed-value>
+       <stored-value>TRANSLATION</stored-value>
+     </pair>
+      <pair>
+       <displayed-value>Publications / Book reviews in Scientific journals</displayed-value>
+       <stored-value>REVIEW</stored-value>
+     </pair>
+      <pair>
+       <displayed-value>Publications / Comments on Court Verdicts</displayed-value>
+       <stored-value>COURT_REVIEW</stored-value>
+     </pair>
+      <pair>
+       <displayed-value>Publications / Reports of members od the Department of Architecture</displayed-value>
+       <stored-value>ARCHITECTURE_REPORT</stored-value>
+     </pair>
+      <pair>
+       <displayed-value>Creative Writing</displayed-value>
+       <stored-value>CREATIVE_WRITING</stored-value>
+     </pair>
+   </value-pairs>
     <value-pairs value-pairs-name="patent_types" dc-term="patent_types">
       <pair>
         <displayed-value>Use by owner</displayed-value>
@@ -2696,148 +3491,212 @@ it, please enter the types and the actual numbers or codes.</hint>
       <pair>
         <displayed-value>ISBN</displayed-value>
         <stored-value>isbn</stored-value>
-      </pair>
+	</pair>
+	<pair>
+       <displayed-value>LC</displayed-value>
+       <stored-value>lc</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>DDC</displayed-value>
+       <stored-value>ddc</stored-value>
+     </pair>
       <pair>
         <displayed-value>Ads Code</displayed-value>
         <stored-value>adsbibcode</stored-value>
       </pair>
     </value-pairs>
+    <value-pairs value-pairs-name="common_types_phd" dc-term="type">
+            <pair>
+                <displayed-value>Doctoral Thesis</displayed-value>
+                <stored-value>Doctoral Thesis</stored-value>
+            </pair>
+        </value-pairs>
+    <value-pairs value-pairs-name="common_types_msc" dc-term="type">
+        <pair>
+            <displayed-value>Master Thesis</displayed-value>
+            <stored-value>Master Thesis</stored-value>
+        </pair>
+    </value-pairs>
     <value-pairs value-pairs-name="common_types" dc-term="common_types">
-      <pair>
-        <displayed-value>Animation</displayed-value>
-        <stored-value>Animation</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Article</displayed-value>
-        <stored-value>Article</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Book</displayed-value>
-        <stored-value>Book</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Book chapter</displayed-value>
-        <stored-value>Book chapter</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Dataset</displayed-value>
-        <stored-value>Dataset</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Learning Object</displayed-value>
-        <stored-value>Learning Object</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Image</displayed-value>
-        <stored-value>Image</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Image, 3-D</displayed-value>
-        <stored-value>Image, 3-D</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Map</displayed-value>
-        <stored-value>Map</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Musical Score</displayed-value>
-        <stored-value>Musical Score</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Plan or blueprint</displayed-value>
-        <stored-value>Plan or blueprint</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Preprint</displayed-value>
-        <stored-value>Preprint</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Presentation</displayed-value>
-        <stored-value>Presentation</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Recording, acoustical</displayed-value>
-        <stored-value>Recording, acoustical</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Recording, musical</displayed-value>
-        <stored-value>Recording, musical</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Recording, oral</displayed-value>
-        <stored-value>Recording, oral</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Software</displayed-value>
-        <stored-value>Software</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Technical Report</displayed-value>
-        <stored-value>Technical Report</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Thesis</displayed-value>
-        <stored-value>Thesis</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Video</displayed-value>
-        <stored-value>Video</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Working Paper</displayed-value>
-        <stored-value>Working Paper</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Other</displayed-value>
-        <stored-value>Other</stored-value>
-      </pair>
+       <pair>
+                <displayed-value>Animation</displayed-value>
+                <stored-value>Animation</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Contribution To Periodical</displayed-value>
+                <stored-value>Contribution To Periodical</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Patent</displayed-value>
+                <stored-value>Patent</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Review</displayed-value>
+                <stored-value>Review</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Article</displayed-value>
+                <stored-value>Article</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Book</displayed-value>
+                <stored-value>Book</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Book chapter</displayed-value>
+                <stored-value>Book chapter</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Book part</displayed-value>
+                <stored-value>Book part</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Dataset</displayed-value>
+                <stored-value>Dataset</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Learning Object</displayed-value>
+                <stored-value>Learning Object</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Image</displayed-value>
+                <stored-value>Image</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Image, 3-D</displayed-value>
+                <stored-value>Image, 3-D</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Map</displayed-value>
+                <stored-value>Map</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Musical Score</displayed-value>
+                <stored-value>Musical Score</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Plan or blueprint</displayed-value>
+                <stored-value>Plan or blueprint</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Preprint</displayed-value>
+                <stored-value>Preprint</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Presentation</displayed-value>
+                <stored-value>Presentation</stored-value>
+            </pair>
+          <pair>
+                <displayed-value>Lecture</displayed-value>
+                <stored-value>Lecture</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Recording, acoustical</displayed-value>
+                <stored-value>Recording, acoustical</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Recording, musical</displayed-value>
+                <stored-value>Recording, musical</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Recording, oral</displayed-value>
+                <stored-value>Recording, oral</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Software</displayed-value>
+                <stored-value>Software</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Report</displayed-value>
+                <stored-value>Report</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Technical Report</displayed-value>
+                <stored-value>Technical Report</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Thesis</displayed-value>
+                <stored-value>Thesis</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Master Thesis</displayed-value>
+                <stored-value>Master Thesis</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Bachelor Thesis</displayed-value>
+                <stored-value>Bachelor Thesis</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Doctoral Thesis</displayed-value>
+                <stored-value>Doctoral Thesis</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Annotation</displayed-value>
+                <stored-value>Annotation</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Video</displayed-value>
+                <stored-value>Video</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Working Paper</displayed-value>
+                <stored-value>Working Paper</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Other</displayed-value>
+                <stored-value>Other</stored-value>
+            </pair>
+            <pair>
+                <displayed-value>Conference Object</displayed-value>
+                <stored-value>Conference Object</stored-value>
+            </pair>
     </value-pairs>
     <value-pairs value-pairs-name="common_iso_languages" dc-term="common_iso_languages">
-      <pair>
-        <displayed-value>N/A</displayed-value>
-        <stored-value />
-      </pair>
-      <pair>
-        <displayed-value>English (United States)</displayed-value>
-        <stored-value>en_US</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>English</displayed-value>
-        <stored-value>en</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Spanish</displayed-value>
-        <stored-value>es</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>German</displayed-value>
-        <stored-value>de</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>French</displayed-value>
-        <stored-value>fr</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Italian</displayed-value>
-        <stored-value>it</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Japanese</displayed-value>
-        <stored-value>ja</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Chinese</displayed-value>
-        <stored-value>zh</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>Turkish</displayed-value>
-        <stored-value>tr</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>(Other)</displayed-value>
-        <stored-value>other</stored-value>
-      </pair>
-    </value-pairs>
+	   <pair>
+       <displayed-value>N/A</displayed-value>
+       <stored-value></stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Greek</displayed-value>
+       <stored-value>gre</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>English</displayed-value>
+       <stored-value>eng</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Spanish</displayed-value>
+       <stored-value>spa</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>German</displayed-value>
+       <stored-value>ger</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>French</displayed-value>
+       <stored-value>fre</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Italian</displayed-value>
+       <stored-value>ita</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Japanese</displayed-value>
+       <stored-value>jpn</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Chinese</displayed-value>
+       <stored-value>chi</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>Turkish</displayed-value>
+       <stored-value>tur</stored-value>
+     </pair>
+     <pair>
+       <displayed-value>(Other)</displayed-value>
+       <stored-value>other</stored-value>
+     </pair>
+     </value-pairs>
     <value-pairs value-pairs-name="dataset_types" dc-term="dataset_types">
       <pair>
         <displayed-value>Dataset</displayed-value>
