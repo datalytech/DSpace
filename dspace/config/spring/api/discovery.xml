@@ -229,7 +229,8 @@
                 <entry>
                     <key><util:constant static-field="org.dspace.core.Constants.ITEM"/></key>
                     <list>
-                        <value>dc.description.provenance</value>
+			    <value>dc.description.provenance</value>
+			    <value>local.production.cost</value>
                     </list>
                 </entry>
             </map>
@@ -651,8 +652,9 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+		<!--    <ref bean="searchFilterContentInOriginalBundle"/>
+			<ref bean="searchFilterEntityType"/>
+		-->
                 <ref bean="searchFilterLanguage" />
             </list>
         </property>
@@ -669,9 +671,9 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterFileNameInOriginalBundle" />
+		<!--  <ref bean="searchFilterFileNameInOriginalBundle" />
                 <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+		<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterIsAuthorOfPublicationRelation"/>
                 <ref bean="searchFilterIsProjectOfPublicationRelation"/>
                 <ref bean="searchFilterIsOrgUnitOfPublicationRelation"/>
@@ -1571,8 +1573,8 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+		<ref bean="searchFilterContentInOriginalBundle"/>
+		<!-- <ref bean="searchFilterEntityType"/> -->
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -1585,9 +1587,9 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterFileNameInOriginalBundle" />
+		<!--<ref bean="searchFilterFileNameInOriginalBundle" />
                 <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+		<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterIsAuthorOfPublicationRelation"/>
                 <ref bean="searchFilterIsProjectOfPublicationRelation"/>
                 <ref bean="searchFilterIsOrgUnitOfPublicationRelation"/>
@@ -1644,7 +1646,7 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+		    <!--   <ref bean="searchFilterEntityType"/> -->
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -1659,9 +1661,9 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterFileNameInOriginalBundle" />
+		<!--  <ref bean="searchFilterFileNameInOriginalBundle" />
                 <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+		<ref bean="searchFilterEntityType"/> -->
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -1712,9 +1714,9 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterJobtitle"/>
-                <ref bean="searchFilterKnowsLanguage"/>
+		<!-- <ref bean="searchFilterKnowsLanguage"/> -->
                 <ref bean="searchFilterPersonOrgUnit"/>
-                <ref bean="searchFilterBirthdate"/>
+		<!--  <ref bean="searchFilterBirthdate"/> -->
             </list>
         </property>
         <!--The search filters which can be used on the discovery search page-->
@@ -1723,9 +1725,9 @@
                 <ref bean="searchFilterFamilyName"/>
                 <ref bean="searchFilterGivenName"/>
                 <ref bean="searchFilterJobtitle"/>
-                <ref bean="searchFilterKnowsLanguage"/>
+		<!--	<ref bean="searchFilterKnowsLanguage"/> -->
                 <ref bean="searchFilterPersonOrgUnit"/>
-                <ref bean="searchFilterBirthdate"/>
+		<!-- <ref bean="searchFilterBirthdate"/> -->
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -1882,7 +1884,7 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterSubject"/>
-                <ref bean="searchFilterEntityType"/>
+		<!--	<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterInvestigators"/>
                 <ref bean="searchFilterProjectOrgUnits" />
             </list>
@@ -1891,7 +1893,7 @@
         <property name="searchFilters">
             <list>
                 <ref bean="searchFilterSubject"/>
-                <ref bean="searchFilterEntityType"/>
+		<!--	<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterInvestigators"/>
                 <ref bean="searchFilterProjectOrgUnits"/>
                 <ref bean="searchFilterIdentifier"/>
@@ -2311,7 +2313,7 @@
                         <ref bean="sortDateAccessionedDesc"/>
                         <ref bean="sortFamilyName"/>
                         <ref bean="sortGivenName"/>
-                        <ref bean="sortBirthDate"/>
+			<!--	<ref bean="sortBirthDate"/> -->
                     </list>
                 </property>
             </bean>
@@ -3727,7 +3729,7 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+		<!--	<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterLanguage" />
             </list>
         </property>
@@ -3742,9 +3744,9 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterFileNameInOriginalBundle" />
-                <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+		<!--  <ref bean="searchFilterFileNameInOriginalBundle" />
+		<ref bean="searchFilterFileDescriptionInOriginalBundle" /> -->
+	  <!--  <ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterIsAuthorOfPublicationRelation"/>
                 <ref bean="searchFilterIsProjectOfPublicationRelation"/>
                 <ref bean="searchFilterIsOrgUnitOfPublicationRelation"/>

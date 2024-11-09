@@ -446,6 +446,33 @@
         </field>
       </row>
     </form>
+    <form name="academic_part1-dc-contributor-author">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>author</dc-qualifier>
+          <label>Author</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint>Enter the affiliation of the author as stated on the publication.</hint>
+        </field>
+      </row>
+    </form>
+
     <form name="journal">
       <row>
         <field>
@@ -531,7 +558,6 @@
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>title</dc-element>
-         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Τιτλος Δημοσιευσης/ Title Of The Publication</label>
          <input-type>onebox</input-type>
@@ -548,7 +574,7 @@
          <label>Μεταφρασμένος τίτλος / Translated title</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε τη μετάφραση του τίτλου, εάν υπάρχει. / If the item has any alternative titles, please enter them here.</hint>
-         <required></required>
+	 <required />
       </field>
     </row>
     <row>
@@ -558,7 +584,7 @@
          <dc-qualifier>author</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Συγγραφείς / Authors</label>
-         <input-type>name</input-type>
+         <input-type>group</input-type>
          <hint>Προσθέστε τα ονόματα των συγγραφέων στη γλώσσα δημοσίευσης του τεκμηρίου.  / Enter the names of the authors in publishing language.</hint>
          <required>Υποχρεωτικό πεδίο / Mandatory field</required>
        </field>
@@ -572,7 +598,7 @@
          <label>Επιμελητής(ες) έκδοσης: / Editor(s)</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε το πλήρες όνομα του/των επιμελητή (ων) έκδοσης. / Enter the full name of the editor.</hint>
-         <required></required>
+	 <required />
        </field>
        </row>
     <row>
@@ -584,10 +610,22 @@
          <label>Μεταφραστής(ες) / Translator(s)</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε το πλήρες όνομα του/των μεταφραστή(ων). / Enter the full name of the translator.</hint>
-         <required></required>
+	 <required />
       </field>
        </row>
-    <row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>contributor</dc-element>
+         <dc-qualifier>other</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>Άλλη συμβολή / Other contribution</label>
+         <input-type>onebox</input-type>
+         <hint>Προσθέστε το πλήρες όνομα του/των ατόμου/ατόμων που συνέβαλαν στην εργασία. / Enter the full name of other contributors.</hint>
+	 <required />
+      </field>
+       </row>
+     <row>
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>contributor</dc-element>
@@ -596,33 +634,32 @@
          <label>ORCID (συγγραφέα, επιμελητή έκδοσης, μεταφραστή) / ORCID (author, editor, translator)</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε το προσωπικό σας ORCID ως Συγγραφέα ή Επιμελητή ή Μεταφραστή της δημοσίευσης, ανάλογα με το τι ισχύει. π.χ. Ιωάννου, Μαρία [0000-0460-0340-5550] / Enter your individual ORCID as Author, or Editor, or Translator of the publication, accordingly. e.g. Ioannou, Maria [0000-0460-0340-5550]</hint>
-         <required></required>
+	 <required />
       </field>
     </row>
     <row>
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
-         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Εκδότης / Publisher</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε το όνομα του εκδότη. / Enter the name of the publisher.</hint>
-         <required></required>
+	 <required />
       </field>
-</row>
+    </row>
     <row>
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>coverage</dc-element>
          <dc-qualifier>spatial</dc-qualifier>
          <repeatable>false</repeatable>
-         <label> Τόπος δημοσίευσης / Place of publication</label>
+         <label>Τόπος δημοσίευσης / Place of publication</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε τον τόπο δημοσίευσης. / Enter the place of publication.</hint>
-         <required></required>
+	 <required />
       </field>
-</row>
+    </row>
     <row>
       <field>
          <dc-schema>dc</dc-schema>
@@ -634,7 +671,7 @@
          <hint>Εισάξετε το έτος δημοσίευσης. Μπορείτε να παραλείψετε τον μήνα και την ημέρα. / Please  the year of publication. You can omit month and/or day if they are not applicable.</hint>
          <required>Πρέπει να εισάξετε τουλάχιστον το έτος. / You must enter at least the year.</required>
       </field>
-</row>
+    </row>
     <row>
       <field>
          <dc-schema>dc</dc-schema>
@@ -644,25 +681,24 @@
          <label>Αριθμός Έκδοσης / Number of Edition</label>
          <input-type>onebox</input-type>
          <hint>Παρακαλώ προσθέστε τον αριθμό έκδοσης εάν υπάρχει. / Please enter the number of the edition, if any.</hint>
-         <required></required>
+	 <required />
        </field>
     </row>
   </form>
   <form name="academic_part2">
-        <row>
+      <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>source</dc-element>
-         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Ευρύτερη Πηγή Δημοσίευσης (ΕΠΔ) / Broader Publishing Source (BPS)</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε την ευρύτερη πηγή δημοσίευσης, εάν υπάρχει ( π.χ. τίτλος περιοδικού) / Enter the broader source if any (e.g. Journal or book title).</hint>
-         <required></required>
-       </field>
-</row>
-    <row>
-      <field>
+	 <required />
+         </field>
+	</row>
+    	<row>
+      	 <field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>
          <dc-qualifier>startingpage</dc-qualifier>
@@ -670,7 +706,7 @@
          <label>Αρχική σελίδα ΕΠΔ / BPS starting page</label>
          <input-type>onebox</input-type>
          <hint>Παρακαλώ προσθέστε την αρχική σελίδα της Ευρύτερης Πηγής Δημοσίευσης./ Please enter the start page of the Broader Publishing Source.</hint>
-         <required></required>
+	 <required />
        </field>
        </row>
     <row>
@@ -682,10 +718,10 @@
          <label>Τελική σελίδα ΕΠΔ / BPS last page</label>
          <input-type>onebox</input-type>
          <hint>Παρακαλώ προσθέστε την τελική σελίδα της Ευρύτερης Πηγής Δημοσίευσης. / Please enter the last page of the Broader Publishing Source.</hint>
-         <required></required>
+	 <required />
       </field>
-</row>
-    <row>
+      </row>
+      <row>
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>7/
@@ -694,7 +730,7 @@
          <label>Τόμος / Volume</label>
          <input-type>onebox</input-type>
          <hint>Παρακαλώ προσθέστε τον τόμο εάν υπάρχει. / Please enter the volume, if any.</hint>
-         <required></required>
+	 <required />
       </field>
       </row>
     <row>
@@ -706,10 +742,10 @@
          <label>Τεύχος / Issue</label>
          <input-type>onebox</input-type>
          <hint>Παρακαλώ προσθέστε το τεύχος εάν υπάρχει. / Please enter the issue, if any.</hint>
-         <required></required>
+	 <required />
       </field>
-</row>
-    <row>
+     </row>
+      <row>
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>language</dc-element>
@@ -718,7 +754,7 @@
          <label>Γλώσσα / Language</label>
          <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
          <hint>Επιλέξτε τη γλώσσα περιεχομένου της δημοσίευσης. Εάν η γλώσσα δεν εμφανίζεται στη λίστα, επιλέξτε "Άλλο" ή αν δεν υπάρχει γλώσσα όπως, π.χ. για αριθμητικά δεδομένα, τον όρο 'N/A'. / Select the language of the main content of the item. If the language does not appear in the list, please select 'Other'. If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
-         <required></required>
+	 <required />
       </field>
 </row>
     <row>
@@ -730,9 +766,9 @@
          <label>DOI  (Digital Object Identifier)</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε τον αριθμό DOI. π.χ 10.1037/arc0000014 / Enter the DOI number. e.g. 10.1037/arc0000014.</hint>
-         <required></required>
+	 <required />
       </field>
-</row>
+     </row>
     <row>
       <field>
          <dc-schema>dc</dc-schema>
@@ -742,37 +778,45 @@
          <label>Σύνδεσμος(οι) / Link(s)</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε τον/τους σύνδεσμο/συνδέσμους προς τη δημοσίευση. / Enter the link(s) to the publication.</hint>
-         <required></required>
+	 <required />
       </field>
 </row>
     <row>
       <field>
          <dc-schema>dc</dc-schema>
          <dc-element>identifier</dc-element>
-         <dc-qualifier></dc-qualifier>
-         <!-- An input-type of qualdrop_value MUST be marked as repeatable -->
          <repeatable>true</repeatable>
          <label>Αναγνωριστικά / Identifiers</label>
          <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
          <hint>Εάν η εργασία σας έχει οποιαδήποτε αναγνωριστικά που συνδέονται με αυτή, παρακαλούμε εισάγετε τους τύπους και τους αριθμούς ή κωδικούς. / If the item has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes.</hint>
-         <required></required>
+	 <required />
       </field>
      </row>
     <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>subject</dc-element>
-         <dc-qualifier></dc-qualifier>
-         <!-- An input-type of twobox MUST be marked as repeatable -->
          <repeatable>true</repeatable>
          <label>Λέξεις κλειδιά / Keywords</label>
-         <input-type>twobox</input-type>
+         <input-type>onebox</input-type>
          <hint>Προσθέστε λέξεις κλειδιά ή φράσεις. / Enter appropriate subject keywords or phrases.</hint>
-         <required></required>
-         <!-- <vocabulary>srsc</vocabulary> -->
+	 <required />
        </field>
-</row>
-    <row>
+	</row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+	 <dc-element>subject</dc-element>
+	 <dc-qualifier>code</dc-qualifier>
+         <repeatable>true</repeatable>
+         <label>SDG Codes</label>
+         <input-type value-pairs-name="common_sdg_identifiers">qualdrop_value</input-type>
+         <hint></hint>
+	 <required />
+      </field>
+     </row>
+    
+     <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>
@@ -781,10 +825,10 @@
          <label>Περίληψη / Abstract</label>
          <input-type>textarea</input-type>
          <hint>Προσθέστε την περίληψη της εργασίας σας στη γλώσσα του κειμένου. / Enter the abstract of the item in the text language.</hint>
-         <required></required>
+	 <required />
        </field>
-</row>
-    <row>
+     </row>
+      <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>description</dc-element>
@@ -793,19 +837,18 @@
          <label>Χορηγοί / Sponsors</label>
          <input-type>textarea</input-type>
          <hint>Προσθέστε τα ονόματα των χορηγών. Enter the names of any sponsors.</hint>
-         <required></required>
+	 <required />
        </field>
 	</row>
     <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>relation</dc-element>
-         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Συμφωνία Επιχορήγησης / Grant Agreement</label>
          <input-type>onebox</input-type>
          <hint>e.g. EC/FP7/265010.</hint>
-         <required></required>
+	 <required />
        </field>
       </row>
     <row>
@@ -817,11 +860,22 @@
          <label>Σημειώσεις / Notes</label>
          <input-type>onebox</input-type>
          <hint>Εισαγάγετε οποιαδήποτε άλλη περιγραφή ή σχόλιο επιθυμείτε σε αυτό το πεδίο / Enter any other description or comment in this box.</hint>
-         <required></required>
+	 <required />
+       </field>
+     </row>
+     <row>
+      <field>
+         <dc-schema>local</dc-schema>
+         <dc-element>production</dc-element>
+         <dc-qualifier>cost</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Κόστος Δημοσίευσης / Cost of Publication (APC)</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
        </field>
      </row>
    </form>
-
    <form name="phd_part1">
     <row>
        <field>
@@ -844,14 +898,13 @@
          <label>ORCID συγγραφέα / Authors ORCID</label>
          <input-type>onebox</input-type>
          <hint>π.χ. Ιωάννου, Μαρία [0000-0460-0340-5550] / e.g. Ioannou, Maria [0000-0460-0340-5550]</hint>
-         <required></required>
+	 <required />
        </field>
 </row>
     <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>title</dc-element>
-         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Τίτλος / Title</label>
          <input-type>onebox</input-type>
@@ -868,7 +921,7 @@
          <label>Μεταφρασμένος τίτλος / Translated title</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε τη μετάφραση του τίτλου σας / Insert translation of the title.</hint>
-         <required></required>
+	 <required />
        </field>
 </row>
     <row>
@@ -904,14 +957,13 @@
          <label>Συνεργαζόμενο ίδρυμα / Collaborating Institution</label>
          <input-type>onebox</input-type>
          <hint>Να συμπληρωθεί μόνο εάν η διατριβή γράφτηκε σε ερευνητικό ίδρυμα ή εργαστήριο, π.χ. Ινστιτούτο Νευρολογίας και Γενετικής / To be completed only if the dissertation was written in a research institute or laboratory, e.g. Institute of Neurology and Genetics.</hint>
-         <required></required>
+	 <required />
        </field>
 </row>
     <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>publisher</dc-element>
-         <dc-qualifier></dc-qualifier>
          <repeatable>false</repeatable>
          <label>Εκδότης / Publisher</label>
          <input-type>onebox</input-type>
@@ -942,7 +994,7 @@
          <label>Τόπος δημοσίευσης / Place of publication</label>
          <input-type>onebox</input-type>
          <hint>Προσθέστε τον τόπο δημοσίευσης π.χ. Κύπρος / Enter the place of publication e.g. Cyprus</hint>
-         <required></required>
+	 <required />
        </field>
        </row>
     <row>
@@ -966,7 +1018,7 @@
          <label>Γλώσσα / Language</label>
          <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
          <hint>Επιλέξτε τη γλώσσα του κύριου περιεχομένου του αντικειμένου. Εάν η γλώσσα δεν εμφανίζεται στη λίστα, επιλέξτε "Άλλο" / Select the language of the main content of the item.  If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
-         <required></required>
+	 <required />
        </field>
      </row>
    </form>
@@ -977,10 +1029,9 @@
          <dc-schema>dc</dc-schema>
          <dc-element>subject</dc-element>
          <dc-qualifier>uncontrolledterm</dc-qualifier>
-         <!-- An input-type of twobox MUST be marked as repeatable -->
          <repeatable>true</repeatable>
          <label>Λέξεις κλειδιά / Subject Keywords</label>
-         <input-type>twobox</input-type>
+         <input-type>onebox</input-type>
          <hint>Προσθέστε λέξεις κλειδιά ή φράσεις (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Με τον όρο λέξεις κλειδιά χαρακτηρίζονται λέξεις ή φράσεις, που προσδιορίζουν το θέμα. Κάθε λέξη κλειδί ή φράση να μην υπερβαίνει τους 60 χαρακτήρες / Enter appropriate subject keywords or phrases (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). Words or phrases defining the topic. Each keyword must not exceed 60 characters, including spaces.</hint>
          <required></required>
 
@@ -1160,21 +1211,18 @@
        </field>
        </row>
     </form>
-
      <form name="msc_part2">
        <row>
        <field>
          <dc-schema>dc</dc-schema>
          <dc-element>subject</dc-element>
          <dc-qualifier>uncontrolledterm</dc-qualifier>
-         <!-- An input-type of twobox MUST be marked as repeatable -->
          <repeatable>true</repeatable>
          <label>Λέξεις κλειδιά / Subject Keywords</label>
-         <input-type>twobox</input-type>
+         <input-type>onebox</input-type>
          <hint>Προσθέστε λέξεις κλειδιά ή φράσεις με ΚΕΦΑΛΑΙΑ γράμματα (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Με τον όρο λέξεις κλειδιά χαρακτηρίζονται λέξεις ή φράσεις, που προσδιορίζουν το θέμα. Κάθελέξηκλειδίήφράσηναμηνυπερβαίνειτους 60χαρακτήρες / Enter appropriate subject keywords or phrases in CAPITAL LETTERS (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). Words or phrases defining the topic. Each keyword must not exceed 60 characters, including spaces.</hint>
          <required>Υποχρεωτικό / Mandatory</required>
-         <!-- <vocabulary>srsc</vocabulary> -->
-       </field>
+         </field>
        </row>
     <row>
        <field>
@@ -1200,7 +1248,7 @@
          <required></required>
        </field>
        </row>
-   </form>
+    </form>
     <form name="publication">
       <row>
         <field>
@@ -2101,7 +2149,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <hint />
         </field>
       </row>
-      <row>
+      <!--      <row>
         <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>name</dc-element>
@@ -2112,7 +2160,8 @@ it, please enter the types and the actual numbers or codes.</hint>
           <required />
           <hint />
         </field>
-      </row>
+	      </row>
+      -->
       <row>
         <field>
           <dc-schema>crisrp</dc-schema>
@@ -2343,6 +2392,18 @@ it, please enter the types and the actual numbers or codes.</hint>
       </row>
       <row>
         <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>oid</dc-qualifier>
+          <label>Other ID</label>
+          <input-type>onebox</input-type>
+          <repeatable>true</repeatable>
+          <required />
+          <hint />
+        </field>
+      </row>
+      <row>
+        <field>
           <dc-schema>oairecerif</dc-schema>
           <dc-element>person</dc-element>
           <dc-qualifier>affiliation</dc-qualifier>
@@ -2358,7 +2419,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
           <dc-qualifier>abstract</dc-qualifier>
-          <label>Biography</label>
+          <label>Narrative CV /  Open Science impact</label>
           <input-type>textarea</input-type>
           <repeatable>false</repeatable>
           <required />
@@ -3451,6 +3512,76 @@ it, please enter the types and the actual numbers or codes.</hint>
         <stored-value>Other</stored-value>
       </pair>
     </value-pairs>
+    <value-pairs value-pairs-name="common_sdg_identifiers" dc-term="common_sdg_identifiers">
+      <pair>
+        <displayed-value>SDG1 - No poverty</displayed-value>
+        <stored-value>sdg1</stored-value>
+      </pair>
+     <pair>
+        <displayed-value>SDG2 - Zero hunger</displayed-value>
+        <stored-value>sdg2</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG3 - Good health and well-being</displayed-value>
+        <stored-value>sdg3</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG4 - Quality Education</displayed-value>
+        <stored-value>sdg4</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG5 - Gender Equality</displayed-value>
+        <stored-value>sdg5</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG6 - Clean water and sanitation</displayed-value>
+        <stored-value>sdg6</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG7 - Affordable and clean energy</displayed-value>
+        <stored-value>sdg7</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG8 - Decent work and economic growth</displayed-value>
+        <stored-value>sdg8</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG9 - Industry, innovation and infrastructure</displayed-value>
+        <stored-value>sdg9</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG10 - Reduced inequalities</displayed-value>
+        <stored-value>sdg10</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG11 - Sustainable cities and communities</displayed-value>
+        <stored-value>sdg11</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG12 - Responsible consumption and production</displayed-value>
+        <stored-value>sdg12</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG13 - Climate action</displayed-value>
+        <stored-value>sdg13</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG14 - Life below water</displayed-value>
+        <stored-value>sdg14</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG15 - Life on land</displayed-value>
+        <stored-value>sdg15</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG16 - Peace, justice and strong institutions</displayed-value>
+        <stored-value>sdg16</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>SDG17 - Partnerships for the goals</displayed-value>
+        <stored-value>sdg17</stored-value>
+      </pair>
+    </value-pairs>
     <value-pairs value-pairs-name="common_identifiers" dc-term="common_identifiers">
       <pair>
         <displayed-value>DOI</displayed-value>
@@ -3526,7 +3657,12 @@ it, please enter the types and the actual numbers or codes.</hint>
                 <displayed-value>Contribution To Periodical</displayed-value>
                 <stored-value>Contribution To Periodical</stored-value>
             </pair>
-            <pair>
+           <pair>
+                <displayed-value>Conference Proceedings</displayed-value>
+                <stored-value>Conference Proceedings</stored-value>
+            </pair>
+
+	    <pair>
                 <displayed-value>Patent</displayed-value>
                 <stored-value>Patent</stored-value>
             </pair>
