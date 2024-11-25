@@ -85,8 +85,9 @@ public class DetectPotentialDuplicateValidator implements SubmissionStepValidato
         boolean check = isNotWorkspaceItem(obj);
 
         try {
-            return dedupUtils.getDuplicateByIDandType(context, itemID, typeID, check);
-        } catch (SQLException | SearchServiceException e) {
+            //return dedupUtils.getDuplicateByIDandType(context, itemID, typeID, check);
+            return new ArrayList<>();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
