@@ -24,11 +24,8 @@
                     <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
                         <property name="browseNames">
                             <list>
-                                <value>rodept</value>
-                                <value>author</value>
                                 <value>title</value>
-                                <value>type</value>
-                                <value>dateissued</value>
+                                <value>author</value>
                                 <value>subject</value>
                             </list>
                         </property>
@@ -73,7 +70,10 @@
                     <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
                         <property name="browseNames">
                             <list>
-                                <value>pjtitle</value>
+				    <value>pjtitle</value>
+				    <value>rpname</value>
+				    <value>subject</value>
+				    <value>rpdept</value>
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>
@@ -102,7 +102,9 @@
                         <property name="browseNames">
                             <list>
                                 <value>rpname</value>
-                                <value>rpdept</value>
+				<value>rpdept</value>
+				<value>rpfacu</value>
+				<value>rpsubj</value>
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>

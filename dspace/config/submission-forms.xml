@@ -259,7 +259,7 @@
           <dc-element>affiliation</dc-element>
           <dc-qualifier>role</dc-qualifier>
           <label>Role</label>
-          <input-type>onebox</input-type>
+	  <input-type value-pairs-name="common_roles">dropdown</input-type>
           <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
@@ -473,6 +473,167 @@
       </row>
     </form>
 
+    <form name="academic_part1-dc-contributor-editor">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>editor</dc-qualifier>
+          <label>Επιμελητής(ες) έκδοσης: / Editor(s)</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint>Enter the affiliation of the author as stated on the publication.</hint>
+        </field>
+      </row>
+    </form>
+    <form name="academic_part1-dc-contributor-translator">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>translator</dc-qualifier>
+          <label>Μεταφραστής(ες) / Translator(s)</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint>Enter the affiliation of the author as stated on the publication.</hint>
+        </field>
+      </row>
+    </form>
+     <form name="phd_part1-dc-contributor-advisor">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <label>Επιβλέπων / Supervisor</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint></hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint></hint>
+        </field>
+      </row>
+    </form>
+    
+    <form name="phd_part1-dc-contributor-committeemember">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>committeemember</dc-qualifier>
+          <label>Μέλος εξεταστικής επιτροπής / Committee member</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint></hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint></hint>
+        </field>
+      </row>
+    </form>
+
+   
+    <form name="msc_part1-dc-contributor-advisor">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <label>Επιβλέπων / Supervisor</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint></hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint></hint>
+        </field>
+      </row>
+    </form>
+    
+    <form name="msc_part1-dc-contributor-committeemember">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>committeemember</dc-qualifier>
+          <label>Μέλος εξεταστικής επιτροπής / Committee member</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint></hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>author</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <label>Affiliation</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required />
+          <hint></hint>
+        </field>
+      </row>
+    </form>
+
     <form name="journal">
       <row>
         <field>
@@ -596,7 +757,7 @@
          <dc-qualifier>editor</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Επιμελητής(ες) έκδοσης: / Editor(s)</label>
-         <input-type>onebox</input-type>
+         <input-type>group</input-type>
          <hint>Προσθέστε το πλήρες όνομα του/των επιμελητή (ων) έκδοσης. / Enter the full name of the editor.</hint>
 	 <required />
        </field>
@@ -608,7 +769,7 @@
          <dc-qualifier>translator</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Μεταφραστής(ες) / Translator(s)</label>
-         <input-type>onebox</input-type>
+         <input-type>group</input-type>
          <hint>Προσθέστε το πλήρες όνομα του/των μεταφραστή(ων). / Enter the full name of the translator.</hint>
 	 <required />
       </field>
@@ -803,6 +964,7 @@
 	 <required />
        </field>
 	</row>
+	
      <row>
       <field>
          <dc-schema>dc</dc-schema>
@@ -810,12 +972,12 @@
 	 <dc-qualifier>code</dc-qualifier>
          <repeatable>true</repeatable>
          <label>SDG Codes</label>
-         <input-type value-pairs-name="common_sdg_identifiers">qualdrop_value</input-type>
+         <input-type value-pairs-name="sdg">dropdown</input-type>
          <hint></hint>
 	 <required />
       </field>
      </row>
-    
+      
      <row>
        <field>
          <dc-schema>dc</dc-schema>
@@ -875,6 +1037,19 @@
 	 <required />
        </field>
      </row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>project</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Ερευνητικό Έργο</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
+
    </form>
    <form name="phd_part1">
     <row>
@@ -931,7 +1106,7 @@
          <dc-qualifier>advisor</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Επιβλέπων / Supervisor</label>
-         <input-type>name</input-type>
+         <input-type>group</input-type>
          <hint>Προσθέστε το/τα όνομα/ονόματα του επιβλέπων ακαδημαϊκού / Enter the name(s) of the supervisor(s) of this item.</hint>
          <required>You must enter the advisor for this item.</required>
        </field>
@@ -943,7 +1118,7 @@
          <dc-qualifier>committeemember</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Μέλη εξεταστικής επιτροπής / Committee members</label>
-         <input-type>name</input-type>
+         <input-type>group</input-type>
          <hint>Εισάξετε τα ονόματα των μελών της εξεταστικής επιτροπής / Enter the names of the members of the evaluation committee.</hint>
          <required>Υποχρεωτικό / Mandatory</required>
        </field>
@@ -1131,7 +1306,7 @@
          <dc-qualifier>advisor</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Επιβλέπων / Supervisor</label>
-         <input-type>name</input-type>
+         <input-type>group</input-type>
          <hint>Προσθέστε το/τα όνομα/ονόματα του επιβλέπων ακαδημαϊκού / Enter the name(s) of the supervisor(s) of this item.</hint>
          <required>You must enter the advisor for this item.</required>
        </field>
@@ -1143,7 +1318,7 @@
          <dc-qualifier>committeemember</dc-qualifier>
          <repeatable>true</repeatable>
          <label>Μέλη εξεταστικής επιτροπής / Committee members</label>
-         <input-type>name</input-type>
+         <input-type>group</input-type>
          <hint>Εισάξετε τα ονόματα των μελών της εξεταστικής επιτροπής / Enter the names of the members of the evaluation committee.</hint>
          <required>Υποχρεωτικό / Mandatory</required>
        </field>
@@ -3512,73 +3687,73 @@ it, please enter the types and the actual numbers or codes.</hint>
         <stored-value>Other</stored-value>
       </pair>
     </value-pairs>
-    <value-pairs value-pairs-name="common_sdg_identifiers" dc-term="common_sdg_identifiers">
+    <value-pairs value-pairs-name="sdg" dc-term="sdg_type">
       <pair>
-        <displayed-value>SDG1 - No poverty</displayed-value>
+        <displayed-value>No Poverty</displayed-value>
         <stored-value>sdg1</stored-value>
       </pair>
      <pair>
-        <displayed-value>SDG2 - Zero hunger</displayed-value>
+        <displayed-value>Zero Hunger</displayed-value>
         <stored-value>sdg2</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG3 - Good health and well-being</displayed-value>
+        <displayed-value>Good Health and Well-being</displayed-value>
         <stored-value>sdg3</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG4 - Quality Education</displayed-value>
+        <displayed-value>Quality Education</displayed-value>
         <stored-value>sdg4</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG5 - Gender Equality</displayed-value>
+        <displayed-value>Gender Equality</displayed-value>
         <stored-value>sdg5</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG6 - Clean water and sanitation</displayed-value>
+        <displayed-value>Clean Water and Sanitation</displayed-value>
         <stored-value>sdg6</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG7 - Affordable and clean energy</displayed-value>
+        <displayed-value>Affordable and Clean Energy</displayed-value>
         <stored-value>sdg7</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG8 - Decent work and economic growth</displayed-value>
+        <displayed-value>Decent Work and Economic Growth</displayed-value>
         <stored-value>sdg8</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG9 - Industry, innovation and infrastructure</displayed-value>
+        <displayed-value>Industry, Innovation and Infrastructure</displayed-value>
         <stored-value>sdg9</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG10 - Reduced inequalities</displayed-value>
+        <displayed-value>Reduced Inequalities</displayed-value>
         <stored-value>sdg10</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG11 - Sustainable cities and communities</displayed-value>
+        <displayed-value>Sustainable Cities and Communities</displayed-value>
         <stored-value>sdg11</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG12 - Responsible consumption and production</displayed-value>
+        <displayed-value>Responsible Consumption and Production</displayed-value>
         <stored-value>sdg12</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG13 - Climate action</displayed-value>
+        <displayed-value>Climate Action</displayed-value>
         <stored-value>sdg13</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG14 - Life below water</displayed-value>
+        <displayed-value>Life Below Water</displayed-value>
         <stored-value>sdg14</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG15 - Life on land</displayed-value>
+        <displayed-value>Life on Land</displayed-value>
         <stored-value>sdg15</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG16 - Peace, justice and strong institutions</displayed-value>
+        <displayed-value>Peace, justice and Strong Institutions</displayed-value>
         <stored-value>sdg16</stored-value>
       </pair>
       <pair>
-        <displayed-value>SDG17 - Partnerships for the goals</displayed-value>
+        <displayed-value>Partnerships for the Goals</displayed-value>
         <stored-value>sdg17</stored-value>
       </pair>
     </value-pairs>
@@ -3635,6 +3810,52 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>Ads Code</displayed-value>
         <stored-value>adsbibcode</stored-value>
       </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="common_roles" dc-term="roles">
+            <pair>
+                <displayed-value>Καθηγητής</displayed-value>
+                <stored-value>Καθηγητής</stored-value>
+	</pair>
+        <pair>
+                <displayed-value>Αναπληρωτής Καθηγητής</displayed-value>
+                <stored-value>Αναπληρωτής Καθηγητής</stored-value>
+        </pair>
+        <pair>
+                <displayed-value>Επίκουρος Καθηγητής</displayed-value>
+                <stored-value>Επίκουρος Καθηγητής</stored-value>
+        </pair>
+        <pair>
+                <displayed-value>Επίκουρος Καθηγητής</displayed-value>
+                <stored-value>Επίκουρος Καθηγητής</stored-value>
+        </pair>
+        <pair>
+                <displayed-value>Λέκτορας</displayed-value>
+                <stored-value>Λέκτορας</stored-value>
+        </pair>
+ 	<pair>
+                <displayed-value>Ομότιμοι Καθηγητές</displayed-value>
+                <stored-value>Ομότιμοι Καθηγητές</stored-value>
+        </pair>
+ 	<pair>
+                <displayed-value>Επισκέπτες Καθηγητές</displayed-value>
+                <stored-value>Επισκέπτες Καθηγητές</stored-value>
+        </pair>
+ 	<pair>
+                <displayed-value>Μεταπτυχιακοί Συνεργάτες</displayed-value>
+                <stored-value>Μεταπτυχιακοί Συνεργάτες</stored-value>
+        </pair>
+ 	<pair>
+                <displayed-value>Ειδικό Εκπαιδευτικό Προσωπικό</displayed-value>
+                <stored-value>Ειδικό Εκπαιδευτικό Προσωπικό</stored-value>
+        </pair>
+ 	<pair>
+                <displayed-value>Συνεργάτες Πανεπιστημίου</displayed-value>
+                <stored-value>Συνεργάτες Πανεπιστημίου</stored-value>
+        </pair>
+ 	<pair>
+                <displayed-value>Διοικητικό Προσωπικό</displayed-value>
+                <stored-value>Διοικητικό Προσωπικό</stored-value>
+        </pair>
     </value-pairs>
     <value-pairs value-pairs-name="common_types_phd" dc-term="type">
             <pair>
