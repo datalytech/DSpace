@@ -495,11 +495,11 @@
           <input-type>onebox</input-type>
           <repeatable>false</repeatable>
           <required />
-          <hint>Enter the affiliation of the author as stated on the publication.</hint>
-        </field>
-      </row>
-    </form>
-    <form name="academic_part1-dc-contributor-translator">
+  <hint>Enter the affiliation of the author as stated on the publication.</hint>
+</field>
+</row>
+</form>
+<form name="academic_part1-dc-contributor-translator">
       <row>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1049,6 +1049,30 @@
 	 <required />
        </field>
      </row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>department</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Τμήμα</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>faculty</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Σχολή</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
 
    </form>
    <form name="phd_part1">
@@ -1248,7 +1272,33 @@
          <required></required>
        </field>
       </row>
-   </form>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>department</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Τμήμα</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>faculty</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Σχολή</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
+
+
+</form>
 
    <form name="msc_part1">
         <row>
@@ -1423,7 +1473,31 @@
          <required></required>
        </field>
        </row>
-    </form>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>department</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Τμήμα</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
+     <row>
+      <field>
+         <dc-schema>dc</dc-schema>
+         <dc-element>relation</dc-element>
+         <dc-qualifier>faculty</dc-qualifier>
+         <repeatable>false</repeatable>
+	 <label>Σχολή</label>
+         <input-type>onebox</input-type>
+         <hint></hint>
+	 <required />
+       </field>
+     </row>
+</form>
     <form name="publication">
       <row>
         <field>
@@ -3819,10 +3893,6 @@ it, please enter the types and the actual numbers or codes.</hint>
         <pair>
                 <displayed-value>Αναπληρωτής Καθηγητής</displayed-value>
                 <stored-value>Αναπληρωτής Καθηγητής</stored-value>
-        </pair>
-        <pair>
-                <displayed-value>Επίκουρος Καθηγητής</displayed-value>
-                <stored-value>Επίκουρος Καθηγητής</stored-value>
         </pair>
         <pair>
                 <displayed-value>Επίκουρος Καθηγητής</displayed-value>
