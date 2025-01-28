@@ -2946,7 +2946,7 @@
         <property name="onlyLastNodeRelevant" value="true" />
         <property name="metadataFields">
             <list>
-                <value>dc.type</value>
+                <value>dc.type.uhtype</value>
             </list>
         </property>
     </bean>
@@ -2965,7 +2965,7 @@
         <property name="indexFieldName" value="types" />
         <property name="metadataFields">
             <list>
-                <value>dc.type</value>
+                <value>dc.type.uhtype</value>
             </list>
         </property>
     </bean>
@@ -3516,7 +3516,7 @@
         <property name="isDate" value="false" />
         <property name="metadataFields">
             <list>
-                <value>dc.type</value>
+                <value>dc.type.uhtype</value>
             </list>
         </property>
         <property name="graphType" value="pie" />
