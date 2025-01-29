@@ -363,6 +363,7 @@
       <step id="correction" />
       <step id="detect-duplicate" />
       <step id="upload" />
+      <step id="cclicense" />
       <step id="license" />
     </submission-process>
     <submission-process name="academic-edit">
@@ -379,6 +380,7 @@
       <step id="correction" />
       <step id="detect-duplicate" />
       <step id="upload" />
+      <step id="cclicense" />
       <step id="license" />
     </submission-process>
     <submission-process name="phd-edit">
@@ -395,6 +397,7 @@
       <step id="correction" />
       <step id="detect-duplicate" />
       <step id="upload" />
+      <step id="cclicense" />
       <step id="license" />
     </submission-process>
     <submission-process name="msc-edit">

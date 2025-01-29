@@ -489,7 +489,7 @@
       <row>
         <field>
           <dc-schema>oairecerif</dc-schema>
-          <dc-element>author</dc-element>
+          <dc-element>editor</dc-element>
           <dc-qualifier>affiliation</dc-qualifier>
           <label>Affiliation</label>
           <input-type>onebox</input-type>
@@ -515,7 +515,7 @@
       <row>
         <field>
           <dc-schema>oairecerif</dc-schema>
-          <dc-element>author</dc-element>
+          <dc-element>translator</dc-element>
           <dc-qualifier>affiliation</dc-qualifier>
           <label>Affiliation</label>
           <input-type>onebox</input-type>
@@ -3742,7 +3742,15 @@ it, please enter the types and the actual numbers or codes.</hint>
        <displayed-value>Creative Writing</displayed-value>
        <stored-value>CREATIVE_WRITING</stored-value>
      </pair>
-   </value-pairs>
+      <pair>
+       <displayed-value>Training Material</displayed-value>
+       <stored-value>TRAINING_MATERIAL</stored-value>
+     </pair>
+      <pair>
+       <displayed-value>Presentation</displayed-value>
+       <stored-value>PRESENTATION</stored-value>
+     </pair>
+</value-pairs>
     <value-pairs value-pairs-name="patent_types" dc-term="patent_types">
       <pair>
         <displayed-value>Use by owner</displayed-value>

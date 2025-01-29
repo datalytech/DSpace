@@ -1720,11 +1720,8 @@
         <!--The search filters which can be used on the discovery search page-->
         <property name="searchFilters">
             <list>
-		    <!-- <ref bean="searchFilterFamilyName"/> -->
-		    <!-- <ref bean="searchFilterGivenName"/> -->
-                <ref bean="searchFilterJobtitle"/>
-		<!--	<ref bean="searchFilterKnowsLanguage"/> -->
 		<ref bean="searchFilterNamePerson"/>
+		<ref bean="searchFilterJobtitle"/>
 		<ref bean="searchFilterPersonOrgUnitDepartment"/>
 		<ref bean="searchFilterPersonOrgUnitFaculty"/>
 		<!-- <ref bean="searchFilterBirthdate"/> -->
@@ -3043,9 +3040,10 @@
             <list>
                 <value>dc.title</value>
 		<value>crisrp.name.variant</value>
-		<value>person.familyName</value>
 		<value>crisrp.name</value>
-            </list>
+		<value>person.familyName</value>
+		<value>person.givenName</value>
+	</list>
         </property>
         <property name="facetLimit" value="5"/>
         <property name="sortOrderSidebar" value="COUNT"/>
