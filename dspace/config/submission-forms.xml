@@ -4669,6 +4669,14 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>Unspecified</displayed-value>
         <stored-value />
       </pair>
+       <pair>
+        <displayed-value>Department</displayed-value>
+        <stored-value>Department</stored-value>
+      </pair>
+       <pair>
+        <displayed-value>Faculty</displayed-value>
+        <stored-value>Faculty</stored-value>
+      </pair>
       <pair>
         <displayed-value>Academic Institute</displayed-value>
         <stored-value>Academic Institute</stored-value>
