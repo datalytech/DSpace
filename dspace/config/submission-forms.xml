@@ -2610,7 +2610,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <label>ORCID</label>
           <input-type>onebox</input-type>
           <repeatable>false</repeatable>
-	  <required>Mandatory</required>
+	  <required />
           <hint>Settable by connecting the entity with ORCID</hint>
 	  <!--  <readonly>all</readonly> -->
         </field>
