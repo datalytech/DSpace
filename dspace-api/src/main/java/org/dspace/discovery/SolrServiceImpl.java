@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import javax.mail.MessagingException;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -172,8 +173,12 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             final IndexFactory indexableObjectFactory = indexObjectServiceFactory.
                     getIndexableObjectFactory(indexableObject);
             if (force || requiresIndexing(indexableObject.getUniqueIndexID(), indexableObject.getLastModified())) {
-                update(context, indexableObjectFactory, indexableObject);
-                log.info(LogHelper.getHeader(context, "indexed_object", indexableObject.getUniqueIndexID()));
+                String reportItemUuid = configurationService.getProperty("dspace.action.report.item.uuid");
+                if  (!indexableObject.getID().toString().equals(reportItemUuid)) {
+                    update(context, indexableObjectFactory, indexableObject);
+                }else{
+                    log.info("Skipping report item with id: " + indexableObject.getID().toString());
+                }
             }
         } catch (IOException | SQLException | SolrServerException | SearchServiceException e) {
             throw new RuntimeException(e.getMessage(), e);
