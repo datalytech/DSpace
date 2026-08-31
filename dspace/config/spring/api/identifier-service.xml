@@ -162,18 +162,26 @@
     </bean>
     -->
 
-    <!-- Namespace definition -->
-<!--    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
+    <!-- Namespace definition.
+
+         At least one DoiGenerationStrategy bean has to exist, even when DOI minting is disabled:
+         IdentifierServiceFactoryImpl autowires Set<DoiGenerationStrategy> as required, so without
+         one the identifierServiceFactory bean cannot be created. IdentifierServiceFactory.getInstance()
+         then returns null, and every caller that goes through it fails with a NullPointerException.
+         That includes GET /api/pid/find, which is how the user interface resolves a handle, so
+         /handle/[prefix]/[suffix] answers "No item found for the identifier" for every object.
+    -->
+    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
         <property name="configurationValue" value="${identifier.doi.namespaceseparator}" />
     </bean>
 
-    &lt;!&ndash; Below there are defined the generation strategy &ndash;&gt;
+    <!-- Below there are defined the generation strategy -->
     <bean id="defaultDoiGenerationStrategy" class="org.dspace.identifier.generators.ConfigurableDoiGenerationStrategy">
-        &lt;!&ndash; Filter configured in item-filters.xml file &ndash;&gt;
+        <!-- Filter configured in item-filters.xml file -->
         <constructor-arg name="filter" ref="always_true_filter" />
         <constructor-arg name="doiNamespaceGenerator" ref="defaultValueNamespace" />
         <constructor-arg name="generationType" value="DEFAULT" />
-    </bean>-->
+    </bean>
 
     <!-- CUSTOM GENERATORS -->
     <!-- The following are some example configurations for the DOI filter generation strategies -->
