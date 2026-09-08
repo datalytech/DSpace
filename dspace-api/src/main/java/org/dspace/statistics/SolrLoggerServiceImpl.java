@@ -32,7 +32,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -1072,7 +1071,8 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
             if (VERSION_FIELD.equals(name) || LOCATION_FIELDS.contains(name)) {
                 continue;
             }
-            Collection<Object> values = document.getFieldValues(name);
+            // fully qualified: the simple name belongs to org.dspace.content.Collection here
+            java.util.Collection<Object> values = document.getFieldValues(name);
             if (values == null || values.isEmpty()) {
                 continue;
             }
