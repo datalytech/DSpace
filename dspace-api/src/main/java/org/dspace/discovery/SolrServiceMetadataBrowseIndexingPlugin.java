@@ -182,6 +182,19 @@ public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndex
                                                 log.warn("Failed to get preferred label for "
                                                              + val.getMetadataField().toString('.'), e);
                                             }
+                                            // ChoiceAuthority implementations fall back to returning the
+                                            // authority key itself when it cannot be resolved (i.e. the
+                                            // linked entity has been deleted or was never created). Such a
+                                            // key is not a label: indexing it would make the browse list
+                                            // show a bare uuid instead of the name. Discard it so that the
+                                            // metadata value stored on the item is used instead.
+                                            if (StringUtils.equals(preferedLabel, val.getAuthority())) {
+                                                log.warn("Unresolvable authority " + val.getAuthority()
+                                                             + " for " + val.getMetadataField().toString('.')
+                                                             + " on item " + item.getID()
+                                                             + ": falling back to the metadata value");
+                                                preferedLabel = null;
+                                            }
                                         }
                                         List<String> variants = null;
 
