@@ -8,6 +8,7 @@
 package org.dspace.statistics.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
@@ -27,6 +28,17 @@ public class TestLocationUtils extends AbstractDSpaceTest {
         assertEquals("NA", LocationUtils.getContinentCode("US"));
         assertTrue(LocationUtils.getContinentCode(null).length() > 2); // message
         assertTrue(LocationUtils.getContinentCode("xyz").length() > 2); // message
+    }
+
+    /**
+     * Test method for {@link org.dspace.statistics.util.LocationUtils#resolveContinentCode(java.lang.String)}.
+     */
+    @Test
+    public void testResolveContinentCode() {
+        assertEquals("NA", LocationUtils.resolveContinentCode("US"));
+        // an unknown country must not be reported as a continent of its own
+        assertNull(LocationUtils.resolveContinentCode(null));
+        assertNull(LocationUtils.resolveContinentCode("xyz"));
     }
 
     /**

@@ -113,6 +113,25 @@ public interface SolrLoggerService {
 
     public void markRobotByUserAgent(String agent);
 
+    /**
+     * Re-resolve the geographical location (continent, country, city and coordinates) of the usage
+     * events already stored in the Solr statistics core(s), based on the IP address recorded with
+     * each event.
+     * <p>
+     * Use this after installing or updating the GeoIP database configured through
+     * 'usage-statistics.dbfile': events recorded while no database was available carry no location
+     * at all, which is what makes the "Top region views" and "Top city views" reports come back
+     * empty.
+     *
+     * @param overwriteExisting when false only the events without a country code are refreshed,
+     *                          when true every event is resolved again
+     * @return the number of usage events that were updated
+     * @throws SolrServerException Exception from the Solr server to the solrj Java client.
+     * @throws IOException         A general class of exceptions produced by failed or interrupted
+     *                             I/O operations.
+     */
+    public long updateLocationData(boolean overwriteExisting) throws SolrServerException, IOException;
+
     public void deleteRobotsByIsBotFlag();
 
     public void deleteIP(String ip);
