@@ -193,36 +193,29 @@
 
 
     <!-- University of Cyprus: the item is a doctoral thesis.
-         Both spellings are checked because the value actually stored depends on the submission
-         form: the phd form stores "Doctoral Thesis" in dc.type.uhtype, while dc.type may hold a
-         COAR label or the openaire style info:eu-repo/semantics/doctoralThesis. Verify against the
-         live data (see docs/DOI-DataCite-UCY.md) and drop whichever condition does not apply. -->
+         Confirmed against live items: dc.type holds info:eu-repo/semantics/doctoralThesis. No
+         submission form writes it, so it comes from the migration/import rather than from a
+         value pair list, which is why the value appears nowhere in this configuration. -->
     <bean id="uc-type-is-doctoral-thesis_condition"
-          class="org.dspace.content.logic.condition.MetadataValuesMatchCondition">
+          class="org.dspace.content.logic.condition.MetadataValueMatchCondition">
         <property name="parameters">
             <map>
                 <entry key="field" value="dc.type" />
-                <entry key="patterns">
-                    <list>
-                        <value>^Doctoral Thesis$</value>
-                        <value>doctoralThesis$</value>
-                    </list>
-                </entry>
+                <entry key="pattern" value="doctoralThesis$" />
             </map>
         </property>
     </bean>
 
+    <!-- Safety net for items that carry the readable type but no dc.type, which can happen for
+         records loaded before dc.type was populated. The phd submission form writes
+         "Doctoral Thesis" here (value pairs "common_types_phd"). Drop this condition once the
+         counts in docs/DOI-DataCite-UCY.md show the two fields agree on every thesis. -->
     <bean id="uc-uhtype-is-doctoral-thesis_condition"
-          class="org.dspace.content.logic.condition.MetadataValuesMatchCondition">
+          class="org.dspace.content.logic.condition.MetadataValueMatchCondition">
         <property name="parameters">
             <map>
                 <entry key="field" value="dc.type.uhtype" />
-                <entry key="patterns">
-                    <list>
-                        <value>^Doctoral Thesis$</value>
-                        <value>doctoralThesis$</value>
-                    </list>
-                </entry>
+                <entry key="pattern" value="^Doctoral Thesis$" />
             </map>
         </property>
     </bean>

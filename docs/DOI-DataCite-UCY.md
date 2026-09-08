@@ -40,7 +40,8 @@ versioning is active on this installation (the `versioning` consumer is in
 
 - the item is archived,
 - it is not withdrawn,
-- it is a doctoral thesis (see the verification step below),
+- it is a doctoral thesis: `dc.type` ends with `doctoralThesis`, or `dc.type.uhtype` is
+  exactly `Doctoral Thesis`,
 - it does not already carry a DOI under prefix `10.82357`,
 - it has at least one bitstream.
 
@@ -61,7 +62,7 @@ crosswalk was deliberately left untouched.
 | `contributors` | `HostingInstitution` and `DataManager`, both fixed to `University of Cyprus` |
 | `dates` | `dc.date.issued`, `datacite.available` or `dc.date.available` |
 | `language` | `dc.language.iso` |
-| `resourceType@resourceTypeGeneral` | `dc.type` through `mapConverter-ucThesisDataciteResourceTypes.properties` → `Dissertation` |
+| `resourceType@resourceTypeGeneral` | `dc.type` (`info:eu-repo/semantics/doctoralThesis`) through `mapConverter-ucThesisDataciteResourceTypes.properties` → `Dissertation` |
 | `resourceType` text | `dc.type.uhtype` |
 | `alternateIdentifiers` | `dc.identifier.uri` |
 | `rightsList`, `descriptions` | as in the stock template |
@@ -78,41 +79,50 @@ The resource type needs its own converter because the stock
 and keys on the value. Unmapped values fall back to `Text`, so the XML stays schema valid even
 for a type nobody anticipated.
 
-## Verify this before registering anything
+## Where the type comes from
 
-The requirement was stated as `dc.type = info:eu-repo/semantics/doctoralThesis`, but that value
-does not appear anywhere in this installation's configuration. What the configuration shows is:
+Checked against live items:
 
-- the phd submission form stores **`dc.type.uhtype` = `Doctoral Thesis`** (value pairs
-  `common_types_phd` in `submission-forms.xml`), and has no `dc.type` field at all;
-- `info:eu-repo/semantics/…` appears only in `crosswalks/oai/transformers/driver.xsl` and
-  `openaire.xsl`, which build those strings **at OAI dissemination time** — they are not stored
-  on the item.
-
-The filter and the type mapping therefore accept both spellings, on both fields. Confirm what is
-really stored and then trim whichever half is dead weight:
-
-```bash
-# What dc.type and dc.type.uhtype actually hold on doctoral theses
-docker exec -i dspacedb psql -U dspace -d dspace -c "
-  SELECT mfr.element, mfr.qualifier, mv.text_value, count(*)
-  FROM metadatavalue mv
-  JOIN metadatafieldregistry mfr ON mfr.metadata_field_id = mv.metadata_field_id
-  JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
-  WHERE msr.short_id = 'dc' AND mfr.element = 'type'
-  GROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 40;"
+```
+dc.type         info:eu-repo/semantics/doctoralThesis
+dc.type.uhtype  Doctoral Thesis
 ```
 
-If `dc.type` turns out to be empty on these items, change the one token in
-`uc-publication-datacite-xml.template` from `type2dataciteuc.dc-type` to
-`type2dataciteuc.dc-type-uhtype`; the converter file already carries the `Doctoral Thesis` key,
-so nothing else has to change.
+`dc.type` is the field the filter and the resource type mapping key on. Worth knowing when
+maintaining this: no submission form writes `dc.type` — the phd form only writes
+`dc.type.uhtype` from the `common_types_phd` value pairs — and the string
+`info:eu-repo/semantics/doctoralThesis` appears nowhere in `[dspace]/config`. It reaches the
+items through the migration/import rather than through DSpace configuration, so grepping the
+config for it finds nothing and proves nothing.
 
-Then check how many items the filter will actually match, before it can act:
+`dc.type.uhtype` is kept in the filter as a safety net for records that carry the readable type
+but no `dc.type`. Check whether any such records exist, and drop
+`uc-uhtype-is-doctoral-thesis_condition` from `item-filters.xml` if none do:
 
 ```bash
-docker exec -it dspace /dspace/bin/dspace filter-media -h >/dev/null 2>&1   # container is up
-docker exec -it dspace /dspace/bin/dspace doi-organiser -l                  # list pending DOIs
+docker exec -i dspacedb psql -U dspace -d dspace -c "
+  WITH t AS (
+    SELECT mv.dspace_object_id AS id,
+           max(CASE WHEN mfr.qualifier IS NULL              THEN mv.text_value END) AS dctype,
+           max(CASE WHEN mfr.qualifier = 'uhtype'           THEN mv.text_value END) AS uhtype
+    FROM metadatavalue mv
+    JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+    JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+    WHERE msr.short_id = 'dc' AND mfr.element = 'type'
+    GROUP BY mv.dspace_object_id)
+  SELECT dctype LIKE '%doctoralThesis' AS dc_says_thesis,
+         uhtype = 'Doctoral Thesis'    AS uh_says_thesis,
+         count(*)
+  FROM t GROUP BY 1,2 ORDER BY 3 DESC;"
+```
+
+A row with `dc_says_thesis = f` and `uh_says_thesis = t` is exactly what the safety net is for.
+If that row has count 0, the condition is dead weight.
+
+Then see how many items the filter will actually match, before it can act:
+
+```bash
+docker exec -it dspace /dspace/bin/dspace doi-organiser -l   # list pending DOIs
 ```
 
 ## The shape of the DOIs
