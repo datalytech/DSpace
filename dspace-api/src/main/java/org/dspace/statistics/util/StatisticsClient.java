@@ -74,6 +74,13 @@ public class StatisticsClient {
                           "While indexing the bundle names remove the statistics about deleted bitstreams");
         options.addOption("s", "shard-solr-index", false,
                           "Split the data from the main Solr core into separate Solr cores per year");
+        options.addOption("g", "update-location-data", false,
+                          "Resolve the continent/country/city of the usage events already stored in Solr, "
+                              + "based on the IP address recorded with each event. Run this after installing "
+                              + "the GeoIP database configured in 'usage-statistics.dbfile'");
+        options.addOption("a", "overwrite-location-data", false,
+                          "Together with -g, resolve every event again instead of only the events "
+                              + "that carry no location yet");
         options.addOption("h", "help", false, "help");
 
         CommandLine line = parser.parse(options, args);
@@ -98,8 +105,33 @@ public class StatisticsClient {
             solrLoggerService.exportHits();
         } else if (line.hasOption('s')) {
             solrLoggerService.shardSolrIndex();
+        } else if (line.hasOption('g')) {
+            StatisticsClient.updateLocationData(solrLoggerService, line.hasOption('a'));
         } else {
             printHelp(options, 0);
+        }
+    }
+
+    /**
+     * Re-resolve the location of the usage events already recorded in Solr.
+     *
+     * @param solrLoggerService the service holding the statistics core
+     * @param overwriteExisting resolve every event again instead of only those without a location
+     */
+    private static void updateLocationData(SolrLoggerService solrLoggerService, boolean overwriteExisting) {
+        try {
+            System.out.println(overwriteExisting
+                                   ? "Resolving the location of every usage event..."
+                                   : "Resolving the location of the usage events that have none...");
+            long updated = solrLoggerService.updateLocationData(overwriteExisting);
+            System.out.println("Updated " + updated + " usage event(s).");
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        } catch (Exception e) {
+            System.err.println("Failed to update the location data: " + e.getMessage());
+            log.error("Failed to update the location data", e);
+            System.exit(1);
         }
     }
 

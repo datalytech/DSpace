@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.net.InetAddresses;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
@@ -80,6 +82,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.luke.FieldFlag;
 import org.apache.solr.common.params.CommonParams;
 import org.apache.solr.common.params.CoreAdminParams.CoreAdminAction;
+import org.apache.solr.common.params.CursorMarkParams;
 import org.apache.solr.common.params.FacetParams;
 import org.apache.solr.common.params.MapSolrParams;
 import org.apache.solr.common.params.ModifiableSolrParams;
@@ -129,7 +132,25 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
 
     public static final String DATE_FORMAT_DCDATE = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-    protected DatabaseReader locationService;
+    protected volatile DatabaseReader locationService;
+
+    /**
+     * Epoch millis before which we will not try to (re)open the GeoIP database again. Keeps a
+     * missing or broken database from being reopened on every single usage event, while still
+     * allowing an administrator to install it without restarting the application server.
+     */
+    private volatile long nextGeoIpAttempt = 0L;
+
+    /**
+     * The Solr statistics fields that are derived from the client IP address through GeoIP.
+     */
+    protected static final List<String> LOCATION_FIELDS =
+        List.of("continent", "countryCode", "city", "latitude", "longitude");
+
+    /**
+     * Number of statistics documents read from Solr per page while refreshing location data.
+     */
+    private static final int LOCATION_UPDATE_PAGE_SIZE = 500;
 
     protected boolean useProxies;
 
@@ -201,13 +222,98 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
         // Read in the file so we don't have to do it all the time
         //spiderIps = SpiderDetector.getSpiderIpAddresses();
 
-        DatabaseReader service = null;
-        try {
-            service = geoIpService.getDatabaseReader();
-        } catch (IllegalStateException ex) {
-            log.error(ex);
+        // Try to open the GeoIP database straight away, but do not fail the startup when it is
+        // missing: usage events must keep being recorded, they will simply carry no location.
+        getLocationService();
+    }
+
+    /**
+     * Returns the GeoIP database reader used to resolve the continent/country/city of a client IP
+     * address, or {@code null} when no usable database is configured.
+     * <p>
+     * The database is opened lazily and, when it cannot be opened, the attempt is retried at most
+     * once every {@code usage-statistics.dbfile.retry-interval} seconds (5 minutes by default).
+     * That way an administrator who installs (or replaces) the GeoLite2 database does not have to
+     * restart the application server before location based reports start being populated again.
+     *
+     * @return the GeoIP database reader, or null if it is unavailable
+     */
+    protected DatabaseReader getLocationService() {
+        DatabaseReader service = locationService;
+        if (service != null) {
+            return service;
         }
-        locationService = service;
+
+        synchronized (this) {
+            if (locationService != null) {
+                return locationService;
+            }
+            if (System.currentTimeMillis() < nextGeoIpAttempt) {
+                return null;
+            }
+            try {
+                locationService = geoIpService.getDatabaseReader();
+                log.info("GeoIP database loaded, location based usage statistics are enabled");
+            } catch (IllegalStateException ex) {
+                long retryInterval = configurationService
+                    .getLongProperty("usage-statistics.dbfile.retry-interval", 300);
+                nextGeoIpAttempt = System.currentTimeMillis() + (retryInterval * 1000);
+                log.error("Location based usage statistics are disabled: {}. Usage events will still"
+                    + " be recorded, but without continent/country/city information. Configure"
+                    + " 'usage-statistics.dbfile' and run [dspace]/bin/dspace stats-util"
+                    + " --update-location-data to backfill the events already recorded.",
+                    ex.getMessage());
+            }
+            return locationService;
+        }
+    }
+
+    /**
+     * Resolve the geographical location of the given IP address and add it to the statistics
+     * document. Nothing is added when the location cannot be determined; a failing lookup must
+     * never prevent the usage event itself from being recorded.
+     *
+     * @param doc       the Solr document describing the usage event
+     * @param ipAddress the client IP address, may be null
+     */
+    protected void addLocationFields(SolrInputDocument doc, InetAddress ipAddress) {
+        DatabaseReader geoIp = getLocationService();
+        if (geoIp == null || ipAddress == null) {
+            return;
+        }
+
+        try {
+            CityResponse location = geoIp.city(ipAddress);
+
+            String countryCode = location.getCountry().getIsoCode();
+            if (isNotBlank(countryCode) && !"--".equals(countryCode)) {
+                doc.addField("countryCode", countryCode);
+                String continentCode = LocationUtils.resolveContinentCode(countryCode);
+                if (isNotBlank(continentCode)) {
+                    doc.addField("continent", continentCode);
+                }
+            }
+
+            String city = location.getCity().getName();
+            if (isNotBlank(city)) {
+                doc.addField("city", city);
+            }
+
+            Double latitude = location.getLocation() == null ? null : location.getLocation().getLatitude();
+            Double longitude = location.getLocation() == null ? null : location.getLocation().getLongitude();
+            // -180/-180 is what the legacy GeoIP database used for "unknown"
+            if (latitude != null && longitude != null && !(latitude == -180 && longitude == -180)) {
+                doc.addField("latitude", latitude);
+                doc.addField("longitude", longitude);
+            }
+        } catch (IOException e) {
+            log.warn("GeoIP lookup failed for {}", ipAddress.getHostAddress(), e);
+        } catch (GeoIp2Exception e) {
+            log.info("Unable to get location of {}: {}", ipAddress.getHostAddress(), e.getMessage());
+        } catch (RuntimeException e) {
+            // A broken or unexpected database must not cost us the usage event itself
+            log.warn("Unexpected error while resolving the location of {}", ipAddress.getHostAddress(), e);
+        }
     }
 
     @Override
@@ -318,7 +424,9 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
     @Override
     public void postLogin(DSpaceObject dspaceObject, HttpServletRequest request, EPerson currentUser) {
 
-        if (solr == null || locationService == null) {
+        // A missing GeoIP database only costs us the location fields, the event itself is
+        // still worth recording
+        if (solr == null) {
             return;
         }
 
@@ -409,12 +517,18 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
             try {
                 String dns;
                 if (!configurationService.getBooleanProperty("anonymize_statistics.anonymize_on_log", false)) {
-                    ipAddress = InetAddress.getByName(ip);
-                    dns = ipAddress.getHostName();
+                    // getByName(null) silently resolves to the loopback address, which would tag
+                    // the event as coming from the server itself
+                    if (isNotBlank(ip)) {
+                        ipAddress = InetAddress.getByName(ip);
+                    }
+                    dns = ipAddress == null ? null : ipAddress.getHostName();
                 } else {
                     dns = configurationService.getProperty("anonymize_statistics.dns_mask", "anonymized");
                 }
-                doc1.addField("dns", dns.toLowerCase(Locale.ROOT));
+                if (isNotBlank(dns)) {
+                    doc1.addField("dns", dns.toLowerCase(Locale.ROOT));
+                }
             } catch (UnknownHostException e) {
                 log.info("Failed DNS Lookup for IP:  {}", ip);
                 log.debug(e.getMessage(), e);
@@ -425,34 +539,7 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
             doc1.addField("isBot", isSpiderBot);
             // Save the location information if valid, save the event without
             // location information if not valid
-            if (locationService != null && ipAddress != null) {
-                try {
-                    CityResponse location = locationService.city(ipAddress);
-                    String countryCode = location.getCountry().getIsoCode();
-                    double latitude = location.getLocation().getLatitude();
-                    double longitude = location.getLocation().getLongitude();
-                    if (!(
-                            "--".equals(countryCode)
-                            && latitude == -180
-                            && longitude == -180)
-                    ) {
-                        try {
-                            doc1.addField("continent", LocationUtils
-                                .getContinentCode(countryCode));
-                        } catch (Exception e) {
-                            log.warn("Failed to load country/continent table: {}", countryCode);
-                        }
-                        doc1.addField("countryCode", countryCode);
-                        doc1.addField("city", location.getCity().getName());
-                        doc1.addField("latitude", latitude);
-                        doc1.addField("longitude", longitude);
-                    }
-                } catch (IOException e) {
-                    log.warn("GeoIP lookup failed.", e);
-                } catch (GeoIp2Exception e) {
-                    log.info("Unable to get location of request: {}", e.getMessage());
-                }
-            }
+            addLocationFields(doc1, ipAddress);
         }
 
         if (dspaceObject != null) {
@@ -501,12 +588,18 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
         try {
             String dns;
             if (!configurationService.getBooleanProperty("anonymize_statistics.anonymize_on_log", false)) {
-                ipAddress = InetAddress.getByName(ip);
-                dns = ipAddress.getHostName();
+                // getByName(null) silently resolves to the loopback address, which would tag
+                // the event as coming from the server itself
+                if (isNotBlank(ip)) {
+                    ipAddress = InetAddress.getByName(ip);
+                }
+                dns = ipAddress == null ? null : ipAddress.getHostName();
             } else {
                 dns = configurationService.getProperty("anonymize_statistics.dns_mask", "anonymized");
             }
-            doc1.addField("dns", dns.toLowerCase(Locale.ROOT));
+            if (isNotBlank(dns)) {
+                doc1.addField("dns", dns.toLowerCase(Locale.ROOT));
+            }
         } catch (UnknownHostException e) {
             log.info("Failed DNS Lookup for IP:  {}", ip);
             log.debug(e.getMessage(), e);
@@ -517,35 +610,7 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
         doc1.addField("isBot", isSpiderBot);
         // Save the location information if valid, save the event without
         // location information if not valid
-        if (locationService != null) {
-            try {
-                CityResponse location = locationService.city(ipAddress);
-                String countryCode = location.getCountry().getIsoCode();
-                double latitude = location.getLocation().getLatitude();
-                double longitude = location.getLocation().getLongitude();
-                if (!(
-                        "--".equals(countryCode)
-                                && latitude == -180
-                                && longitude == -180)
-                ) {
-                    try {
-                        doc1.addField("continent", LocationUtils
-                                .getContinentCode(countryCode));
-                    } catch (Exception e) {
-                        System.out
-                                .println("COUNTRY ERROR: " + countryCode);
-                    }
-                    doc1.addField("countryCode", countryCode);
-                    doc1.addField("city", location.getCity().getName());
-                    doc1.addField("latitude", latitude);
-                    doc1.addField("longitude", longitude);
-                }
-            } catch (IOException e) {
-                log.warn("GeoIP lookup failed.", e);
-            } catch (GeoIp2Exception e) {
-                log.info("Unable to get location of request: {}", e.getMessage());
-            }
-        }
+        addLocationFields(doc1, ipAddress);
 
         if (dspaceObject != null) {
             doc1.addField("id", dspaceObject.getID().toString());
@@ -877,6 +942,155 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public long updateLocationData(boolean overwriteExisting) throws SolrServerException, IOException {
+        if (solr == null) {
+            throw new IllegalStateException("The Solr statistics core is not available");
+        }
+        if (getLocationService() == null) {
+            throw new IllegalStateException("No GeoIP database is available. Please point"
+                + " 'usage-statistics.dbfile' at a GeoLite2-City database and try again.");
+        }
+
+        long updated = 0;
+        List<SolrClient> clients = getStatisticsCoreClients();
+        try {
+            for (SolrClient client : clients) {
+                updated += updateLocationData(client, overwriteExisting);
+            }
+        } finally {
+            for (SolrClient client : clients) {
+                // the main core is owned by the SolrStatisticsCore bean, only close the ones we opened
+                if (client != solr) {
+                    try {
+                        client.close();
+                    } catch (IOException e) {
+                        log.warn("Failed to close the Solr client of a statistics year core", e);
+                    }
+                }
+            }
+        }
+        return updated;
+    }
+
+    /**
+     * Refresh the location fields of every statistics document of a single Solr core.
+     *
+     * @param client            the core to update
+     * @param overwriteExisting when false only the documents without a country code are visited
+     * @return the number of documents that were updated
+     */
+    private long updateLocationData(SolrClient client, boolean overwriteExisting)
+        throws SolrServerException, IOException {
+
+        SolrQuery query = new SolrQuery("*:*");
+        // Without an IP address there is nothing we can resolve
+        query.addFilterQuery("ip:[* TO *]");
+        if (!overwriteExisting) {
+            query.addFilterQuery("-countryCode:[* TO *]");
+        }
+        query.setFields("uid", "ip");
+        query.setRows(LOCATION_UPDATE_PAGE_SIZE);
+        // A deep paging cursor keeps the iteration stable while we are updating the documents
+        query.setSort("uid", SolrQuery.ORDER.asc);
+
+        String cursorMark = CursorMarkParams.CURSOR_MARK_START;
+        long updated = 0;
+        boolean done = false;
+
+        while (!done) {
+            query.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+            QueryResponse response = client.query(query);
+
+            List<SolrInputDocument> updates = new ArrayList<>();
+            for (SolrDocument document : response.getResults()) {
+                SolrInputDocument update = buildLocationUpdate(document, overwriteExisting);
+                if (update != null) {
+                    updates.add(update);
+                }
+            }
+
+            if (!updates.isEmpty()) {
+                client.add(updates);
+                updated += updates.size();
+            }
+
+            String nextCursorMark = response.getNextCursorMark();
+            done = cursorMark.equals(nextCursorMark);
+            cursorMark = nextCursorMark;
+        }
+
+        if (updated > 0) {
+            client.commit();
+        }
+
+        return updated;
+    }
+
+    /**
+     * Build the atomic update that stores the location resolved from the IP address of the given
+     * statistics document.
+     *
+     * @param document          a statistics document holding at least its uid and ip
+     * @param overwriteExisting when true, a location that can no longer be resolved is cleared
+     * @return the atomic update to send to Solr, or null when there is nothing to change
+     */
+    private SolrInputDocument buildLocationUpdate(SolrDocument document, boolean overwriteExisting) {
+        String uid = (String) document.getFieldValue("uid");
+        String ip = (String) document.getFieldValue("ip");
+        if (StringUtils.isBlank(uid) || StringUtils.isBlank(ip)) {
+            return null;
+        }
+
+        SolrInputDocument resolved = new SolrInputDocument();
+        try {
+            // forString() never falls back on a DNS lookup, unlike InetAddress.getByName()
+            addLocationFields(resolved, InetAddresses.forString(ip));
+        } catch (IllegalArgumentException e) {
+            log.debug("Skipping statistics document {}, '{}' is not an IP address", uid, ip);
+            return null;
+        }
+
+        if (resolved.isEmpty() && !overwriteExisting) {
+            return null;
+        }
+
+        SolrInputDocument update = new SolrInputDocument();
+        update.addField("uid", uid);
+        for (String field : LOCATION_FIELDS) {
+            // A null value removes the field, dropping any location we can no longer confirm
+            update.addField(field, Collections.singletonMap("set", resolved.getFieldValue(field)));
+        }
+        return update;
+    }
+
+    /**
+     * The Solr clients of every statistics core holding usage events: the main core plus, when
+     * the statistics are sharded by year, one client per year core.
+     *
+     * @return the clients to update, the first one always being the main core
+     */
+    private List<SolrClient> getStatisticsCoreClients() {
+        List<SolrClient> clients = new ArrayList<>();
+        clients.add(solr);
+
+        initSolrYearCores();
+        if (!(solr instanceof HttpSolrClient) || statisticYearCores.isEmpty()) {
+            return clients;
+        }
+
+        String baseUrl = ((HttpSolrClient) solr).getBaseURL();
+        String scheme = StringUtils.substringBefore(baseUrl, "://") + "://";
+        // statisticYearCores holds the core URLs without their scheme
+        String mainCore = baseUrl.replace("http://", "").replace("https://", "");
+        for (String yearCore : statisticYearCores) {
+            if (!yearCore.equals(mainCore)) {
+                clients.add(new HttpSolrClient.Builder(scheme + yearCore).build());
+            }
+        }
+        return clients;
     }
 
     @Override

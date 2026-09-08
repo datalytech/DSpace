@@ -48,10 +48,30 @@ public class LocationUtils {
      * an error message string.
      */
     static public String getContinentCode(String countryCode) {
-        if (null == countryCode) {
-            logger.info("Null country code");
+        String continent = resolveContinentCode(countryCode);
+        if (null == continent) {
             return I18nUtil
                 .getMessage("org.dspace.statistics.util.LocationUtils.unknown-continent");
+        } else {
+            return continent;
+        }
+    }
+
+    /**
+     * Map an ISO country code onto its DSpace continent code, without falling back on a
+     * localized "unknown continent" label.
+     * <p>
+     * Callers that store the result (the Solr statistics core, for instance) need to be able to
+     * tell "no continent known" apart from a real continent code, otherwise the localized error
+     * message ends up being indexed and shown as if it were a continent.
+     *
+     * @param countryCode ISO 3166-1 alpha-2 country code.
+     * @return DSpace 2-character continent code, or {@code null} if the country is unknown.
+     */
+    static public String resolveContinentCode(String countryCode) {
+        if (null == countryCode) {
+            logger.info("Null country code");
+            return null;
         }
 
         if (countryToContinent.isEmpty()) {
@@ -66,11 +86,8 @@ public class LocationUtils {
         String continent = countryToContinent.getProperty(countryCode);
         if (null == continent) {
             logger.info("Unknown country code " + countryCode);
-            return I18nUtil
-                .getMessage("org.dspace.statistics.util.LocationUtils.unknown-continent");
-        } else {
-            return continent;
         }
+        return continent;
     }
 
     /**
