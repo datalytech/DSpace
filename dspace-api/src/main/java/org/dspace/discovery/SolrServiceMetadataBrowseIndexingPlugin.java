@@ -12,6 +12,8 @@ import static org.dspace.discovery.SolrServiceImpl.SOLR_FIELD_SUFFIX_FACET_PREFI
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +52,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndexPlugin {
 
     private static final Logger log = LogManager.getLogger(SolrServiceMetadataBrowseIndexingPlugin.class);
+
+    /**
+     * Data type of a browse index that lists the year of a date field instead of
+     * the full date, i.e. webui.browse.index.n = year:metadata:dc.date.issued:year
+     */
+    private static final String YEAR_DATA_TYPE = "year";
+
+    /**
+     * The leading year of a date, as an ISO-8601 date starts with it.
+     */
+    private static final Pattern YEAR_PATTERN = Pattern.compile("^\\s*(-?\\d{4})");
 
     @Autowired(required = true)
     protected ItemService itemService;
@@ -141,6 +154,16 @@ public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndex
                                                   + val.getMetadataField().toString()
                                     );
                                 } else {
+                                    // what the browse list shows and is looked up by, which is
+                                    // the metadata value itself unless the index asks for less
+                                    String browseValue = getBrowseValue(bi, val);
+                                    if (browseValue == null) {
+                                        log.debug("Skipping item=" + item.getID()
+                                                      + ", field=" + val.getMetadataField().toString()
+                                                      + ", value=" + val.getValue()
+                                                      + " (NO " + bi.getDataType() + " TO INDEX)");
+                                        continue;
+                                    }
                                     if (bi.isAuthorityIndex()
                                             && (val.getAuthority() == null || val.getConfidence() < minConfidence)) {
                                         // if we have an authority index only
@@ -162,7 +185,7 @@ public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndex
                                     if ((ignoreAuthority && !bi.isAuthorityIndex())
                                             || (val.getAuthority() != null && val.getConfidence() >= minConfidence)) {
                                         distFAuths.add(val.getAuthority());
-                                        distValuesForAC.add(val.getValue());
+                                        distValuesForAC.add(browseValue);
 
                                         String preferedLabel = null;
                                         Boolean generalSetting = DSpaceServicesFactory.getInstance()
@@ -236,11 +259,11 @@ public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndex
                                                          + val.getAuthority());
                                             distValuesForAC.add(preferedLabel);
                                         } else {
-                                            String nVal = OrderFormat.makeSortString(val.getValue(),
+                                            String nVal = OrderFormat.makeSortString(browseValue,
                                                     val.getLanguage(), bi.getDataType());
                                             distFValues.add(nVal
                                                      + SearchUtils.FILTER_SEPARATOR
-                                                     + val.getValue()
+                                                     + browseValue
                                                      + SearchUtils.AUTHORITY_SEPARATOR
                                                      + val.getAuthority());
                                             distValuesForAC.add(nVal);
@@ -269,15 +292,15 @@ public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndex
                                         // get the normalised version of the value
                                         String nVal = OrderFormat
                                             .makeSortString(
-                                                val.getValue(),
+                                                browseValue,
                                                 val.getLanguage(),
                                                 bi.getDataType());
                                         distFValues
                                             .add(nVal
                                                      + SearchUtils.FILTER_SEPARATOR
-                                                     + val.getValue());
-                                        distFVal.add(val.getValue());
-                                        distValuesForAC.add(val.getValue());
+                                                     + browseValue);
+                                        distFVal.add(browseValue);
+                                        distValuesForAC.add(browseValue);
                                     }
                                 }
                             }
@@ -316,4 +339,25 @@ public class SolrServiceMetadataBrowseIndexingPlugin implements SolrServiceIndex
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+
+    /**
+     * The value a metadata value contributes to the given browse index.
+     * <p>
+     * Every index browses by the metadata value itself, except an index declared
+     * with the "year" data type: that one keeps only the leading year of the date,
+     * so that 2019-05-12 and 2019-11-03 end up under the same browse entry.
+     *
+     * @param bi  the browse index being populated
+     * @param val the metadata value to index
+     * @return the value to index, or null when this value has nothing to
+     *         contribute to the index
+     */
+    private String getBrowseValue(BrowseIndex bi, MetadataValue val) {
+        if (!YEAR_DATA_TYPE.equalsIgnoreCase(bi.getDataType())) {
+            return val.getValue();
+        }
+        Matcher matcher = YEAR_PATTERN.matcher(val.getValue());
+        return matcher.find() ? matcher.group(1) : null;
+    }
+
 }

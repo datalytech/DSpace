@@ -27,6 +27,7 @@
                                 <value>title</value>
                                 <value>author</value>
                                 <value>subject</value>
+                                <value>dateissuedyear</value>
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>
