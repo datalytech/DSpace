@@ -32,7 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -151,6 +151,11 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
      * Number of statistics documents read from Solr per page while refreshing location data.
      */
     private static final int LOCATION_UPDATE_PAGE_SIZE = 500;
+
+    /**
+     * The Solr internal version field, which must never be sent back when reindexing a document.
+     */
+    private static final String VERSION_FIELD = "_version_";
 
     protected boolean useProxies;
 
@@ -991,7 +996,7 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
         if (!overwriteExisting) {
             query.addFilterQuery("-countryCode:[* TO *]");
         }
-        query.setFields("uid", "ip");
+        // every stored field is needed: the documents are rebuilt and indexed again
         query.setRows(LOCATION_UPDATE_PAGE_SIZE);
         // A deep paging cursor keeps the iteration stable while we are updating the documents
         query.setSort("uid", SolrQuery.ORDER.asc);
@@ -1030,12 +1035,16 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
     }
 
     /**
-     * Build the atomic update that stores the location resolved from the IP address of the given
-     * statistics document.
+     * Rebuild the given statistics document with the location resolved from its IP address.
+     * <p>
+     * The statistics core is configured without an {@code <updateLog/>}, so Solr rejects atomic
+     * updates on it. The document is therefore reindexed in full, from the fields it has stored,
+     * with only the location fields replaced. Its uid is kept, so the new document takes the place
+     * of the old one instead of being added next to it.
      *
-     * @param document          a statistics document holding at least its uid and ip
+     * @param document          a statistics document, with all of its stored fields
      * @param overwriteExisting when true, a location that can no longer be resolved is cleared
-     * @return the atomic update to send to Solr, or null when there is nothing to change
+     * @return the document to send back to Solr, or null when there is nothing to change
      */
     private SolrInputDocument buildLocationUpdate(SolrDocument document, boolean overwriteExisting) {
         String uid = (String) document.getFieldValue("uid");
@@ -1058,10 +1067,24 @@ public class SolrLoggerServiceImpl implements SolrLoggerService, InitializingBea
         }
 
         SolrInputDocument update = new SolrInputDocument();
-        update.addField("uid", uid);
-        for (String field : LOCATION_FIELDS) {
-            // A null value removes the field, dropping any location we can no longer confirm
-            update.addField(field, Collections.singletonMap("set", resolved.getFieldValue(field)));
+        for (String name : document.getFieldNames()) {
+            // the version is reassigned by Solr, the location is about to be replaced
+            if (VERSION_FIELD.equals(name) || LOCATION_FIELDS.contains(name)) {
+                continue;
+            }
+            Collection<Object> values = document.getFieldValues(name);
+            if (values == null || values.isEmpty()) {
+                continue;
+            }
+            // a lone value must not be sent as a list, a single valued field would reject it
+            update.addField(name, values.size() == 1 ? values.iterator().next() : values);
+        }
+        // anything we could not resolve is simply left out, which clears it from the document
+        for (String name : LOCATION_FIELDS) {
+            Object value = resolved.getFieldValue(name);
+            if (value != null) {
+                update.addField(name, value);
+            }
         }
         return update;
     }
