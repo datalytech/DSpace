@@ -158,8 +158,59 @@ GROUP BY 1, 2
 ORDER BY 3 DESC;
 ```
 
-The row with `dc_says_thesis = f` and `uh_says_thesis = t` is what the safety net exists for.
-If it is absent, drop `uc-uhtype-is-doctoral-thesis_condition` from `item-filters.xml`.
+### Measured, 2026-09-08
+
+| | items |
+|---|---|
+| archived, non withdrawn, with any `dc.type*` | 26,175 |
+| both fields say doctoral thesis | 1,331 |
+| only `dc.type.uhtype` says so | **5** |
+| only `dc.type` says so | 0 |
+| **candidates for a DOI** | **1,336** |
+
+Two things follow from these numbers.
+
+**The `dc.type.uhtype` safety net stays.** Five items carry `Doctoral Thesis` with no matching
+`dc.type`; without the condition they would silently never get a DOI. Before the first run, look
+at what those five actually are — their `dc.type` is what drives `resourceTypeGeneral`:
+
+```sql
+SELECT i.uuid,
+       string_agg(DISTINCT CASE WHEN mfr.qualifier IS NULL    THEN mv.text_value END, ' | ') AS dc_type,
+       string_agg(DISTINCT CASE WHEN mfr.qualifier = 'uhtype' THEN mv.text_value END, ' | ') AS uhtype
+FROM item i
+JOIN metadatavalue mv           ON mv.dspace_object_id    = i.uuid
+JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+WHERE msr.short_id = 'dc' AND mfr.element = 'type'
+  AND i.in_archive AND NOT i.withdrawn
+GROUP BY i.uuid
+HAVING bool_or(mfr.qualifier = 'uhtype' AND mv.text_value = 'Doctoral Thesis')
+   AND NOT bool_or(mfr.qualifier IS NULL AND mv.text_value LIKE '%doctoralThesis');
+```
+
+**Two items hold a `dc.type` that ends in `doctoralThesis` but is not the usual string.** 1,331
+items match the pattern while `info:eu-repo/semantics/doctoralThesis` occurs only 1,329 times.
+Whatever those two values are, they are not in
+`mapConverter-ucThesisDataciteResourceTypes.properties`, so those items would be registered as
+`Text` instead of `Dissertation`. Find them and add them to the converter:
+
+```sql
+SELECT mv.text_value, count(*) AS occurrences
+FROM item i
+JOIN metadatavalue mv           ON mv.dspace_object_id    = i.uuid
+JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+WHERE msr.short_id = 'dc' AND mfr.element = 'type' AND mfr.qualifier IS NULL
+  AND mv.text_value LIKE '%doctoralThesis'
+  AND mv.text_value <> 'info:eu-repo/semantics/doctoralThesis'
+  AND i.in_archive AND NOT i.withdrawn
+GROUP BY 1;
+```
+
+The same gap exists on master theses (1,063 `Master Thesis` against 917
+`info:eu-repo/semantics/masterThesis`), so the two type fields disagreeing is a known trait of
+this data rather than a one-off. Worth remembering if the DOI filter is ever widened.
 
 Then see how many items the filter will actually match, before it can act:
 
