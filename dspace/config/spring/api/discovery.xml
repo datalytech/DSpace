@@ -1880,9 +1880,10 @@
         <!--Which sidebar facets are to be displayed-->
         <property name="sidebarFacets">
             <list>
-		<!-- <ref bean="searchFilterSubject"/> -->
 		<!--	<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterInvestigators"/>
+                <ref bean="searchFilterProjectDepartment"/>
+                <ref bean="searchFilterProjectSubject"/>
 		<ref bean="searchFilterProjectOrgUnits" />
 		<ref bean="searchFilterProjectType"/>
             </list>
@@ -1890,9 +1891,10 @@
         <!--The search filters which can be used on the discovery search page-->
         <property name="searchFilters">
             <list>
-		<!-- <ref bean="searchFilterSubject"/> -->
 		<!--	<ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterInvestigators"/>
+                <ref bean="searchFilterProjectDepartment"/>
+                <ref bean="searchFilterProjectSubject"/>
                 <ref bean="searchFilterProjectOrgUnits"/>
 		<ref bean="searchFilterGrantno"/>
 		<ref bean="searchFilterProjectType"/>
@@ -2844,7 +2846,36 @@
 
     </bean>
    
-     <bean id="searchFilterProjectType" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+     <!-- The subject and the department of the fundings and projects section. They cannot reuse the
+         "subject" filter, which indexes every dc.subject.* of every item, nor the department of the
+         researcher profiles, which is taken from the profile rather than from the project itself. -->
+    <bean id="searchFilterProjectSubject" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="pjsubject"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.subject</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="5"/>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+    <bean id="searchFilterProjectDepartment" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
+        <property name="indexFieldName" value="pjdept"/>
+        <property name="metadataFields">
+            <list>
+                <value>crispj.investigator.department</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="5"/>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+        <property name="splitter" value="::"/>
+    </bean>
+
+    <bean id="searchFilterProjectType" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
         <property name="indexFieldName" value="projectType"/>
         <property name="metadataFields">
             <list>
