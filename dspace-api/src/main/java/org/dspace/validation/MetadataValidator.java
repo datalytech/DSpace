@@ -181,7 +181,8 @@ public class MetadataValidator implements SubmissionStepValidator {
 
         for (MetadataValue md : metadataValues) {
             if (! (input.validate(md.getValue()))) {
-                addError(errors, ERROR_VALIDATION_REGEX,
+                // a field can explain what it expects instead of the generic message
+                addError(errors, StringUtils.defaultIfBlank(input.getRegexErrorMessage(), ERROR_VALIDATION_REGEX),
                     "/" + OPERATION_PATH_SECTIONS + "/" + config.getId() + "/" +
                         input.getFieldName() + "/" + md.getPlace());
             }

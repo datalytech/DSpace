@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class SubmissionFormInputTypeRest {
     private String type;
     private String regex;
+    private String regexErrorMessage;
 
     public String getType() {
         return type;
@@ -36,6 +37,14 @@ public class SubmissionFormInputTypeRest {
 
     public void setRegex(String regex) {
         this.regex = regex;
+    }
+
+    public String getRegexErrorMessage() {
+        return regexErrorMessage;
+    }
+
+    public void setRegexErrorMessage(String regexErrorMessage) {
+        this.regexErrorMessage = regexErrorMessage;
     }
 
 }

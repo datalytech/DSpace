@@ -135,6 +135,11 @@
         <property name="dspaceRunnableClass" value="org.dspace.content.enhancer.script.ItemEnhancerScript"/>
     </bean>
 
+    <bean id="dangling-authority" class="org.dspace.content.authority.script.DanglingAuthorityScriptConfiguration" >
+        <property name="description" value="Report and optionally repair the metadata authorities pointing to a non existent item"/>
+        <property name="dspaceRunnableClass" value="org.dspace.content.authority.script.DanglingAuthorityScript"/>
+    </bean>
+
     <bean id="filter-media" class="org.dspace.app.mediafilter.MediaFilterScriptConfiguration">
         <property name="description" value="Perform the media filtering to extract full text from documents and to create thumbnails"/>
         <property name="dspaceRunnableClass" value="org.dspace.app.mediafilter.MediaFilterScript"/>

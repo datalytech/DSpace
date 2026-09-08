@@ -8,7 +8,7 @@
  <!ELEMENT row (field|relation-field)+ >
  <!ATTLIST form name NMTOKEN #REQUIRED>
 
- <!ELEMENT field (dc-schema, dc-element, dc-qualifier?, language?, repeatable?, label, style?, type-bind?, input-type, hint, required?, regex?, vocabulary?, visibility?, readonly?) >
+ <!ELEMENT field (dc-schema, dc-element, dc-qualifier?, language?, repeatable?, label, style?, type-bind?, input-type, hint, required?, regex?, regex-error-message?, vocabulary?, visibility?, readonly?) >
  <!ELEMENT dc-schema (#PCDATA) >
  <!ELEMENT dc-element (#PCDATA) >
  <!ELEMENT dc-qualifier (#PCDATA) >
@@ -24,6 +24,7 @@
  <!ELEMENT required (#PCDATA)>
  <!ELEMENT name-variants (#PCDATA)>
  <!ELEMENT regex (#PCDATA) >
+ <!ELEMENT regex-error-message (#PCDATA) >
 
  <!ELEMENT form-value-pairs (value-pairs)* >
  <!ELEMENT value-pairs (pair)+ >
@@ -61,5 +62,5 @@
 <!ELEMENT search-configuration (#PCDATA) >
 <!ELEMENT filter (#PCDATA) >
 <!ELEMENT externalsources (#PCDATA) >
-<!ELEMENT relation-field (relationship-type, search-configuration, filter?, repeatable?, name-variants?, label, type-bind?, hint, linked-metadata-field?, externalsources?, required?, regex?, visibility?)>
+<!ELEMENT relation-field (relationship-type, search-configuration, filter?, repeatable?, name-variants?, label, type-bind?, hint, linked-metadata-field?, externalsources?, required?, regex?, regex-error-message?, visibility?)>
 <!ELEMENT linked-metadata-field (dc-schema, dc-element, dc-qualifier?, input-type)>

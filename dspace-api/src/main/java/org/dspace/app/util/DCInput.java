@@ -144,6 +144,12 @@ public class DCInput {
     private Pattern pattern = null;
 
     /**
+     * the i18n key of the message to show when the value does not match the
+     * regex, null to let the user interface use its generic one
+     */
+    private String regexErrorMessage = null;
+
+    /**
      * allowed document types
      */
     private List<String> typeBind = null;
@@ -216,6 +222,7 @@ public class DCInput {
         readOnly = fieldMap.get("readonly");
         vocabulary = fieldMap.get("vocabulary");
         this.initRegex(fieldMap.get("regex"));
+        regexErrorMessage = fieldMap.get("regex-error-message");
         String closedVocabularyStr = fieldMap.get("closedVocabulary");
         closedVocabulary = "true".equalsIgnoreCase(closedVocabularyStr)
             || "yes".equalsIgnoreCase(closedVocabularyStr);
@@ -570,6 +577,14 @@ public class DCInput {
 
     public String getRegex() {
         return this.regex;
+    }
+
+    /**
+     * @return the i18n key of the message to show when a value does not match
+     *         {@link #getRegex()}, null when none is configured
+     */
+    public String getRegexErrorMessage() {
+        return this.regexErrorMessage;
     }
 
     public String getFieldName() {
