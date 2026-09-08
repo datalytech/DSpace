@@ -58,4 +58,32 @@
         <scope_note></scope_note>
     </dc-type>
 
+    <dc-type>
+        <schema>crispj</schema>
+        <element>investigator</element>
+        <qualifier>department</qualifier>
+        <scope_note>Department of the project investigator</scope_note>
+    </dc-type>
+
+    <dc-type>
+        <schema>crispj</schema>
+        <element>investigator</element>
+        <qualifier>faculty</qualifier>
+        <scope_note>Faculty of the project investigator</scope_note>
+    </dc-type>
+
+    <dc-type>
+        <schema>crispj</schema>
+        <element>type</element>
+        <qualifier></qualifier>
+        <scope_note>Type of the project</scope_note>
+    </dc-type>
+
+    <dc-type>
+        <schema>crispj</schema>
+        <element>university</element>
+        <qualifier>responsibility</qualifier>
+        <scope_note>University responsible for the project</scope_note>
+    </dc-type>
+
 </dspace-dc-types>

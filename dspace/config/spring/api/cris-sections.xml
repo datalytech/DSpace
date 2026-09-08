@@ -72,9 +72,9 @@
                         <property name="browseNames">
                             <list>
 				    <value>pjtitle</value>
-				    <value>rpname</value>
-				    <value>subject</value>
-				    <value>rpdept</value>
+				    <value>pjinvestigator</value>
+				    <value>pjsubject</value>
+				    <value>pjdept</value>
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>
