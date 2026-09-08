@@ -95,29 +95,71 @@ maintaining this: no submission form writes `dc.type` — the phd form only writ
 items through the migration/import rather than through DSpace configuration, so grepping the
 config for it finds nothing and proves nothing.
 
-`dc.type.uhtype` is kept in the filter as a safety net for records that carry the readable type
-but no `dc.type`. Check whether any such records exist, and drop
-`uc-uhtype-is-doctoral-thesis_condition` from `item-filters.xml` if none do:
+### Counting the theses
+
+Connect to the database container. Check the name first with `docker ps`; in the compose file it
+is `dspacedb`, and the DSpace postgres image creates the `dspace` role and database:
 
 ```bash
-docker exec -i dspacedb psql -U dspace -d dspace -c "
-  WITH t AS (
-    SELECT mv.dspace_object_id AS id,
-           max(CASE WHEN mfr.qualifier IS NULL              THEN mv.text_value END) AS dctype,
-           max(CASE WHEN mfr.qualifier = 'uhtype'           THEN mv.text_value END) AS uhtype
-    FROM metadatavalue mv
-    JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
-    JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
-    WHERE msr.short_id = 'dc' AND mfr.element = 'type'
-    GROUP BY mv.dspace_object_id)
-  SELECT dctype LIKE '%doctoralThesis' AS dc_says_thesis,
-         uhtype = 'Doctoral Thesis'    AS uh_says_thesis,
-         count(*)
-  FROM t GROUP BY 1,2 ORDER BY 3 DESC;"
+docker exec -i dspacedb psql -U dspace -d dspace
 ```
 
-A row with `dc_says_thesis = f` and `uh_says_thesis = t` is exactly what the safety net is for.
-If that row has count 0, the condition is dead weight.
+**What the type fields actually hold**, over archived, non withdrawn items only:
+
+```sql
+SELECT coalesce(mfr.qualifier, '(no qualifier)') AS field,
+       mv.text_value,
+       count(*) AS occurrences
+FROM item i
+JOIN metadatavalue mv           ON mv.dspace_object_id    = i.uuid
+JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+WHERE msr.short_id = 'dc' AND mfr.element = 'type'
+  AND i.in_archive AND NOT i.withdrawn
+GROUP BY 1, 2
+ORDER BY 3 DESC
+LIMIT 40;
+```
+
+**How many items the filter will match** — the number to know before running `doi-organiser`:
+
+```sql
+SELECT count(DISTINCT i.uuid) AS doctoral_theses
+FROM item i
+JOIN metadatavalue mv           ON mv.dspace_object_id    = i.uuid
+JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+WHERE msr.short_id = 'dc' AND mfr.element = 'type' AND mfr.qualifier IS NULL
+  AND mv.text_value LIKE '%doctoralThesis'
+  AND i.in_archive AND NOT i.withdrawn;
+```
+
+That count is an upper bound: the filter additionally requires at least one bitstream and no
+existing DOI, so `doi-organiser -l` will report the same number or fewer.
+
+**Whether the dc.type.uhtype safety net earns its place.** `dc.type` is repeatable, so this has
+to test each item for *any* matching value rather than collapsing its values into one:
+
+```sql
+SELECT t.dc_says_thesis, t.uh_says_thesis, count(*) AS items
+FROM (
+  SELECT i.uuid,
+         bool_or(mfr.qualifier IS NULL    AND mv.text_value LIKE '%doctoralThesis') AS dc_says_thesis,
+         bool_or(mfr.qualifier = 'uhtype' AND mv.text_value = 'Doctoral Thesis')    AS uh_says_thesis
+  FROM item i
+  JOIN metadatavalue mv           ON mv.dspace_object_id    = i.uuid
+  JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+  JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+  WHERE msr.short_id = 'dc' AND mfr.element = 'type'
+    AND i.in_archive AND NOT i.withdrawn
+  GROUP BY i.uuid
+) t
+GROUP BY 1, 2
+ORDER BY 3 DESC;
+```
+
+The row with `dc_says_thesis = f` and `uh_says_thesis = t` is what the safety net exists for.
+If it is absent, drop `uc-uhtype-is-doctoral-thesis_condition` from `item-filters.xml`.
 
 Then see how many items the filter will actually match, before it can act:
 
