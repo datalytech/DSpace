@@ -962,6 +962,8 @@
          <input-type>onebox</input-type>
          <hint>Προσθέστε λέξεις κλειδιά ή φράσεις. / Enter appropriate subject keywords or phrases.</hint>
 	 <required />
+         <regex>/^[^,;]*$/</regex>
+         <regex-error-message>error.validation.keywords.separator</regex-error-message>
        </field>
 	</row>
 	
@@ -1233,7 +1235,8 @@
          <input-type>onebox</input-type>
          <hint>Προσθέστε λέξεις κλειδιά ή φράσεις (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Με τον όρο λέξεις κλειδιά χαρακτηρίζονται λέξεις ή φράσεις, που προσδιορίζουν το θέμα. Κάθε λέξη κλειδί ή φράση να μην υπερβαίνει τους 60 χαρακτήρες / Enter appropriate subject keywords or phrases (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). Words or phrases defining the topic. Each keyword must not exceed 60 characters, including spaces.</hint>
          <required></required>
-
+         <regex>/^[^,;]*$/</regex>
+         <regex-error-message>error.validation.keywords.separator</regex-error-message>
        </field>
        </row>
       <row>
@@ -1447,6 +1450,8 @@
          <input-type>onebox</input-type>
          <hint>Προσθέστε λέξεις κλειδιά ή φράσεις με ΚΕΦΑΛΑΙΑ γράμματα (στην Αγγλική ΚΑΙ στην Ελληνική γλώσσα ή στη γλώσσα της διατριβής, σε περίπτωση που δεν ισχύουν ούτε τα Αγγλικά ούτε τα Ελληνικά). Με τον όρο λέξεις κλειδιά χαρακτηρίζονται λέξεις ή φράσεις, που προσδιορίζουν το θέμα. Κάθελέξηκλειδίήφράσηναμηνυπερβαίνειτους 60χαρακτήρες / Enter appropriate subject keywords or phrases in CAPITAL LETTERS (in English AND in Greek language or in the language of dissertation, in case neither English nor Greek apply). Words or phrases defining the topic. Each keyword must not exceed 60 characters, including spaces.</hint>
          <required>Υποχρεωτικό / Mandatory</required>
+         <regex>/^[^,;]*$/</regex>
+         <regex-error-message>error.validation.keywords.separator</regex-error-message>
          </field>
        </row>
     <row>

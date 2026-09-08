@@ -114,6 +114,7 @@ public class SubmissionFormConverter implements DSpaceConverter<DCInputSet, Subm
         SubmissionFormInputTypeRest inputRest = new SubmissionFormInputTypeRest();
 
         inputRest.setRegex(dcinput.getRegex());
+        inputRest.setRegexErrorMessage(dcinput.getRegexErrorMessage());
 
         if (dcinput.isMetadataField()) {
             // only try to process the metadata input type if there's a metadata field
