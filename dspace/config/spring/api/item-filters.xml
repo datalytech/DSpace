@@ -192,6 +192,45 @@
     </bean>
 
 
+    <!-- University of Cyprus: the item is a doctoral thesis.
+         Confirmed against live items: dc.type holds info:eu-repo/semantics/doctoralThesis. No
+         submission form writes it, so it comes from the migration/import rather than from a
+         value pair list, which is why the value appears nowhere in this configuration. -->
+    <bean id="uc-type-is-doctoral-thesis_condition"
+          class="org.dspace.content.logic.condition.MetadataValueMatchCondition">
+        <property name="parameters">
+            <map>
+                <entry key="field" value="dc.type" />
+                <entry key="pattern" value="doctoralThesis$" />
+            </map>
+        </property>
+    </bean>
+
+    <!-- Safety net for items that carry the readable type but no dc.type, which can happen for
+         records loaded before dc.type was populated. The phd submission form writes
+         "Doctoral Thesis" here (value pairs "common_types_phd"). Drop this condition once the
+         counts in docs/DOI-DataCite-UCY.md show the two fields agree on every thesis. -->
+    <bean id="uc-uhtype-is-doctoral-thesis_condition"
+          class="org.dspace.content.logic.condition.MetadataValueMatchCondition">
+        <property name="parameters">
+            <map>
+                <entry key="field" value="dc.type.uhtype" />
+                <entry key="pattern" value="^Doctoral Thesis$" />
+            </map>
+        </property>
+    </bean>
+
+    <!-- The item already carries a DOI under our own prefix -->
+    <bean id="uc-already-has-doi_condition"
+          class="org.dspace.content.logic.condition.MetadataValueMatchCondition">
+        <property name="parameters">
+            <map>
+                <entry key="field" value="dc.identifier.doi" />
+                <entry key="pattern" value="${identifier.doi.prefix}/" />
+            </map>
+        </property>
+    </bean>
+
     <!-- DEFINE FILTERS -->
     <!-- Note that this filter is almost the same as the above "or" bean but the advantage is we
          can reference the type_filter directly for item logic *and* as a sub-statement of other filters
@@ -216,6 +255,38 @@
                             <property name="statements" ref="dc-identifier-uri-contains-doi_condition"/>
                         </bean>
                         <!-- Create DOIs for items only that do have at least one bitstream. -->
+                        <ref bean="has-at-least-one-bitstream_condition"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- University of Cyprus DOI filter: only archived, non withdrawn doctoral theses that carry
+         at least one bitstream and do not already have a DOI get one minted. -->
+    <bean id="uc-doctoral-thesis-doi_filter" class="org.dspace.content.logic.DefaultFilter">
+        <property name="statement">
+            <bean class="org.dspace.content.logic.operator.And">
+                <property name="statements">
+                    <list>
+                        <ref bean="is-archived_condition"/>
+                        <bean class="org.dspace.content.logic.operator.Not">
+                            <property name="statements" ref="is-withdrawn_condition"/>
+                        </bean>
+                        <!-- It is a doctoral thesis, whichever field carries the type -->
+                        <bean class="org.dspace.content.logic.operator.Or">
+                            <property name="statements">
+                                <list>
+                                    <ref bean="uc-type-is-doctoral-thesis_condition"/>
+                                    <ref bean="uc-uhtype-is-doctoral-thesis_condition"/>
+                                </list>
+                            </property>
+                        </bean>
+                        <!-- Do not mint a second DOI for an item that already carries one -->
+                        <bean class="org.dspace.content.logic.operator.Not">
+                            <property name="statements" ref="uc-already-has-doi_condition"/>
+                        </bean>
+                        <!-- A thesis without a deposited file is not worth a DOI yet -->
                         <ref bean="has-at-least-one-bitstream_condition"/>
                     </list>
                 </property>

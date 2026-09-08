@@ -205,4 +205,58 @@
     -->
     <!-- CUSTOM GENERATORS -->
 
+    <!-- ============================================================================= -->
+    <!-- University of Cyprus: DOI registration with DataCite                            -->
+    <!-- Credentials live in local.cfg (identifier.doi.user / identifier.doi.password),   -->
+    <!-- they must never be committed. See docs/DOI-DataCite-UCY.md.                      -->
+    <!-- ============================================================================= -->
+
+    <!-- The namespace that goes between the prefix and the generated id. Reads
+         identifier.doi.namespaceseparator, so DOIs come out as 10.82357/gnosis/<id>. -->
+    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
+        <property name="configurationValue" value="${identifier.doi.namespaceseparator}" />
+    </bean>
+
+    <!-- At least one DEFAULT generation strategy has to exist: DoiGenerationStrategy
+         .getApplicableStrategy() returns null when there is none, and the provider dereferences
+         it while building the DOI. The filter here selects which namespace applies, not which
+         items get a DOI - that is the provider's own filter property below. -->
+    <bean id="defaultDoiGenerationStrategy" class="org.dspace.identifier.generators.ConfigurableDoiGenerationStrategy">
+        <constructor-arg name="filter" ref="always_true_filter" />
+        <constructor-arg name="doiNamespaceGenerator" ref="defaultValueNamespace" />
+        <constructor-arg name="generationType" value="DEFAULT" />
+    </bean>
+
+    <!-- Item level versioning is enabled on this installation (the "versioning" consumer is in
+         event.dispatcher.default.consumers), so the versioned provider is the correct one: it
+         keeps the DOI of previous versions and mints a new one per version. -->
+    <bean id="org.dspace.identifier.DOIIdentifierProvider"
+          class="org.dspace.identifier.VersionedDOIIdentifierProvider"
+          scope="singleton">
+        <property name="configurationService"
+                  ref="org.dspace.services.ConfigurationService"/>
+        <property name="DOIConnector"
+                  ref="org.dspace.identifier.doi.DOIConnector"/>
+        <!-- Only doctoral theses get a DOI. Defined in item-filters.xml. -->
+        <property name="filter" ref="uc-doctoral-thesis-doi_filter"/>
+    </bean>
+
+    <!-- Talks to the DataCite MDS API. The host is a property so that switching between
+         mds.datacite.org and mds.test.datacite.org is a one line change in local.cfg. -->
+    <bean id="org.dspace.identifier.doi.DOIConnector"
+          class="org.dspace.identifier.doi.DataCiteConnector"
+          scope="singleton">
+        <property name='DATACITE_SCHEME' value='https'/>
+        <property name='DATACITE_HOST' value='${identifier.doi.datacite.host}'/>
+        <property name='DATACITE_DOI_PATH' value='/doi/' />
+        <property name='DATACITE_METADATA_PATH' value='/metadata/' />
+        <property name='disseminationCrosswalkByEntityType'>
+            <map>
+                <!-- Doctoral theses are Publication entities. The UC crosswalk fixes the
+                     publisher, hosting institution and data manager to University of Cyprus. -->
+                <entry key="Publication" value-ref="referCrosswalkUcPublicationDataciteXml"></entry>
+            </map>
+        </property>
+    </bean>
+
 </beans>

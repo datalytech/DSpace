@@ -355,6 +355,20 @@
         <property name="converter" ref="xmlValueConverter" />
     </bean>
 
+    <!-- DataCite crosswalk used when registering DOIs for University of Cyprus doctoral theses.
+         It is a copy of referCrosswalkPublicationDataciteXml with the publisher, hosting
+         institution and data manager fixed to University of Cyprus, and with the human readable
+         resource type taken from dc.type.uhtype. It is deliberately kept separate so that the
+         generic publication-datacite-xml export crosswalk is not changed. -->
+    <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkUcPublicationDataciteXml">
+        <property name="templateFileName" value="crosswalks/template/uc-publication-datacite-xml.template"/>
+        <property name="mimeType" value="application/xml; charset=UTF-8"/>
+        <property name="fileName" value="datacite44.xml"/>
+        <property name="entityType" value="Publication"/>
+        <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE}"/>
+        <property name="converter" ref="xmlValueConverter" />
+    </bean>
+
     <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkPatentDataciteXml">
         <property name="templateFileName" value="crosswalks/template/patent-datacite-xml.template"/>
         <property name="mimeType" value="application/xml; charset=UTF-8"/>
@@ -623,6 +637,7 @@
 				<entry key="cerifToOrgUnitTypes" value-ref="mapConverterCerifToOrgUnitTypes" />
 				<entry key="cerifToFundingTypes" value-ref="mapConverterCerifToFundingTypes" />
                 <entry key="type2datacite" value-ref="mapConverterDataciteToPublicationTypes" />
+                <entry key="type2dataciteuc" value-ref="mapConverterUcThesisDataciteResourceTypes" />
 				<entry key="type2datacitelabel" value-ref="mapConverterDataciteToPublicationLabelTypes" />
                 <entry key="right2licenseUrl" value-ref="mapConverterDataciteToPublicationLicense" />
                 <entry key="right2conceptUrl" value-ref="mapConverterDataciteToPublicationAccessRights" />
@@ -701,6 +716,15 @@
 		<property name="configurationService" ref="org.dspace.services.ConfigurationService" />
 		<property name="defaultValue" value="other"/>
 	</bean>
+
+    <!-- Resolves the DataCite resourceTypeGeneral from the VALUE of dc.type (useAuthority=false),
+         used by the University of Cyprus doctoral thesis DataCite crosswalk. -->
+    <bean name="mapConverterUcThesisDataciteResourceTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">
+        <property name="converterNameFile" value="mapConverter-ucThesisDataciteResourceTypes.properties" />
+        <property name="configurationService" ref="org.dspace.services.ConfigurationService" />
+        <property name="defaultValue" value="Text"/>
+        <property name="useAuthority" value="false" />
+    </bean>
 
     <bean name="mapConverterDataciteToPublicationTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">
         <property name="converterNameFile" value="mapConverter-datacitePublicationTypes.properties" />
