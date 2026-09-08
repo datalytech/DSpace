@@ -162,18 +162,22 @@
     </bean>
     -->
 
-    <!-- Namespace definition -->
-<!--    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
+    <!-- Namespace definition. Reads identifier.doi.namespaceseparator, so DOIs come out as
+         10.82357/gnosis/<id>. -->
+    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
         <property name="configurationValue" value="${identifier.doi.namespaceseparator}" />
     </bean>
 
-    &lt;!&ndash; Below there are defined the generation strategy &ndash;&gt;
+    <!-- At least one DEFAULT generation strategy has to exist once a DOI provider is enabled:
+         DoiGenerationStrategy.getApplicableStrategy() returns null when there is none, and the
+         provider dereferences it while building the DOI. The filter here selects which namespace
+         applies, not which items get a DOI - that is the provider's own filter property. -->
     <bean id="defaultDoiGenerationStrategy" class="org.dspace.identifier.generators.ConfigurableDoiGenerationStrategy">
-        &lt;!&ndash; Filter configured in item-filters.xml file &ndash;&gt;
+        <!-- Filter configured in item-filters.xml file -->
         <constructor-arg name="filter" ref="always_true_filter" />
         <constructor-arg name="doiNamespaceGenerator" ref="defaultValueNamespace" />
         <constructor-arg name="generationType" value="DEFAULT" />
-    </bean>-->
+    </bean>
 
     <!-- CUSTOM GENERATORS -->
     <!-- The following are some example configurations for the DOI filter generation strategies -->
@@ -210,22 +214,6 @@
     <!-- Credentials live in local.cfg (identifier.doi.user / identifier.doi.password),   -->
     <!-- they must never be committed. See docs/DOI-DataCite-UCY.md.                      -->
     <!-- ============================================================================= -->
-
-    <!-- The namespace that goes between the prefix and the generated id. Reads
-         identifier.doi.namespaceseparator, so DOIs come out as 10.82357/gnosis/<id>. -->
-    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
-        <property name="configurationValue" value="${identifier.doi.namespaceseparator}" />
-    </bean>
-
-    <!-- At least one DEFAULT generation strategy has to exist: DoiGenerationStrategy
-         .getApplicableStrategy() returns null when there is none, and the provider dereferences
-         it while building the DOI. The filter here selects which namespace applies, not which
-         items get a DOI - that is the provider's own filter property below. -->
-    <bean id="defaultDoiGenerationStrategy" class="org.dspace.identifier.generators.ConfigurableDoiGenerationStrategy">
-        <constructor-arg name="filter" ref="always_true_filter" />
-        <constructor-arg name="doiNamespaceGenerator" ref="defaultValueNamespace" />
-        <constructor-arg name="generationType" value="DEFAULT" />
-    </bean>
 
     <!-- Item level versioning is enabled on this installation (the "versioning" consumer is in
          event.dispatcher.default.consumers), so the versioned provider is the correct one: it
