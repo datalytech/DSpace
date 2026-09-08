@@ -192,6 +192,52 @@
     </bean>
 
 
+    <!-- University of Cyprus: the item is a doctoral thesis.
+         Both spellings are checked because the value actually stored depends on the submission
+         form: the phd form stores "Doctoral Thesis" in dc.type.uhtype, while dc.type may hold a
+         COAR label or the openaire style info:eu-repo/semantics/doctoralThesis. Verify against the
+         live data (see docs/DOI-DataCite-UCY.md) and drop whichever condition does not apply. -->
+    <bean id="uc-type-is-doctoral-thesis_condition"
+          class="org.dspace.content.logic.condition.MetadataValuesMatchCondition">
+        <property name="parameters">
+            <map>
+                <entry key="field" value="dc.type" />
+                <entry key="patterns">
+                    <list>
+                        <value>^Doctoral Thesis$</value>
+                        <value>doctoralThesis$</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="uc-uhtype-is-doctoral-thesis_condition"
+          class="org.dspace.content.logic.condition.MetadataValuesMatchCondition">
+        <property name="parameters">
+            <map>
+                <entry key="field" value="dc.type.uhtype" />
+                <entry key="patterns">
+                    <list>
+                        <value>^Doctoral Thesis$</value>
+                        <value>doctoralThesis$</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <!-- The item already carries a DOI under our own prefix -->
+    <bean id="uc-already-has-doi_condition"
+          class="org.dspace.content.logic.condition.MetadataValueMatchCondition">
+        <property name="parameters">
+            <map>
+                <entry key="field" value="dc.identifier.doi" />
+                <entry key="pattern" value="${identifier.doi.prefix}/" />
+            </map>
+        </property>
+    </bean>
+
     <!-- DEFINE FILTERS -->
     <!-- Note that this filter is almost the same as the above "or" bean but the advantage is we
          can reference the type_filter directly for item logic *and* as a sub-statement of other filters
@@ -216,6 +262,38 @@
                             <property name="statements" ref="dc-identifier-uri-contains-doi_condition"/>
                         </bean>
                         <!-- Create DOIs for items only that do have at least one bitstream. -->
+                        <ref bean="has-at-least-one-bitstream_condition"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- University of Cyprus DOI filter: only archived, non withdrawn doctoral theses that carry
+         at least one bitstream and do not already have a DOI get one minted. -->
+    <bean id="uc-doctoral-thesis-doi_filter" class="org.dspace.content.logic.DefaultFilter">
+        <property name="statement">
+            <bean class="org.dspace.content.logic.operator.And">
+                <property name="statements">
+                    <list>
+                        <ref bean="is-archived_condition"/>
+                        <bean class="org.dspace.content.logic.operator.Not">
+                            <property name="statements" ref="is-withdrawn_condition"/>
+                        </bean>
+                        <!-- It is a doctoral thesis, whichever field carries the type -->
+                        <bean class="org.dspace.content.logic.operator.Or">
+                            <property name="statements">
+                                <list>
+                                    <ref bean="uc-type-is-doctoral-thesis_condition"/>
+                                    <ref bean="uc-uhtype-is-doctoral-thesis_condition"/>
+                                </list>
+                            </property>
+                        </bean>
+                        <!-- Do not mint a second DOI for an item that already carries one -->
+                        <bean class="org.dspace.content.logic.operator.Not">
+                            <property name="statements" ref="uc-already-has-doi_condition"/>
+                        </bean>
+                        <!-- A thesis without a deposited file is not worth a DOI yet -->
                         <ref bean="has-at-least-one-bitstream_condition"/>
                     </list>
                 </property>

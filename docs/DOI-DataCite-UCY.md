@@ -1,0 +1,169 @@
+# DOI registration with DataCite — University of Cyprus
+
+DOIs are minted for **doctoral theses only** and registered with DataCite under prefix
+`10.82357`. This note covers what was configured, what still has to be verified against the
+live data, and how to roll the registration out in controlled batches.
+
+Reference: <https://wiki.lyrasis.org/spaces/DSDOC7x/pages/104566767/DOI+Digital+Object+Identifier>
+
+## Credentials — never commit these
+
+`identifier.doi.user` and `identifier.doi.password` are placeholders in `dspace.cfg`, which is
+under version control. Put the real values in `[dspace]/config/local.cfg`, which is git-ignored:
+
+```properties
+identifier.doi.user     = <the DataCite repository account id>
+identifier.doi.password = <the DataCite password>
+```
+
+The password was shared over chat during setup, so rotate it in DataCite Fabrica once the
+integration is working.
+
+## What was configured
+
+| File | Change |
+|---|---|
+| `dspace.cfg` | `identifier.doi.prefix = 10.82357`, new `identifier.doi.datacite.host`, `doi` added to `event.dispatcher.default.consumers` |
+| `spring/api/identifier-service.xml` | Enables `VersionedDOIIdentifierProvider` and the `DataCiteConnector` |
+| `spring/api/item-filters.xml` | `uc-doctoral-thesis-doi_filter` — the rule deciding which items get a DOI |
+| `spring/api/crosswalks.xml` | `referCrosswalkUcPublicationDataciteXml` and the resource type converter bean |
+| `crosswalks/template/uc-publication-datacite-xml.template` | The DataCite kernel-4 XML that is sent |
+| `crosswalks/mapConverter-ucThesisDataciteResourceTypes.properties` | `dc.type` value → DataCite `resourceTypeGeneral` |
+
+`VersionedDOIIdentifierProvider` is used rather than `DOIIdentifierProvider` because item level
+versioning is active on this installation (the `versioning` consumer is in
+`event.dispatcher.default.consumers`); the plain provider throws at startup in that case.
+
+### Which items get a DOI
+
+`uc-doctoral-thesis-doi_filter` requires **all** of:
+
+- the item is archived,
+- it is not withdrawn,
+- it is a doctoral thesis (see the verification step below),
+- it does not already carry a DOI under prefix `10.82357`,
+- it has at least one bitstream.
+
+### What is sent to DataCite
+
+The XML is built from `uc-publication-datacite-xml.template`, a copy of the stock
+`publication-datacite-xml.template` with the client's requirements applied. The generic export
+crosswalk was deliberately left untouched.
+
+| DataCite element | Source |
+|---|---|
+| `identifier` | the minted DOI |
+| `creators` | `dc.contributor.author` (+ ORCID and affiliation when linked) |
+| `titles` | `dc.title` |
+| `publisher` | fixed text `University of Cyprus` |
+| `publicationYear` | year of `dc.date.issued` |
+| `subjects` | `dc.subject` |
+| `contributors` | `HostingInstitution` and `DataManager`, both fixed to `University of Cyprus` |
+| `dates` | `dc.date.issued`, `datacite.available` or `dc.date.available` |
+| `language` | `dc.language.iso` |
+| `resourceType@resourceTypeGeneral` | `dc.type` through `mapConverter-ucThesisDataciteResourceTypes.properties` → `Dissertation` |
+| `resourceType` text | `dc.type.uhtype` |
+| `alternateIdentifiers` | `dc.identifier.uri` |
+| `rightsList`, `descriptions` | as in the stock template |
+
+Publisher, hosting institution and data manager are written into the template rather than taken
+from `crosswalk.dissemination.DataCite.publisher` / `.dataManager` / `.hostingInstitution`.
+Those properties belong to the XSLT crosswalk path; this fork's `DataCiteConnector` uses the CRIS
+refer crosswalks instead and **never reads them** — only
+`crosswalk.dissemination.DataCite.namespace` is used, and it already matches kernel-4.
+
+The resource type needs its own converter because the stock
+`mapConverterDataciteToPublicationTypes` bean sets `useAuthority=true`: it keys on the COAR
+*authority* of `dc.type` and ignores plain text values. The new bean uses `useAuthority=false`
+and keys on the value. Unmapped values fall back to `Text`, so the XML stays schema valid even
+for a type nobody anticipated.
+
+## Verify this before registering anything
+
+The requirement was stated as `dc.type = info:eu-repo/semantics/doctoralThesis`, but that value
+does not appear anywhere in this installation's configuration. What the configuration shows is:
+
+- the phd submission form stores **`dc.type.uhtype` = `Doctoral Thesis`** (value pairs
+  `common_types_phd` in `submission-forms.xml`), and has no `dc.type` field at all;
+- `info:eu-repo/semantics/…` appears only in `crosswalks/oai/transformers/driver.xsl` and
+  `openaire.xsl`, which build those strings **at OAI dissemination time** — they are not stored
+  on the item.
+
+The filter and the type mapping therefore accept both spellings, on both fields. Confirm what is
+really stored and then trim whichever half is dead weight:
+
+```bash
+# What dc.type and dc.type.uhtype actually hold on doctoral theses
+docker exec -i dspacedb psql -U dspace -d dspace -c "
+  SELECT mfr.element, mfr.qualifier, mv.text_value, count(*)
+  FROM metadatavalue mv
+  JOIN metadatafieldregistry mfr ON mfr.metadata_field_id = mv.metadata_field_id
+  JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+  WHERE msr.short_id = 'dc' AND mfr.element = 'type'
+  GROUP BY 1,2,3 ORDER BY 4 DESC LIMIT 40;"
+```
+
+If `dc.type` turns out to be empty on these items, change the one token in
+`uc-publication-datacite-xml.template` from `type2dataciteuc.dc-type` to
+`type2dataciteuc.dc-type-uhtype`; the converter file already carries the `Doctoral Thesis` key,
+so nothing else has to change.
+
+Then check how many items the filter will actually match, before it can act:
+
+```bash
+docker exec -it dspace /dspace/bin/dspace filter-media -h >/dev/null 2>&1   # container is up
+docker exec -it dspace /dspace/bin/dspace doi-organiser -l                  # list pending DOIs
+```
+
+## One decision left: the DOI shape
+
+`identifier.doi.namespaceseparator` is still the DSpace default `dspace/`, so DOIs will look like
+
+```
+10.82357/dspace/12345
+```
+
+Setting it to an empty value gives `10.82357/12345` instead. This is baked into every DOI ever
+minted and cannot be changed afterwards, so decide before the first registration.
+
+## Controlled rollout
+
+Nothing is sent to DataCite at the moment an item is installed: the provider only records the DOI
+in the `doi` table with a pending status. `doi-organiser` is what talks to DataCite, so keeping it
+off cron means nothing leaves the building until you run it.
+
+```bash
+# 1. See what is queued, and check a single record first
+docker exec -it dspace /dspace/bin/dspace doi-organiser -l
+
+# 2. Register one DOI and verify it in DataCite Fabrica before going further
+docker exec -it dspace /dspace/bin/dspace doi-organiser -r -d <doi>
+
+# 3. Once that record looks right, work through the rest
+docker exec -it dspace /dspace/bin/dspace doi-organiser -r
+```
+
+To see the exact XML for an item before anything is sent, download the DataCite dissemination of
+that item from the REST API:
+
+```
+/server/api/core/items/<uuid>/crosswalk?type=publication-datacite-xml
+```
+
+Note this returns the **generic** publication crosswalk, not the UC one; use it to sanity check the
+metadata, and read `uc-publication-datacite-xml.template` for the differences.
+
+Once a batch has gone through cleanly, add the daily job:
+
+```
+0 3 * * *  docker exec dspace /dspace/bin/dspace doi-organiser -q
+```
+
+## Rolling back
+
+A DOI that has been registered with DataCite in production cannot be deleted, only marked
+inactive. Before the first production run, make sure the metadata is right — a wrong
+`publicationYear` or a missing creator is permanent in the DOI's history.
+
+To stop minting new DOIs, remove the `filter` reference or point it at a filter that returns
+false; existing DOIs are unaffected.
