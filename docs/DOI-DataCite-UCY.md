@@ -23,8 +23,8 @@ integration is working.
 
 | File | Change |
 |---|---|
-| `dspace.cfg` | `identifier.doi.prefix = 10.82357`, new `identifier.doi.datacite.host`, `doi` added to `event.dispatcher.default.consumers` |
-| `spring/api/identifier-service.xml` | Enables `VersionedDOIIdentifierProvider` and the `DataCiteConnector` |
+| `dspace.cfg` | `identifier.doi.prefix = 10.82357`, `identifier.doi.namespaceseparator = gnosis/`, new `identifier.doi.datacite.host`, `doi` added to `event.dispatcher.default.consumers` |
+| `spring/api/identifier-service.xml` | Enables `VersionedDOIIdentifierProvider`, the `DataCiteConnector` and the default DOI generation strategy |
 | `spring/api/item-filters.xml` | `uc-doctoral-thesis-doi_filter` — the rule deciding which items get a DOI |
 | `spring/api/crosswalks.xml` | `referCrosswalkUcPublicationDataciteXml` and the resource type converter bean |
 | `crosswalks/template/uc-publication-datacite-xml.template` | The DataCite kernel-4 XML that is sent |
@@ -115,16 +115,24 @@ docker exec -it dspace /dspace/bin/dspace filter-media -h >/dev/null 2>&1   # co
 docker exec -it dspace /dspace/bin/dspace doi-organiser -l                  # list pending DOIs
 ```
 
-## One decision left: the DOI shape
+## The shape of the DOIs
 
-`identifier.doi.namespaceseparator` is still the DSpace default `dspace/`, so DOIs will look like
+`identifier.doi.namespaceseparator = gnosis/`, after the repository name, so every DOI reads
 
 ```
-10.82357/dspace/12345
+10.82357/gnosis/<id>
 ```
 
-Setting it to an empty value gives `10.82357/12345` instead. This is baked into every DOI ever
-minted and cannot be changed afterwards, so decide before the first registration.
+This is baked into every DOI ever minted and cannot be changed afterwards. Changing it later
+would not rewrite the DOIs already registered, it would only make new ones inconsistent with the
+old ones.
+
+The namespace is applied by `defaultDoiGenerationStrategy` in `identifier-service.xml`. That bean
+is not optional decoration: `DoiGenerationStrategy.getApplicableStrategy()` returns `null` when no
+strategy of type `DEFAULT` is registered, and `VersionedDOIIdentifierProvider.getBareDOI()`
+dereferences the result while assembling the DOI. Without it, minting fails with a
+`NullPointerException`. Its own `filter` is `always_true_filter` and decides which *namespace*
+applies, not which items get a DOI — that is the provider's `filter` property.
 
 ## Controlled rollout
 

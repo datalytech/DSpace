@@ -211,6 +211,22 @@
     <!-- they must never be committed. See docs/DOI-DataCite-UCY.md.                      -->
     <!-- ============================================================================= -->
 
+    <!-- The namespace that goes between the prefix and the generated id. Reads
+         identifier.doi.namespaceseparator, so DOIs come out as 10.82357/gnosis/<id>. -->
+    <bean id="defaultValueNamespace" class="org.dspace.identifier.generators.FixedConfigurationValueNamespaceGenerator">
+        <property name="configurationValue" value="${identifier.doi.namespaceseparator}" />
+    </bean>
+
+    <!-- At least one DEFAULT generation strategy has to exist: DoiGenerationStrategy
+         .getApplicableStrategy() returns null when there is none, and the provider dereferences
+         it while building the DOI. The filter here selects which namespace applies, not which
+         items get a DOI - that is the provider's own filter property below. -->
+    <bean id="defaultDoiGenerationStrategy" class="org.dspace.identifier.generators.ConfigurableDoiGenerationStrategy">
+        <constructor-arg name="filter" ref="always_true_filter" />
+        <constructor-arg name="doiNamespaceGenerator" ref="defaultValueNamespace" />
+        <constructor-arg name="generationType" value="DEFAULT" />
+    </bean>
+
     <!-- Item level versioning is enabled on this installation (the "versioning" consumer is in
          event.dispatcher.default.consumers), so the versioned provider is the correct one: it
          keeps the DOI of previous versions and mints a new one per version. -->
