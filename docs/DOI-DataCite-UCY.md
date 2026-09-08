@@ -239,36 +239,94 @@ applies, not which items get a DOI — that is the provider's `filter` property.
 
 ## Controlled rollout
 
-Nothing is sent to DataCite at the moment an item is installed: the provider only records the DOI
-in the `doi` table with a pending status. `doi-organiser` is what talks to DataCite, so keeping it
-off cron means nothing leaves the building until you run it.
+Two things about `doi-organiser` are worth knowing before the first run, because neither is
+obvious and both were checked in the code rather than assumed.
+
+**It only ever works off the `doi` table.** `-l`, `-r`, `-s` and `-u` all call
+`doiService.getDOIsByStatus()`; nothing in the tool scans items. Rows reach that table when the
+identifier provider runs, which happens when an item is installed or updated — so **newly
+deposited theses queue themselves, while the existing backlog does not**. Straight after
+deployment `doi-organiser -l` will therefore report nothing, and that is correct, not a fault.
+`DOIConsumer` does not help here either: it only mints for in-progress submissions, and only when
+`identifiers.submission.register` is on.
+
+**`--filter` takes a configuration property name, not a bean id.**
+`FilterUtils.getFilterFromConfiguration()` reads the property and resolves the bean named in its
+value. Without the option, `DOIOrganiser` uses `always_true_filter` and will mint a DOI for
+whatever it is pointed at, ignoring `uc-doctoral-thesis-doi_filter` entirely. `dspace.cfg`
+therefore defines `identifier.doi.filter = uc-doctoral-thesis-doi_filter`, and every manual
+invocation should pass `--filter identifier.doi.filter`.
+
+### New deposits
+
+Nothing to do. A thesis installed from now on is queued by the provider, and
 
 ```bash
-# 1. See what is queued, and check a single record first
-docker exec -it dspace /dspace/bin/dspace doi-organiser -l
-
-# 2. Register one DOI and verify it in DataCite Fabrica before going further
-docker exec -it dspace /dspace/bin/dspace doi-organiser -r -d <doi>
-
-# 3. Once that record looks right, work through the rest
-docker exec -it dspace /dspace/bin/dspace doi-organiser -r
+docker exec -it dspace /dspace/bin/dspace doi-organiser -l   # what is queued
+docker exec -it dspace /dspace/bin/dspace doi-organiser -r   # register the queue
 ```
 
-To see the exact XML for an item before anything is sent, download the DataCite dissemination of
-that item from the REST API:
+sends it to DataCite. Add the daily job only once a first batch has gone through cleanly:
+
+```
+0 3 * * *  docker exec dspace /dspace/bin/dspace doi-organiser -q -r
+```
+
+### The existing backlog
+
+The archived theses have to be named one at a time. Collect them first:
+
+```bash
+docker exec -i dspacedb psql -U dspace -d dspace -At -c "
+SELECT DISTINCT i.uuid
+FROM item i
+JOIN metadatavalue mv           ON mv.dspace_object_id    = i.uuid
+JOIN metadatafieldregistry mfr  ON mfr.metadata_field_id  = mv.metadata_field_id
+JOIN metadataschemaregistry msr ON msr.metadata_schema_id = mfr.metadata_schema_id
+WHERE msr.short_id = 'dc' AND mfr.element = 'type'
+  AND ((mfr.qualifier IS NULL    AND mv.text_value LIKE '%doctoralThesis')
+    OR (mfr.qualifier = 'uhtype' AND mv.text_value = 'Doctoral Thesis'))
+  AND i.in_archive AND NOT i.withdrawn
+ORDER BY 1" > ~/thesis-uuids.txt
+
+wc -l ~/thesis-uuids.txt    # expect 1336
+```
+
+One item first, and check it in DataCite Fabrica before anything else:
+
+```bash
+head -1 ~/thesis-uuids.txt | while read u; do
+  docker exec dspace /dspace/bin/dspace doi-organiser \
+      --register-doi "$u" --filter identifier.doi.filter
+done
+```
+
+Then in batches. Each invocation starts its own JVM, so this is slow — around 20 seconds per
+item, some seven hours for the whole backlog — which suits doing it a few hundred at a time:
+
+```bash
+sed -n '2,101p' ~/thesis-uuids.txt | while read u; do
+  docker exec dspace /dspace/bin/dspace doi-organiser \
+      --register-doi "$u" --filter identifier.doi.filter
+done
+```
+
+Watch the count climb as you go:
+
+```bash
+docker exec -i dspacedb psql -U dspace -d dspace -c \
+  "SELECT status, count(*) FROM doi GROUP BY status ORDER BY 1;"
+```
+
+To see the XML for an item before anything is sent, fetch the DataCite dissemination from the
+REST API:
 
 ```
 /server/api/core/items/<uuid>/crosswalk?type=publication-datacite-xml
 ```
 
-Note this returns the **generic** publication crosswalk, not the UC one; use it to sanity check the
+That is the **generic** publication crosswalk, not the UC one; use it to sanity check the
 metadata, and read `uc-publication-datacite-xml.template` for the differences.
-
-Once a batch has gone through cleanly, add the daily job:
-
-```
-0 3 * * *  docker exec dspace /dspace/bin/dspace doi-organiser -q
-```
 
 ## Rolling back
 
