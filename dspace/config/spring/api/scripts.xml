@@ -140,6 +140,11 @@
         <property name="dspaceRunnableClass" value="org.dspace.content.authority.script.DanglingAuthorityScript"/>
     </bean>
 
+    <bean id="match-authority" class="org.dspace.content.authority.script.MatchAuthorityScriptConfiguration" >
+        <property name="description" value="Link the text values of the authority controlled metadata to the entity they name, filling in the missing authorities"/>
+        <property name="dspaceRunnableClass" value="org.dspace.content.authority.script.MatchAuthorityScript"/>
+    </bean>
+
     <bean id="filter-media" class="org.dspace.app.mediafilter.MediaFilterScriptConfiguration">
         <property name="description" value="Perform the media filtering to extract full text from documents and to create thumbnails"/>
         <property name="dspaceRunnableClass" value="org.dspace.app.mediafilter.MediaFilterScript"/>
