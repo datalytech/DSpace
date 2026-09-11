@@ -93,14 +93,27 @@ import org.dspace.utils.DSpace;
  * {@code crispj.investigator.faculty}, and only reports what it would do: use
  * -f to write the authorities.
  * <p>
- * An authority declaring its entity type - {@code OrgUnitAuthority} does,
- * through {@code cris.ItemAuthority.OrgUnitAuthority.entityType} - searches the
- * entities of that type only. {@code AuthorAuthority} declares none in the
- * default configuration, so it searches every item by title: the expected
- * entity type is then taken from {@code authority.match.entity-type.<field>},
- * from -t, or from the defaults below, and the candidates of another type are
- * discarded. Declaring {@code cris.ItemAuthority.AuthorAuthority.entityType =
- * Person} narrows the search itself, for the submission form as well.
+ * Whenever the expected entity type is known - declared by the authority
+ * through {@code cris.ItemAuthority.<name>.entityType}, given with -t, or
+ * taken from the defaults below - the value is matched by scanning the
+ * entities of that type directly and comparing their names with the same
+ * accent/case/punctuation insensitive rule used for verification, rather than
+ * through the authority's own solr based suggestion. This is deliberate: the
+ * `itemauthoritylookup`/`bestmatch_s` solr fields the authority searches are
+ * tokenized in ways that can silently drop a value containing punctuation
+ * (a department name such as "Ωκεανογραφικό Κέντρο / Oceanography Centre"),
+ * so relying on them alone would miss entities that plainly exist. The
+ * authority's own search is still used as a fallback when nothing is found
+ * locally - which is how -l/--loose can still accept its best guess - and
+ * whenever the entity type is not known.
+ * <p>
+ * {@code AuthorAuthority} declares no entity type in the default
+ * configuration, so its own search would otherwise match every item by
+ * title: the expected type is then taken from
+ * {@code authority.match.entity-type.<field>}, from -t, or from the defaults
+ * below, and candidates of another type are discarded either way. Declaring
+ * {@code cris.ItemAuthority.AuthorAuthority.entityType = Person} narrows the
+ * authority's own search too, for the submission form as well.
  * <p>
  * Once the authorities are written, run {@code ./dspace item-enhancer -f} and
  * {@code ./dspace index-discovery -b}: the links live in solr and in the
@@ -229,6 +242,15 @@ public class MatchAuthorityScript
      * The name fields to compare against, keyed by entity type.
      */
     private final Map<String, List<String>> nameFields = new HashMap<>();
+
+    /**
+     * The local name index built for each entity type that is looked up, so
+     * that repository is scanned once per entity type rather than once per
+     * value. A missing entry means the index still has to be built; a null
+     * entry means building it failed and the authority's own search is used
+     * instead for that entity type.
+     */
+    private final Map<String, EntityIndex> entityIndexes = new HashMap<>();
 
     /**
      * How many times each action has been taken, keyed by field.
@@ -515,8 +537,9 @@ public class MatchAuthorityScript
     }
 
     /**
-     * Ask the authority configured for the field to match the value, and verify
-     * the candidates it returns.
+     * Match the value against the local name index of the expected entity type
+     * and, when that finds nothing, against the authority configured for the
+     * field.
      *
      * @return the match, its uuid being null when nothing was found, or null
      *         when the lookup itself failed
@@ -530,9 +553,111 @@ public class MatchAuthorityScript
             return matches.get(cacheKey);
         }
 
-        Match match = search(target, collection, value);
+        Match match = target.entityType != null ? searchLocalIndex(target, value) : null;
+        if (match == null || (match.uuid == null && !match.ambiguous)) {
+            // nothing usable locally: either the entity type is not known, the
+            // index could not be built, or none of its entities has a matching
+            // name, in which case the authority's own search still gets a say
+            // (this is also how -l/--loose can accept its best guess)
+            match = search(target, collection, value);
+        }
+
         matches.put(cacheKey, match);
         return match;
+    }
+
+    /**
+     * Match the value against every entity of the expected type, by comparing
+     * its text to their names directly instead of going through the
+     * authority's own solr based search.
+     *
+     * @return the match, its uuid being null when no entity has a matching
+     *         name, or null when the index could not be built
+     */
+    private Match searchLocalIndex(Target target, MetadataValue value) {
+
+        EntityIndex index = entityIndexOf(target.entityType);
+        if (index == null) {
+            return null;
+        }
+
+        String normalized = normalize(value.getValue());
+
+        Match exactMatch = matchFrom(index.exact.get(normalized), Quality.EXACT);
+        if (exactMatch != null) {
+            return exactMatch;
+        }
+
+        Match tokenMatch = matchFrom(index.tokens.get(tokenKey(normalized)), Quality.TOKENS);
+        return tokenMatch != null ? tokenMatch : new Match();
+    }
+
+    /**
+     * @return a match built from the given candidates: null when there are
+     *         none, ambiguous when there is more than one, otherwise the one
+     *         candidate at the given quality
+     */
+    private Match matchFrom(Set<UUID> candidates, Quality quality) {
+
+        if (candidates == null || candidates.isEmpty()) {
+            return null;
+        }
+
+        Match match = new Match();
+        if (candidates.size() > 1) {
+            match.ambiguous = true;
+            return match;
+        }
+
+        Item candidate = findItem(candidates.iterator().next().toString());
+        if (candidate == null) {
+            // indexed a moment ago, in the same run: should not happen outside
+            // of a concurrent deletion, but the lookup falls back rather than
+            // pointing at a uuid that turned out not to resolve
+            return null;
+        }
+
+        match.uuid = candidate.getID().toString();
+        match.quality = quality;
+        match.name = itemService.getMetadata(candidate, "dc.title");
+        return match;
+    }
+
+    /**
+     * The local name index for the given entity type, built by scanning every
+     * archived item of that type once and cached for the rest of the run.
+     */
+    private EntityIndex entityIndexOf(String entityType) {
+        // computeIfAbsent would not cache a null (a failed build), retrying it
+        // on every single value instead of falling back for the rest of the run
+        if (!entityIndexes.containsKey(entityType)) {
+            entityIndexes.put(entityType, buildEntityIndex(entityType));
+        }
+        return entityIndexes.get(entityType);
+    }
+
+    private EntityIndex buildEntityIndex(String entityType) {
+
+        EntityIndex index = new EntityIndex();
+        int indexed = 0;
+
+        try {
+            Iterator<Item> iterator = itemService.findArchivedByMetadataField(context,
+                "dspace", "entity", "type", entityType);
+            while (iterator.hasNext()) {
+                Item candidate = iterator.next();
+                index.add(candidate.getID(), namesOf(candidate, entityType));
+                indexed++;
+                context.uncacheEntity(candidate);
+            }
+        } catch (SQLException | AuthorizeException e) {
+            handler.logWarning("Could not build the local name index for " + entityType
+                + ", falling back to the authority lookup only: " + e.getMessage());
+            return null;
+        }
+
+        handler.logInfo("Indexed the names of " + indexed + " " + entityType + " entities");
+        return index;
     }
 
     private Match search(Target target, Collection collection, MetadataValue value) {
@@ -592,10 +717,14 @@ public class MatchAuthorityScript
      * and given name in both orders.
      */
     private List<String> namesOf(Item candidate, Target target) {
+        return namesOf(candidate, target.entityType);
+    }
+
+    private List<String> namesOf(Item candidate, String entityType) {
 
         List<String> names = new ArrayList<>();
 
-        for (String field : nameFieldsOf(target.entityType)) {
+        for (String field : nameFieldsOf(entityType)) {
             itemService.getMetadataByMetadataString(candidate, field)
                 .forEach(metadataValue -> names.add(metadataValue.getValue()));
         }
@@ -678,6 +807,15 @@ public class MatchAuthorityScript
         List<String> tokens = new ArrayList<>(Arrays.asList(StringUtils.split(normalized, ' ')));
         tokens.sort(String::compareTo);
         return tokens;
+    }
+
+    /**
+     * The index key for a normalized name under the token based comparison:
+     * its words, sorted and re-joined, so that two names built of the same
+     * words hash to the same key regardless of order or separator.
+     */
+    private static String tokenKey(String normalized) {
+        return String.join(" ", tokens(normalized));
     }
 
     private Item findItem(String uuid) {
@@ -811,7 +949,15 @@ public class MatchAuthorityScript
         try (InputStream input = new FileInputStream(csvFile)) {
             handler.writeFilestream(context, CSV_NAME, input, "text/csv");
         }
-        handler.logInfo("Report written to " + CSV_NAME);
+        // run from the admin UI, this ends up among the process' output files,
+        // downloadable from there; run from the command line, DSpaceRunnable
+        // writes it relative to the current directory of that process, inside
+        // whatever container or host ran it - not necessarily where the shell
+        // that launched "dspace" is, so the absolute path is spelled out here
+        handler.logInfo("Report written to " + new File(CSV_NAME).getAbsolutePath()
+            + ". When run from the command line, look for it in the container that ran the script "
+            + "(i.e. docker exec <container> find / -maxdepth 4 -name " + CSV_NAME
+            + "), then copy it out with docker cp.");
     }
 
     private void deleteCsv() {
@@ -955,6 +1101,31 @@ public class MatchAuthorityScript
         private Quality quality;
 
         private boolean ambiguous;
+
+    }
+
+    /**
+     * The names of every archived entity of one entity type, indexed for the
+     * exact and the token based comparison, so that a value is matched by a
+     * direct lookup instead of a solr query whose tokenization can silently
+     * miss a name that contains punctuation.
+     */
+    private static final class EntityIndex {
+
+        private final Map<String, Set<UUID>> exact = new HashMap<>();
+
+        private final Map<String, Set<UUID>> tokens = new HashMap<>();
+
+        private void add(UUID uuid, List<String> names) {
+            for (String name : names) {
+                String normalized = normalize(name);
+                if (normalized.isEmpty()) {
+                    continue;
+                }
+                exact.computeIfAbsent(normalized, key -> new LinkedHashSet<>()).add(uuid);
+                tokens.computeIfAbsent(tokenKey(normalized), key -> new LinkedHashSet<>()).add(uuid);
+            }
+        }
 
     }
 
