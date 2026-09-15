@@ -49,14 +49,19 @@
       <str name="dir">${solr.ulog.dir:}</str>
     </updateLog>
  
-     <autoCommit> 
+     <!-- How often the index is written to disk. The searcher is kept up to date by the soft
+          commit below, so it does not need to reopen here. -->
+     <autoCommit>
        <maxDocs>10000</maxDocs> <!--Commit every 10.000 documents-->
-       <maxTime>${solr.autoCommit.maxTime:900000}</maxTime> <!--Default commit every 15 minutes--> 
-       <openSearcher>true</openSearcher> 
+       <maxTime>${solr.autoCommit.maxTime:900000}</maxTime> <!--Default commit every 15 minutes-->
+       <openSearcher>false</openSearcher>
      </autoCommit>
 
-     <autoSoftCommit> 
-       <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
+     <!-- How soon a newly recorded audit event becomes visible to the REST API and any search
+          against this core. Without this, an admin browsing an item's audit trail right after
+          acting on it would see nothing for up to the 15 minutes above. -->
+     <autoSoftCommit>
+       <maxTime>${solr.autoSoftCommit.maxTime:15000}</maxTime>
      </autoSoftCommit>
 
   </updateHandler>
