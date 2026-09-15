@@ -828,16 +828,28 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         // update reporting item
         String reportItemUuid = configurationService.getProperty("dspace.action.report.item.uuid");
         boolean reportActive = configurationService.getBooleanProperty("dspace.action.report.active");
-        if (reportActive && !reportItemUuid.equals(item.getID().toString()) && item.isArchived()) {
+        if (reportActive && StringUtils.isNotBlank(reportItemUuid)
+                && !reportItemUuid.equals(item.getID().toString()) && item.isArchived()) {
             try {
                 context.turnOffAuthorisationSystem();
                 Item reportItem = findByIdOrLegacyId(context, reportItemUuid);
+                if (reportItem == null) {
+                    log.warn("Cannot log action report: configured dspace.action.report.item.uuid '{}'"
+                            + " does not resolve to an item.", reportItemUuid);
+                    return;
+                }
+                // Scripts and other system-triggered updates run in a Context with no current user:
+                // fall back to a fixed label instead of failing the whole update() with a NPE.
+                EPerson currentUser = context.getCurrentUser();
+                String actor = currentUser != null ? currentUser.getFullName() : "system (script)";
                 addMetadata(context, reportItem, "dc", "subject", null, Item.ANY,
-                        (new Date()).toString() + "::" + context.getCurrentUser().getFullName() + "::" + status + "::"
+                        (new Date()).toString() + "::" + actor + "::" + status + "::"
                                 + item.getID() + "::" + item.getName());
+            } catch (RuntimeException | SQLException | AuthorizeException e) {
+                log.error("Failed to log an action report entry for item {}: {}",
+                        item.getID(), e.getMessage(), e);
+            } finally {
                 context.restoreAuthSystemState();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }
