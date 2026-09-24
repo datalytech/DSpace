@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
@@ -27,8 +29,10 @@ import org.apache.solr.client.solrj.SolrQuery.SortClause;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CursorMarkParams;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.event.Event;
@@ -148,7 +152,7 @@ public class AuditService {
      * Shortcut for
      * {@link #findEvents(Context, UUID, Date, Date, int, int, boolean)} with
      * objectUuid, from and to null
-     * 
+     *
      * @param context DSpace context
      * @param limit   the number of results to return
      * @param offset  the offset for the pagination (0 based)
@@ -163,7 +167,7 @@ public class AuditService {
     /**
      * Return the list of events in the specified time window for the requested
      * object
-     * 
+     *
      * @param context    DSpace context
      * @param objectUuid can be null. If not null limit the audit events to the ones
      *                   where the subject or the object
@@ -177,13 +181,32 @@ public class AuditService {
      */
     public List<AuditEvent> findEvents(Context context, UUID objectUuid, Date from, Date to, int limit, int offset,
             boolean asc) {
-        String q = "*";
-        if (objectUuid != null) {
-            q = objectUuid.toString();
-        }
-        SolrQuery solrQuery = new SolrQuery("(" + SUBJECT_UUID_FIELD + ":" + q + " OR "
-                + OBJECT_UUID_FIELD + ":" + q + ")  AND " + buildTimeQuery(from, to));
-        solrQuery.setRows(Integer.MAX_VALUE);
+        return findEvents(context, objectUuid, null, null, from, to, limit, offset, asc);
+    }
+
+    /**
+     * Return the list of events matching every supplied filter. Any filter left
+     * {@code null} is not applied.
+     *
+     * @param context     DSpace context
+     * @param objectUuid  can be null. If not null limit the audit events to the ones
+     *                    where the subject or the object matches
+     * @param epersonUuid can be null. If not null limit the audit events to the ones
+     *                    performed by this EPerson
+     * @param eventType   can be null. If not null limit the audit events to this
+     *                    event type (one of {@code CREATE}, {@code MODIFY},
+     *                    {@code MODIFY_METADATA}, {@code ADD}, {@code REMOVE},
+     *                    {@code DELETE}, {@code INSTALL} - see {@link Event})
+     * @param from        the start date (inclusive) can be null
+     * @param to          the end date (inclusive) can be null
+     * @param limit       the number of results to return
+     * @param offset      the offset for the pagination (0 based)
+     * @param asc         if true sort the result in ascending order (by timeStamp)
+     * @return the list of events matching every supplied filter
+     */
+    public List<AuditEvent> findEvents(Context context, UUID objectUuid, UUID epersonUuid, String eventType,
+            Date from, Date to, int limit, int offset, boolean asc) {
+        SolrQuery solrQuery = new SolrQuery(buildFilterQuery(objectUuid, epersonUuid, eventType, from, to));
         solrQuery.addSort(new SortClause(DATETIME_FIELD, asc ? ORDER.asc : ORDER.desc));
         solrQuery.setRows(limit);
         solrQuery.setStart(offset);
@@ -199,6 +222,52 @@ public class AuditService {
             listResourceSyncEvent.add(rse);
         }
         return listResourceSyncEvent;
+    }
+
+    /**
+     * Visit every event matching every supplied filter, oldest first, without
+     * loading them all into memory at once. Intended for exports: pages through
+     * the audit core in batches of {@code batchSize} using a Solr cursor mark,
+     * which - unlike offset-based paging - stays efficient no matter how deep
+     * into a large result set it goes.
+     *
+     * @param context     DSpace context
+     * @param objectUuid  can be null, see {@link #findEvents(Context, UUID, UUID,
+     *                    String, Date, Date, int, int, boolean)}
+     * @param epersonUuid can be null, see {@link #findEvents(Context, UUID, UUID,
+     *                    String, Date, Date, int, int, boolean)}
+     * @param eventType   can be null, see {@link #findEvents(Context, UUID, UUID,
+     *                    String, Date, Date, int, int, boolean)}
+     * @param from        the start date (inclusive) can be null
+     * @param to          the end date (inclusive) can be null
+     * @param batchSize   how many events to fetch from Solr per page
+     * @param consumer    called once per matching event, in ascending timestamp order
+     */
+    public void forEachEvent(Context context, UUID objectUuid, UUID epersonUuid, String eventType,
+            Date from, Date to, int batchSize, Consumer<AuditEvent> consumer) {
+        SolrQuery solrQuery = new SolrQuery(buildFilterQuery(objectUuid, epersonUuid, eventType, from, to));
+        solrQuery.setRows(batchSize);
+        // the cursor mark requires a sort with a unique tie-breaker field
+        solrQuery.addSort(new SortClause(DATETIME_FIELD, ORDER.asc));
+        solrQuery.addSort(new SortClause(UUID_FIELD, ORDER.asc));
+
+        String cursorMark = CursorMarkParams.CURSOR_MARK_START;
+        boolean done = false;
+        while (!done) {
+            solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+            QueryResponse queryResponse;
+            try {
+                queryResponse = getSolr().query(solrQuery);
+            } catch (SolrServerException | IOException e) {
+                throw new RuntimeException(e);
+            }
+            for (SolrDocument sd : queryResponse.getResults()) {
+                consumer.accept(getAuditEventFromSolrDoc(sd));
+            }
+            String nextCursorMark = queryResponse.getNextCursorMark();
+            done = cursorMark.equals(nextCursorMark);
+            cursorMark = nextCursorMark;
+        }
     }
 
     public AuditEvent findEvent(Context context, UUID id) {
@@ -291,18 +360,61 @@ public class AuditService {
         return DATETIME_FIELD + ":[" + fromDate + " TO " + toDate + "]";
     }
 
+    /**
+     * Build the Solr query implementing every supplied filter, {@code null}
+     * filters left out. Every value coming from outside this class - the object,
+     * eperson and event type filters - is escaped with
+     * {@link ClientUtils#escapeQueryChars(String)} before being placed in the
+     * query string, since none of them are validated to be free of Solr query
+     * syntax by the time they reach here (a UUID happens to only ever contain
+     * hex digits and hyphens, but the event type is a caller-supplied string).
+     */
+    private String buildFilterQuery(UUID objectUuid, UUID epersonUuid, String eventType, Date from, Date to) {
+        String q = "*";
+        if (objectUuid != null) {
+            q = ClientUtils.escapeQueryChars(objectUuid.toString());
+        }
+        StringBuilder query = new StringBuilder()
+            .append("(").append(SUBJECT_UUID_FIELD).append(":").append(q)
+            .append(" OR ").append(OBJECT_UUID_FIELD).append(":").append(q).append(")")
+            .append(" AND ").append(buildTimeQuery(from, to));
+        if (epersonUuid != null) {
+            query.append(" AND ").append(EPERSON_UUID_FIELD).append(":")
+                .append(ClientUtils.escapeQueryChars(epersonUuid.toString()));
+        }
+        if (StringUtils.isNotBlank(eventType)) {
+            query.append(" AND ").append(EVENT_TYPE_FIELD).append(":")
+                .append(ClientUtils.escapeQueryChars(eventType));
+        }
+        return query.toString();
+    }
+
     public long countAllEvents(Context context) {
         return countEvents(context, null, null, null);
     }
 
     public long countEvents(Context context, UUID objectUuid, Date from, Date to) {
-        String q = "*";
-        if (objectUuid != null) {
-            q = objectUuid.toString();
-        }
-        SolrQuery solrQuery = new SolrQuery("(" + SUBJECT_UUID_FIELD + ":" + q + " OR "
-                + OBJECT_UUID_FIELD + ":" + q + ")  AND " + buildTimeQuery(from, to));
-        solrQuery.setRows(Integer.MAX_VALUE);
+        return countEvents(context, objectUuid, null, null, from, to);
+    }
+
+    /**
+     * Count the events matching every supplied filter. Any filter left
+     * {@code null} is not applied.
+     *
+     * @param context     DSpace context
+     * @param objectUuid  can be null, see {@link #findEvents(Context, UUID, UUID,
+     *                    String, Date, Date, int, int, boolean)}
+     * @param epersonUuid can be null, see {@link #findEvents(Context, UUID, UUID,
+     *                    String, Date, Date, int, int, boolean)}
+     * @param eventType   can be null, see {@link #findEvents(Context, UUID, UUID,
+     *                    String, Date, Date, int, int, boolean)}
+     * @param from        the start date (inclusive) can be null
+     * @param to          the end date (inclusive) can be null
+     * @return the number of events matching every supplied filter
+     */
+    public long countEvents(Context context, UUID objectUuid, UUID epersonUuid, String eventType,
+            Date from, Date to) {
+        SolrQuery solrQuery = new SolrQuery(buildFilterQuery(objectUuid, epersonUuid, eventType, from, to));
         solrQuery.setRows(0);
         QueryResponse queryResponse;
         try {

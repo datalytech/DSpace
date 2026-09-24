@@ -27,6 +27,14 @@
         <property name="dspaceRunnableClass" value="org.dspace.identifier.doi.DoiFilterDiagnostic"/>
     </bean>
 
+    <!-- Restricted to repository administrators by the default ScriptConfiguration.isAllowedToExecute,
+         which is not overridden here. -->
+    <bean id="audit-export" class="org.dspace.app.audit.AuditExportScriptConfiguration" primary="true">
+        <property name="description"
+                  value="Export audit events (optionally filtered by object, eperson, event type and/or date range) to CSV"/>
+        <property name="dspaceRunnableClass" value="org.dspace.app.audit.AuditExport"/>
+    </bean>
+
     <bean id="curate" class="org.dspace.curate.CurationScriptConfiguration">
         <property name="description" value="Curation tasks"/>
         <property name="dspaceRunnableClass" value="org.dspace.curate.Curation"/>
