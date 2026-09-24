@@ -83,14 +83,14 @@ jobs:
       # (This artifact is downloadable at the bottom of any job's summary page)
       - name: Upload Results of ${{ matrix.type }} to Artifact
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.type }} results
           path: ${{ matrix.resultsdir }}
 
       # Upload code coverage report to artifact, so that it can be shared with the 'codecov' job (see below)
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.type }} coverage report
           path: 'dspace/target/site/jacoco-aggregate/jacoco.xml'
@@ -109,7 +109,7 @@ jobs:
 
       # Download artifacts from previous 'tests' job
       - name: Download coverage artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       # Now attempt upload to Codecov using its action.
       # NOTE: We use a retry action to retry the Codecov upload if it fails the first time.
