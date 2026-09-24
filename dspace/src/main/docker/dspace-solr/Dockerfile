@@ -17,19 +17,22 @@ FROM solr:${SOLR_VERSION}-slim
 ENV AUTHORITY_CONFIGSET_PATH=/opt/solr/server/solr/configsets/authority/conf \
     OAI_CONFIGSET_PATH=/opt/solr/server/solr/configsets/oai/conf \
     SEARCH_CONFIGSET_PATH=/opt/solr/server/solr/configsets/search/conf \
-    STATISTICS_CONFIGSET_PATH=/opt/solr/server/solr/configsets/statistics/conf
+    STATISTICS_CONFIGSET_PATH=/opt/solr/server/solr/configsets/statistics/conf \
+    AUDIT_CONFIGSET_PATH=/opt/solr/server/solr/configsets/audit/conf
 
 USER root
 
 RUN mkdir -p $AUTHORITY_CONFIGSET_PATH && \
     mkdir -p $OAI_CONFIGSET_PATH && \
     mkdir -p $SEARCH_CONFIGSET_PATH && \
-    mkdir -p $STATISTICS_CONFIGSET_PATH
+    mkdir -p $STATISTICS_CONFIGSET_PATH && \
+    mkdir -p $AUDIT_CONFIGSET_PATH
 
 COPY dspace/solr/authority/conf/* $AUTHORITY_CONFIGSET_PATH/
 COPY dspace/solr/oai/conf/* $OAI_CONFIGSET_PATH/
 COPY dspace/solr/search/conf/* $SEARCH_CONFIGSET_PATH/
 COPY dspace/solr/statistics/conf/* $STATISTICS_CONFIGSET_PATH/
+COPY dspace/solr/audit/conf/* $AUDIT_CONFIGSET_PATH/
 
 RUN chown -R solr:solr /opt/solr/server/solr/configsets
 
