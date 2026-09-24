@@ -83,15 +83,6 @@ needed:
   there all along; it only ever showed "No audits found" for lack of any enabled backend to ask.
 * **`/auditlogs/<event-id>`** — the detail of a single event.
 
-None of the three screens has a search box, a filter, or a clickable column sort — they are
-read-only, paginated tables ordered by time, navigable only by clicking a row (to its detail, or
-to its object's full history) or paging through. The `AuditDataService` on the frontend
-(`src/app/core/audit/audit-data.service.ts`) only calls `findAll()` and `findByObject()`, and the
-REST repository only exposes `findByObject` as a `@SearchRestMethod` — there is nothing to build
-a richer filter UI against yet without adding a new REST search method first (by event type, by
-eperson, or by date range, say). The detail screen also does not render the `detail` field the
-`Audit` model carries, so today it is unused by the UI even where the backend has it.
-
 `findByObject` is exactly the "what happened to this item" view the old report item was trying
 to approximate by hand — it is now a paginated, admin-only table instead of parsing
 semicolon-separated text out of `dc.subject`, and it was already one click away on every item.
@@ -101,22 +92,64 @@ overview means typing the URL directly, or arriving via a specific item's Audit 
 sidebar entry is a small, separate frontend change if the client wants the general overview to be
 discoverable without knowing the URL.
 
+## Search filters and CSV export
+
+The `/auditlogs` overview now has a filter form (object UUID, eperson UUID, event type, and a
+from/until date range — any combination, all optional) and an **Export to CSV** button, backed
+by:
+
+* `AuditService.findEvents`/`countEvents` (`dspace-api`) — filtered, paginated Solr queries
+  against the audit core, replacing the old unbounded `setRows(Integer.MAX_VALUE)` call.
+* A new `byFilters` `@SearchRestMethod` on `AuditEventRestRepository`
+  (`GET /server/api/core/auditevents/search/byFilters?object=...&eperson=...&eventType=...&startDate=...&endDate=...`),
+  `@PreAuthorize("hasAuthority('ADMIN')")` like the rest of the audit REST endpoints. Dates are
+  `yyyy-MM-dd`; `startDate` is the beginning of that day, `endDate` the end of it.
+* The `audit-export` script (`org.dspace.app.audit.AuditExport`), runnable only by repository
+  administrators (the default `ScriptConfiguration` restriction, not overridden). It accepts the
+  same filters as `-o`/`-p`/`-t`/`-f`/`-u` and streams matching events to a CSV file — one row per
+  event, with object/subject names and eperson emails resolved — attached to its Process as a
+  downloadable bitstream. The frontend's **Export to CSV** button invokes this script (via
+  `ScriptDataService.invoke`, the same mechanism `bulk-item-export`/`metadata-export` use) with
+  whatever filters are currently applied to the table, or no filters at all for the full history,
+  and redirects to the resulting Process page once it starts.
+* Neither the REST search nor the export script ever load the full result set into memory:
+  `findEvents` uses offset/limit paging for the on-screen table, and `AuditExport` streams through
+  `AuditService.forEachEvent`, which pages the audit core with Solr cursor-mark deep paging
+  (`CursorMarkParams`) in batches of 500 — safe regardless of whether the filtered range is 10
+  events or the entire, unbounded history of a repository with ~26,000+ items.
+* `/auditlogs` itself is now guarded by `SiteAdministratorGuard` instead of just
+  `AuthenticatedGuard`, so only repository administrators can reach the screen at all (the REST
+  layer was already admin-only; this closes the same door on the frontend route).
+
+This addresses the earlier "load everything on open" concern directly: the overview's initial
+load is a single paginated page (10 rows) like before, filtering narrows what that page contains,
+and a full export runs as a background Process rather than a synchronous request — it can take as
+long as it needs without tying up a web request thread or the browser.
+
 ## Retention
 
 `filters = All+All` means every event on every object type is recorded — with ~26,000+ items and
-regular editing, this core will grow continuously, and nothing in this codebase prunes it
-automatically (`dspace/config/launcher.xml` has no audit-related command). Decide a retention
-window and prune periodically with a direct Solr delete-by-query, for example to drop anything
-older than a year:
+regular editing, this core grows continuously, and nothing prunes it automatically just by being
+enabled. A new `audit-cleanup` CLI command (`org.dspace.app.audit.AuditCleanup`, registered in
+`dspace/config/launcher.xml`) deletes events older than a retention window:
 
 ```bash
-docker exec dspacesolr curl -s 'http://localhost:8983/solr/audit/update?commit=true' \
-  -H 'Content-Type: application/json' \
-  -d '{"delete": {"query": "timeStamp:[* TO NOW-1YEAR]"}}'
+# Uses audit.retention.days from dspace/config/modules/audit.cfg (defaults to 365)
+[dspace]/bin/dspace audit-cleanup
+
+# See what a shorter/longer window would remove without deleting anything
+[dspace]/bin/dspace audit-cleanup --days 180 --dry-run
+
+# Override the configured retention for a single run
+[dspace]/bin/dspace audit-cleanup --days 730
 ```
 
-Run that from cron at whatever interval suits the retention policy the client wants; there is no
-automatic expiry configured in `dspace/solr/audit/conf/schema.xml`.
+Set `audit.retention.days` in `local.cfg` once a retention period is agreed with the client (a
+year is the default placeholder in `audit.cfg`), and schedule `dspace audit-cleanup` from cron at
+whatever interval fits — daily or weekly is typical. This is intentionally a separate, manually
+scheduled process rather than something wired into the request path or into `AuditConsumer`
+itself, so pruning never competes with normal traffic and its schedule can be changed without a
+redeploy.
 
 ## Retiring the old hook
 
