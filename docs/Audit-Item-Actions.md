@@ -67,27 +67,39 @@ later — `numFound` should have gone up by one.
 
 ## Using it
 
-All of this is behind `@PreAuthorize("hasAuthority('ADMIN')")` — only a repository administrator
-can read it, via the REST API:
+All of this is behind `@PreAuthorize("hasAuthority('ADMIN')")` on the REST side, and the frontend
+already ships a UI for it — `dspace-angular`'s `audit-page` module (`src/app/audit-page/`),
+mounted at `/auditlogs`. It was simply unreachable in practice while `audit.enabled` was off:
+every request 404s via `returnNotFoundIfDisabled()`, so the screens rendered empty regardless of
+who visited them. Once this PR is deployed, three screens become live, with no frontend changes
+needed:
 
-```
-# Every audit event, newest first
-GET /server/api/system/auditevents?sort=timeStamp,desc
+* **`/auditlogs`** — every recorded event, newest first: id, event type, object, subject,
+  acting eperson, timestamp. Rows link into the other two screens.
+* **`/auditlogs/object/<uuid>`** — one object's full history. This is also wired into every
+  item's admin context menu already: the "⋮" actions menu on an item page has an **Audit**
+  button (`src/app/shared/context-menu/audit-item/audit-item-menu.component.ts`, visible only to
+  admins via `FeatureID.AdministratorOf`) that opens exactly this view for that item. It has been
+  there all along; it only ever showed "No audits found" for lack of any enabled backend to ask.
+* **`/auditlogs/<event-id>`** — the detail of a single event.
 
-# The full history of one item
-GET /server/api/system/auditevents/search/findByObject?object=<item-uuid>&sort=timeStamp,desc
-
-# One event, embedding who did it and to what
-GET /server/api/system/auditevents/<event-uuid>?embed=eperson,object,subject
-```
+None of the three screens has a search box, a filter, or a clickable column sort — they are
+read-only, paginated tables ordered by time, navigable only by clicking a row (to its detail, or
+to its object's full history) or paging through. The `AuditDataService` on the frontend
+(`src/app/core/audit/audit-data.service.ts`) only calls `findAll()` and `findByObject()`, and the
+REST repository only exposes `findByObject` as a `@SearchRestMethod` — there is nothing to build
+a richer filter UI against yet without adding a new REST search method first (by event type, by
+eperson, or by date range, say). The detail screen also does not render the `detail` field the
+`Audit` model carries, so today it is unused by the UI even where the backend has it.
 
 `findByObject` is exactly the "what happened to this item" view the old report item was trying
-to approximate by hand — it is now a single paginated, sortable REST call instead of parsing
-semicolon-separated text out of `dc.subject`.
+to approximate by hand — it is now a paginated, admin-only table instead of parsing
+semicolon-separated text out of `dc.subject`, and it was already one click away on every item.
 
-There is no admin-UI screen for this out of the box in this fork; if the client wants one, it is
-a small addition on top of an endpoint that already exists and is already permission-checked,
-rather than new backend work.
+There is currently no link to `/auditlogs` from the admin sidebar/menu — reaching the general
+overview means typing the URL directly, or arriving via a specific item's Audit button. Adding a
+sidebar entry is a small, separate frontend change if the client wants the general overview to be
+discoverable without knowing the URL.
 
 ## Retention
 
