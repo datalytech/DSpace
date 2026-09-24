@@ -45,6 +45,52 @@ versioning is active on this installation (the `versioning` consumer is in
 - it does not already carry a DOI under prefix `10.82357`,
 - it has at least one bitstream.
 
+### Diagnosing why a specific item did not get a DOI
+
+`doi-organiser -l`/`-r` only ever say *how many* items are queued or registered, never *why* a
+given item is not among them — the filter's `And`/`Or`/`Not` composition is opaque from the
+outside. The `doi-filter-diagnostic` script answers that directly: for a list of item UUIDs (or
+every item in the repository), it evaluates each of the filter's sub-conditions individually and
+writes one CSV row per item, so it is immediately obvious which requirement a given thesis fails
+— archived but withdrawn, correctly typed but missing a bitstream, already carrying a DOI, and so
+on. It reads the same `is-archived_condition`/`is-withdrawn_condition`/
+`uc-type-is-doctoral-thesis_condition`/`uc-uhtype-is-doctoral-thesis_condition`/
+`uc-already-has-doi_condition`/`has-at-least-one-bitstream_condition` beans `uc-doctoral-thesis-doi_filter`
+itself is built from (plus the filter named by `identifier.doi.filter` for the overall verdict), so
+its report can never disagree with what `doi-organiser` actually decides.
+
+CSV columns: `uuid`, `title`, `archived`, `notWithdrawn`, `typeIsDoctoralThesis_dcType`,
+`typeIsDoctoralThesis_uhType`, `typeMatches` (the two type columns OR'd together, matching the
+filter's own sub-statement), `doesNotAlreadyHaveDoi`, `hasAtLeastOneBitstream`, and `passesFilter`
+(the overall result — should always agree with the AND of the other columns; if it ever doesn't,
+`item-filters.xml` has changed and this script's hardcoded bean IDs need updating to match).
+
+Against a list of UUIDs collected as in "The existing backlog" below (or any other list — a CSV of
+items a script or the client flagged as missing a DOI works just as well, one UUID per line):
+
+```bash
+docker exec -it dspace /dspace/bin/dspace doi-filter-diagnostic --file /path/to/thesis-uuids.txt
+```
+
+Or a handful of specific items:
+
+```bash
+docker exec -it dspace /dspace/bin/dspace doi-filter-diagnostic \
+    -i 11a2b3c4-... -i 22b3c4d5-...
+```
+
+Or the whole repository (slow on ~26,000+ items, but safe — it streams one item at a time and
+never holds the full item list in memory):
+
+```bash
+docker exec -it dspace /dspace/bin/dspace doi-filter-diagnostic --all
+```
+
+Each run writes `doi-filter-diagnostic-<timestamp>.csv` in the current directory. The same script
+is also registered for the admin UI's Processes screen (repository administrators only, same
+restriction as `audit-export`/`metadata-export`), so it can be run from the browser with the
+resulting CSV downloaded from the finished Process instead of `docker exec`.
+
 ### What is sent to DataCite
 
 The XML is built from `uc-publication-datacite-xml.template`, a copy of the stock

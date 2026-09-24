@@ -18,6 +18,15 @@
         <property name="dspaceRunnableClass" value="org.dspace.app.bulkedit.MetadataExport"/>
     </bean>
 
+    <!-- Restricted to repository administrators by the default ScriptConfiguration.isAllowedToExecute,
+         which is not overridden here. -->
+    <bean id="doi-filter-diagnostic" class="org.dspace.identifier.doi.DoiFilterDiagnosticScriptConfiguration"
+          primary="true">
+        <property name="description"
+                  value="Report, per item and per sub-condition, why the given items do or do not pass the configured DOI minting filter (identifier.doi.filter)"/>
+        <property name="dspaceRunnableClass" value="org.dspace.identifier.doi.DoiFilterDiagnostic"/>
+    </bean>
+
     <bean id="curate" class="org.dspace.curate.CurationScriptConfiguration">
         <property name="description" value="Curation tasks"/>
         <property name="dspaceRunnableClass" value="org.dspace.curate.Curation"/>
