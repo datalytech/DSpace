@@ -845,7 +845,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
                 addMetadata(context, reportItem, "dc", "subject", null, Item.ANY,
                         (new Date()).toString() + "::" + actor + "::" + status + "::"
                                 + item.getID() + "::" + item.getName());
-            } catch (RuntimeException | SQLException | AuthorizeException e) {
+            } catch (RuntimeException | SQLException e) {
                 log.error("Failed to log an action report entry for item {}: {}",
                         item.getID(), e.getMessage(), e);
             } finally {

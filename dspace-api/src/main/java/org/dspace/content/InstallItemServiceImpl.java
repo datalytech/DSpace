@@ -279,7 +279,7 @@ public class InstallItemServiceImpl implements InstallItemService {
                         (new Date()).toString() + "::" + actor + "::" + status + "::"
                                 + item.getID() + "::" + item.getName());
 
-            } catch (RuntimeException | SQLException | AuthorizeException e) {
+            } catch (RuntimeException | SQLException e) {
                 log.error("Failed to log an action report entry for item {}: {}",
                         item.getID(), e.getMessage(), e);
             } finally {
