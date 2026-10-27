@@ -1,0 +1,91 @@
+# ===========================================================================
+# Dockerfile.tomcat-hardened
+#
+# Λεπτό layer πάνω από το DSpace backend image που:
+#   1. Σβήνει κάθε default Tomcat webapp  -> εύρημα "Apache Tomcat Default Files"
+#   2. Κρύβει την έκδοση Tomcat από error pages και Server header
+#   3. Σβήνει τον AJP connector (attack class Ghostcat / CVE-2020-1938)
+#   4. Προσθέτει RemoteIpValve ώστε τα DSpace statistics να βλέπουν τη σωστή IP
+#
+# Build:
+#   # πρώτα φτιάξε το κανονικό image από το ΠΑΡΑΓΩΓΙΚΟ Dockerfile (ΟΧΙ .test)
+#   docker build -t dspace-cris:local -f Dockerfile .
+#   # μετά το hardening layer
+#   docker build -t dspace-cris:hardened \
+#         --build-arg BASE_IMAGE=dspace-cris:local \
+#         -f security-hardening/Dockerfile.tomcat-hardened .
+# ===========================================================================
+ARG BASE_IMAGE=dspace/dspace:dspace-7_x
+FROM ${BASE_IMAGE}
+
+USER root
+
+# ---------------------------------------------------------------------------
+# 1. Default webapps
+# ---------------------------------------------------------------------------
+# Το official tomcat:9 image ήδη τα μετακινεί σε webapps.dist/ και αφήνει το
+# webapps/ άδειο. Τα σβήνουμε εντελώς ώστε ένα λάθος bind-mount ή ένα
+# `cp -r webapps.dist/* webapps/` να μην μπορεί να τα επαναφέρει.
+RUN rm -rf /usr/local/tomcat/webapps.dist \
+           /usr/local/tomcat/webapps/ROOT \
+           /usr/local/tomcat/webapps/docs \
+           /usr/local/tomcat/webapps/examples \
+           /usr/local/tomcat/webapps/manager \
+           /usr/local/tomcat/webapps/host-manager \
+           /usr/local/tomcat/RELEASE-NOTES \
+           /usr/local/tomcat/RUNNING.txt
+
+# Αν τυχόν τρέχεις image φτιαγμένο από Dockerfile.test, πέτα και το
+# deprecated v6 REST webapp (έχει web.xml που επιτρέπει plain HTTP).
+RUN rm -rf /usr/local/tomcat/webapps/rest /dspace/webapps/rest
+
+# ---------------------------------------------------------------------------
+# 2. Version disclosure
+# ---------------------------------------------------------------------------
+# α) ErrorReportValve: οι σελίδες 404/500 δεν δείχνουν ούτε stack trace ούτε
+#    "Apache Tomcat/9.0.xx"
+# β) server=" " + xpoweredBy="false" στον HTTP connector: καθαρό Server header
+# γ) RemoteIpValve: διαβάζει X-Forwarded-For/Proto από τον reverse proxy
+RUN set -eux; \
+    SX=/usr/local/tomcat/conf/server.xml; \
+    cp "$SX" "$SX.orig"; \
+    sed -i 's|<Connector port="8080" protocol="HTTP/1.1"|<Connector port="8080" protocol="HTTP/1.1" server=" " xpoweredBy="false"|' "$SX"; \
+    sed -i 's|</Host>|  <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false" showServerInfo="false" />\n        <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="X-Forwarded-For" protocolHeader="X-Forwarded-Proto" protocolHeaderHttpsValue="https" />\n      </Host>|' "$SX"; \
+    grep -q 'showServerInfo="false"' "$SX"; \
+    grep -q 'RemoteIpValve'          "$SX"; \
+    grep -q 'xpoweredBy="false"'     "$SX"
+
+# δ) Κρύψε το version string και στα banner/logs. Ο $CATALINA_HOME/lib φάκελος
+#    προηγείται των jar στο common.loader, άρα αυτό το αρχείο υπερισχύει του
+#    ServerInfo.properties που είναι μέσα στο catalina.jar.
+RUN mkdir -p /usr/local/tomcat/lib/org/apache/catalina/util && \
+    printf 'server.info=DSpace\nserver.number=0.0.0.0\nserver.built=\n' \
+      > /usr/local/tomcat/lib/org/apache/catalina/util/ServerInfo.properties
+
+# ---------------------------------------------------------------------------
+# 3. AJP connector
+# ---------------------------------------------------------------------------
+# Δεν τον χρειάζεσαι με mod_proxy_http / nginx. Ένας εκτεθειμένος AJP με
+# secretRequired="false" επιτρέπει ανάγνωση αρχείων μέσα στο webapp
+# (WEB-INF/web.xml, configs με DB passwords) - η οικογένεια Ghostcat.
+RUN sed -i '/protocol="AJP\/1\.3"/d' /usr/local/tomcat/conf/server.xml && \
+    ! grep -q 'AJP/1.3' /usr/local/tomcat/conf/server.xml
+
+# ---------------------------------------------------------------------------
+# 4. Καθαρά env - κανένας debugger
+# ---------------------------------------------------------------------------
+# Αν το base image ήταν από Dockerfile.test, το CATALINA_OPTS περιέχει
+# -Xrunjdwp ... address=*:8000 δηλαδή JDWP χωρίς authentication = remote
+# code execution για όποιον φτάσει στην 8000. Το μηδενίζουμε.
+ENV CATALINA_OPTS=""
+ENV JAVA_OPTS="-Xmx2000m -Djava.awt.headless=true"
+
+# Μόνο η 8080. Ούτε 8009 (AJP) ούτε 8000 (JDWP).
+EXPOSE 8080
+
+# Επαλήθευση κατά το build: τίποτα default να μην έχει μείνει.
+RUN set -eux; \
+    for d in ROOT docs examples manager host-manager rest; do \
+      test ! -e "/usr/local/tomcat/webapps/$d" || { echo "LEFTOVER: $d"; exit 1; }; \
+    done; \
+    echo "webapps/ περιέχει:"; ls -1 /usr/local/tomcat/webapps/

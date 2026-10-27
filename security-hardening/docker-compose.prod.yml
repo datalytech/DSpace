@@ -1,0 +1,196 @@
+# ===========================================================================
+# docker-compose.prod.yml - ΠΡΟΤΥΠΟ για production DSpace-CRIS 7.6 σε Docker
+#
+# Γιατί υπάρχει αυτό το αρχείο:
+#
+# Το docker-compose.yml στη ρίζα του repo είναι το upstream αρχείο για τοπική
+# ΑΝΑΠΤΥΞΗ. Σε production έχει τρία σοβαρά προβλήματα:
+#
+#   1. build: dockerfile: Dockerfile.test
+#      Το Dockerfile.test λέει μόνο του: "This image is meant for
+#      TESTING/DEVELOPMENT ONLY". Περιέχει:
+#        - CATALINA_OPTS=-Xrunjdwp:...,address=*:8000
+#          JDWP χωρίς authentication. Όποιος φτάσει στην 8000 εκτελεί
+#          αυθαίρετο κώδικα στο JVM. Δεν είναι "medium", είναι RCE.
+#        - AJP connector στο 0.0.0.0:8009 με secretRequired="false"
+#          Το σχόλιο στο ίδιο το Dockerfile λέει ότι αυτό επιτρέπεται μόνο
+#          όταν το AJP ΔΕΝ είναι προσβάσιμο από εξωτερικό δίκτυο. Εκτεθειμένο,
+#          ανοίγει την οικογένεια Ghostcat (CVE-2020-1938): ανάγνωση αρχείων
+#          μέσα στο webapp, δηλαδή web.xml και configs με DB passwords.
+#        - deployάρει το deprecated v6 REST API στο /rest με web.xml
+#          ξαναγραμμένο ώστε να δέχεται plain HTTP. Το σχόλιο λέει
+#          "WARNING: THIS IS OBVIOUSLY INSECURE. NEVER DO THIS IN PRODUCTION."
+#
+#   2. Δημοσιεύει στον host, σε ΟΛΑ τα interfaces: 8080, 8009, 8000, 5432, 8983
+#      Δηλαδή Tomcat, AJP, java debugger, PostgreSQL (password: dspace) και
+#      Solr admin (χωρίς authentication) προσβάσιμα από το internet.
+#
+#   3. ufw/firewalld ΔΕΝ τα μπλοκάρουν. Το Docker γράφει δικούς του κανόνες
+#      στις DOCKER / DOCKER-USER αλυσίδες (nat + FORWARD), ενώ το ufw
+#      διαχειρίζεται την INPUT. Το `ufw deny 8080/tcp` δεν κάνει τίποτα για
+#      published Docker port. Ο σωστός τρόπος είναι το binding πιο κάτω:
+#      "127.0.0.1:8080:8080" αντί "8080:8080".
+#
+# Χρήση:
+#   cp security-hardening/.env.prod.example .env   # και συμπλήρωσέ το
+#   docker compose -f security-hardening/docker-compose.prod.yml up -d
+#
+# ΠΡΟΣΟΧΗ: είναι ΠΡΟΤΥΠΟ. Σύγκρινέ το με το compose που τρέχεις τώρα και
+# κράτα τα δικά σου volumes, Solr cores και env vars. Μην το τρέξεις τυφλά
+# σε server με δεδομένα.
+# ===========================================================================
+version: '3.7'
+
+networks:
+  dspacenet:
+    ipam:
+      config:
+        - subnet: 172.23.0.0/16
+
+services:
+
+  # -------------------------------------------------------------------------
+  # Backend (Tomcat + DSpace REST API)
+  # -------------------------------------------------------------------------
+  dspace:
+    container_name: dspace
+    image: "${DSPACE_IMAGE:-dspace-cris:hardened}"
+    build:
+      context: ..
+      # ΠΑΡΑΓΩΓΙΚΟ Dockerfile - ΟΧΙ το Dockerfile.test
+      dockerfile: Dockerfile
+      args:
+        JDK_VERSION: 11
+    depends_on:
+      - dspacedb
+      - dspacesolr
+    networks:
+      dspacenet:
+    ports:
+      # ΜΟΝΟ localhost. Ο reverse proxy (Apache/nginx) στον host συνδέεται εδώ.
+      # Μέσα στο container ο Tomcat ακούει κανονικά στο 0.0.0.0 - η απομόνωση
+      # γίνεται από το 127.0.0.1 στο ΑΡΙΣΤΕΡΟ μέρος του mapping.
+      - "127.0.0.1:8080:8080"
+      # ΔΕΝ δημοσιεύουμε 8009 (AJP) ούτε 8000 (JDWP debugger).
+    environment:
+      dspace__P__dir: /dspace
+      # Απόλυτα URLs με https - αλλιώς mixed content και σπασμένα HATEOAS links
+      dspace__P__server__P__url: "https://${DSPACE_HOSTNAME}/server"
+      dspace__P__ui__P__url:     "https://${DSPACE_HOSTNAME}"
+      dspace__P__name: "${DSPACE_NAME:-Institutional Repository}"
+      solr__P__server: http://dspacesolr:8983/solr
+      # Εμπιστεύσου X-Forwarded-For μόνο από το docker subnet + τον host
+      proxies__P__trusted__P__ipranges: '172.23.0'
+      LOGGING_CONFIG: /dspace/config/log4j2-container.xml
+      # Κανένας debugger σε production
+      CATALINA_OPTS: ""
+      JAVA_OPTS: "-Xmx4000m -Djava.awt.headless=true"
+    volumes:
+      - assetstore:/dspace/assetstore
+      - ./../dspace/config:/dspace/config:ro
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    entrypoint:
+      - /bin/bash
+      - '-c'
+      - |
+        while (!</dev/tcp/dspacedb/5432) > /dev/null 2>&1; do sleep 1; done;
+        /dspace/bin/dspace database migrate
+        catalina.sh run
+
+  # -------------------------------------------------------------------------
+  # Frontend (Angular SSR, Node + pm2)
+  # -------------------------------------------------------------------------
+  dspace-angular:
+    container_name: dspace-angular
+    image: "${DSPACE_UI_IMAGE:-dspace-cris-angular:local}"
+    networks:
+      dspacenet:
+    ports:
+      - "127.0.0.1:4000:4000"
+    environment:
+      # Το SSL τερματίζει ο reverse proxy, άρα το UI μιλά http εσωτερικά
+      DSPACE_UI_SSL: 'false'
+      DSPACE_UI_HOST: 0.0.0.0
+      DSPACE_UI_PORT: '4000'
+      DSPACE_UI_NAMESPACE: /
+      # Το SSR κάνει server-side fetch στο REST API και ΑΠΑΙΤΕΙ δημόσιο
+      # HTTPS URL - δες DSpace/dspace-angular issue #1485
+      DSPACE_REST_SSL: 'true'
+      DSPACE_REST_HOST: "${DSPACE_HOSTNAME}"
+      DSPACE_REST_PORT: '443'
+      DSPACE_REST_NAMESPACE: /server
+    depends_on:
+      - dspace
+    restart: unless-stopped
+
+  # -------------------------------------------------------------------------
+  # PostgreSQL
+  # -------------------------------------------------------------------------
+  dspacedb:
+    container_name: dspacedb
+    image: "${DOCKER_OWNER:-dspace}/dspace-postgres-pgcrypto:${DSPACE_VER:-dspace-7_x}"
+    networks:
+      dspacenet:
+    # ΚΑΘΟΛΟΥ ports:. Μόνο τα containers στο dspacenet τη χρειάζονται.
+    # Για ένα pg_dump από τον host:
+    #   docker compose exec dspacedb pg_dump -U dspace dspace > dump.sql
+    # Αν επιμένεις σε host access, βάλε "127.0.0.1:5432:5432" - ποτέ "5432:5432".
+    environment:
+      PGDATA: /pgdata
+      # ΜΗΝ το αφήσεις 'dspace'. Βάλ' το στο .env
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}"
+    volumes:
+      - pgdata:/pgdata
+    restart: unless-stopped
+
+  # -------------------------------------------------------------------------
+  # Solr
+  # -------------------------------------------------------------------------
+  dspacesolr:
+    container_name: dspacesolr
+    image: "${DOCKER_OWNER:-dspace}/dspace-solr:${DSPACE_VER:-dspace-7_x}"
+    build:
+      context: ..
+      dockerfile: ./dspace/src/main/docker/dspace-solr/Dockerfile
+      args:
+        SOLR_VERSION: "${SOLR_VER:-8.11}"
+    networks:
+      dspacenet:
+    # ΚΑΘΟΛΟΥ ports:. Το Solr admin UI δεν έχει authentication by default και
+    # ιστορικά το config-set upload έχει οδηγήσει σε RCE.
+    # Για να δεις το admin UI: ssh -L 8983:127.0.0.1:8983 user@server
+    # και μετά βάλε προσωρινά "127.0.0.1:8983:8983".
+    working_dir: /var/solr/data
+    volumes:
+      - solr_data:/var/solr/data
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    entrypoint:
+      - /bin/bash
+      - '-c'
+      - |
+        init-var-solr
+        # ΚΡΑΤΑ ΤΗ ΔΙΚΗ ΣΟΥ ΛΙΣΤΑ CORES - μην την αντιγράψεις τυφλά.
+        #
+        # Αυτά τα 5 είναι όσα ΠΡΑΓΜΑΤΙΚΑ περιέχει το dspace-solr image
+        # (δες dspace/src/main/docker/dspace-solr/Dockerfile - κάνει COPY
+        # μόνο authority, oai, search, statistics, audit).
+        #
+        # Το dspace/solr/ αυτού του repo έχει ΚΑΙ dedup, nbevent, suggestion,
+        # ocr - cores που χρειάζεται το DSpace-CRIS. Για να δουλέψουν πρέπει
+        # πρώτα να προστεθούν COPY γραμμές στο dspace-solr/Dockerfile.
+        # Αν τα προσθέσεις εδώ χωρίς αυτό, το precreate-core αποτυγχάνει και
+        # το Solr δεν ανεβαίνει. Πρόσθεσέ τα ΜΟΝΟ αν το δικό σου image τα έχει.
+        for core in authority oai search statistics audit; do
+          precreate-core "$core" "/opt/solr/server/solr/configsets/$core"
+          cp -r "/opt/solr/server/solr/configsets/$core/." "$core"
+        done
+        exec solr -f
+
+volumes:
+  assetstore:
+  pgdata:
+  solr_data:
